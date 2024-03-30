@@ -1,0 +1,22 @@
+%!TEX root = x.tex
+%%--------------------------------------------------
+%% Title page
+
+
+\thispagestyle{empty}
+\begingroup
+\def\hd{\begin{tabular}{ll}
+          \textbf{文档编号:} & {\larger\docno}             \\
+          \textbf{日期:}            & \reldate                    \\
+          \end{tabular}
+}
+\newlength{\hdwidth}
+\settowidth{\hdwidth}{\hd}
+\hfill\begin{minipage}{\hdwidth}\hd\end{minipage}
+\endgroup
+
+\vspace{2.5cm}
+\begin{center}
+\textbf{\Huge 编程语言 \X}
+\end{center}
+\newpage

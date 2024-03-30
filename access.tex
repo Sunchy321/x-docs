@@ -1,0 +1,26 @@
+%!TEX root = x.tex
+
+\rSec0[access]{访问控制}
+\indextext{访问控制}
+
+\pnum
+实体 $x$ 可以\term{访问}实体 $y$ 意味着，$x$ 的声明中指代 $y$ 的 \grammarterm{IDExpr} （无论是显式还是隐式）是合法的。\footnote{某些情况可能不存在这样的 \grammarterm{IDExpr}，这并不意味着 $x$ 能访问或不能访问 $y$。}
+
+\pnum
+变量、函数、类型、模块的声明 $e$ 可以包含以下的\term{访问控制符}：
+
+\begin{itemize}
+\item \tcode{public}，任意实体 $f$ 都可以访问它；
+\item \tcode{internal}，只有与 $e$ 处于同一个包中的实体才能访问它；
+\item \tcode{private}，只有与 $e$ 定义在同一个文件中的实体才可以访问它。
+\end{itemize}
+
+块作用域的声明不能具有访问控制符。如果一个非块作用域的声明不包含访问控制符，那么
+
+\begin{itemize}
+\item 如果它对应的 \grammarterm{UnqualID} 不是标识符，它是 \tcode{public} 的；
+\item 如果它的标识符以下划线开头，那么它是 \tcode{private} 的；否则
+\item 它是 \tcode{public} 的。
+\end{itemize}
+
+扩展不能具有访问控制符（因为它不能被使用第二次）。声明块的声明控制符应用到其内部的声明。

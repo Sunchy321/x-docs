@@ -1,0 +1,58 @@
+%!TEX root = x.tex
+
+\rSec0[pattern]{模式匹配}
+
+\begin{bnf}
+\nontermdef{Pattern} \br
+    NullPattern \br
+    ExprPattern \br
+    BindPattern
+\end{bnf}
+
+\pnum
+模式匹配用于检验一个值是否符合特定的模式，以及在符合特定的模式时从中提取某些成分。值符合特定的模式称为这个值\term{匹配}这个模式。
+
+\rSec1[pattern.null]{空模式}
+
+\begin{bnf}
+\nontermdef{NullPattern} \br
+    \tcode{_}
+\end{bnf}
+
+\pnum
+空模式始终认为匹配成功。
+
+\rSec1[pattern.expr]{表达式模式}
+
+\begin{bnf}
+\nontermdef{ExprPattern} \br
+    Expression
+\end{bnf}
+
+\pnum
+表达式模式中的表达式必须实现了 \tcode{core::Equtable}；它必须是无副作用的。值 \tcode{x} 匹配模式 \tcode{p} 当且仅当 \tcode{x == p}。
+
+\rSec1[pattern.bind]{绑定模式}
+
+\begin{bnf}
+\nontermdef{BindPattern} \br
+    \terminal{var} Identifier TypeNotation\bnfq \br
+    \terminal{let} Identifier TypeNotation\bnfq
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{TypeNotation} \br
+    \terminal{is} Type \br
+    \terminal{:} Type
+\end{bnf}
+
+\pnum
+如果绑定模式中不具有类型标记，那么任意值 $\langle T, Q, v \rangle$ 都可以匹配模式 \tcode{let n} 或者 \tcode{var n}；之后 \tcode{n} 将作为一个变量名称插入到当前作用域中，其类型为 \tcode{T}；如果使用的是 \tcode{let} 绑定，则具有限定符 \tcode{immut}。
+
+\pnum
+如果绑定模式中具有类型标记，那么值匹配成功当且仅当其类型也满足类型标记的约束；如果能够匹配，接下来将会像没有类型标记那样继续。类型标记的约束如下：
+
+\begin{itemize}
+\item \tcode{is T} 要求值的类型为 \tcode{T}。
+\item \tcode{: T} 要求值的类型能够隐式转换到 \tcode{T}。
+\end{itemize}

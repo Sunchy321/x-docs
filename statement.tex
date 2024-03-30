@@ -1,0 +1,148 @@
+%!TEX root = x.tex
+
+\rSec0[stmt]{语句}
+\indextext{语句}
+
+\begin{bnf}
+\nontermdef{Statement} \br
+    Block \br
+    IfStmt \br
+    SwitchStmt \br
+    AssertStmt
+\end{bnf}
+
+\pnum
+语句是一类特殊的基本表达式。在语句中的子块将优先作为语句的一部分而不是其中的表达式的一部分。\enterexample
+
+\begin{codeblock}
+// 错误： \tcode{\{ true \}} 被认为是 \tcode{if} 语句的第一个子块，而不是它的条件表达式的一部分
+if x.filter{ true }
+\end{codeblock}
+
+\exitexample
+
+\rSec1[stmt.block]{块}
+
+\begin{bnf}
+\nontermdef{Block} \br
+    \terminal{\{} BlockItem\bnfs\ \terminal{\}}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{BlockItem} \br
+    Expression \terminal{;}\bnfq \br
+    BlockDecl
+\end{bnf}
+
+\pnum
+块是由大括号包裹的一系列声明和表达式的序列。块定义了一个块作用域。块的求值按照顺序进行，整个语句的值是最后一个项目的值。所有不是最后一项的表达式项的值被丢弃；这些表达式必须以\tcode{;}结尾。如果最后一个项目是一个声明，这个块的类型为 \tcode{void}。
+
+\rSec1[stmt.if]{\tcode{if} 语句}
+\indextext{语句!if}
+
+\begin{bnf}
+\nontermdef{IfStmt} \br
+    \terminal{if} Condition \terminal{then} Expression \br
+    \terminal{if} Condition \terminal{then} Expression \terminal{else} Expression \br
+    \terminal{if} Condition Block \br
+    \terminal{if} Condition Block \terminal{else} Block
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{Condition} \br
+     ObjectDecl\bnfl\tcode{;} \bnflp Expression \bnfv Pattern \terminal{=} Expression \bnfrp
+\end{bnf}
+
+\pnum
+\term{条件}可以为任意对象声明后跟一个表达式或模式匹配。如果条件为表达式\footnote{因为赋值表达式的类型是 \tcode{void}，形如 \tcode{p = e} 的程序文本将始终被看做一个模式匹配而不是赋值表达式。}（记作 \tcode{e}），那么这个表达式的类型必须实现 \tcode{core::Boolean}。条件成立当且仅当 \tcode{e} 求值为真（\ref{core.boolean}）。如果条件是模式匹配，那条件成立当且仅当表达式能够匹配这个模式。模式匹配中的模式必须包含至少一个空模式或者绑定模式。
+
+\pnum
+将 \tcode{if} 语句的第一个表达式记作 \tcode{t}，第二个表达式（如果有）记作 \tcode{f}。对 \tcode{if} 语句的求值按以下顺序进行：
+
+\begin{itemize}
+
+\item 如果条件成立，对 \tcode{t} 求值，然后将它的值作为整个语句的值。
+\item 否则，如果存在 \tcode{f}，那么对它求值，然后将它的值作为整个语句的值。
+\item 否则，整个语句的值为 \tcode{void()}。
+
+\end{itemize}
+
+只有一个表达式会被求值。整个语句的类型是 \tcode{t} 和 \tcode{f} 的类型的公共类型（如果 \tcode{f} 不存在的话视为 \tcode{void}）。
+
+\rSec1[stmt.switch]{\tcode{switch} 语句}
+\indextext{}
+
+\begin{bnf}
+\nontermdef{SwitchStmt} \br
+    \terminal{switch} Condition SwitchBlock
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{SwitchBlock} \br
+    \terminal{\{} BlockItem* MatchItem\bnfs \terminal{\}}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{MatchItem} \br
+    Matcher BlockItem\bnfp
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{Matcher} \br
+    Pattern\bnfl\terminal{,} \terminal{=>}
+\end{bnf}
+
+\pnum
+\tcode{switch} 语句的条件最后一个项目必须为表达式，它称为\term{条件表达式}。每个匹配项目的模式必须不同。\tcode{switch} 语句的类型为所有匹配项目的顶层表达式的类型的公共类型（不存在的 \tcode{else} 视为 \tcode{void}）。匹配项目中的 \grammarterm{BlockItem} 等价于大括号包裹这些语句的块。
+
+\pnum
+对 \tcode{switch} 语句的求值按照如下顺序进行：
+
+\begin{itemize}
+\item 如果 \grammarterm{SwitchBlock} 中有 \grammarterm{BlockItem}，按顺序执行它们。
+\item 依次对每个匹配项目进行匹配。如果条件表达式匹配项目中的模式，跳转到第四步并且其中的 $e$ 指代这个项目中 \tcode{=>} 后的表达式。
+\item 否则，求值终止。表达式的值为 \tcode{void()}。\enternote 因为此时没有覆盖所有的可能值，使用它的值会引发错误。此时只有在把整个语句的值丢弃的情况下才不会是错误。\exitnote
+\item 对 $e$ 进行求值。并把这个值作为整个表达式的值。
+\end{itemize}
+
+所有 $e$ 以外的项目中 \tcode{=>} 后的表达式都不会进行求值。
+
+\pnum
+如果 \tcode{switch} 语句中的所有模式均为单个表达式且所有表达式都
+
+\begin{itemize}
+\item 具有整数类型；或
+\item 具有相同的 \tcode{core::Hashable} 类型。
+\end{itemize}
+
+那么实现可以将上述的求值过程优化为一个 \bigoh{1} 的过程。
+
+\rSec1[stmt.while]{\tcode{while} 语句}
+
+\begin{bnf}
+\nontermdef{WhileStmt} \br
+    \terminal{while} Condition Block
+\end{bnf}
+
+\rSec1[stmt.assert]{断言语句}
+
+\begin{bnf}
+\nontermdef{AssertStmt} \br
+    \terminal{assert} Expression \br
+    \terminal{assert} Expression \terminal{:} Expression
+\end{bnf}
+
+\pnum
+\tcode{assert} 语句用作断言。语句中的第一个表达式必须实现了 \tcode{core::Boolean}，第二个表达式必须实现了 \tcode{core::String}。对该语句的求值首先对所有表达式求值，然后如果第一个表达式求值不为真，则抛出一个 \tcode{AssertionFailure}，其构造使用的参数分别为
+
+\begin{itemize}
+\item \tcode{description}：如果存在第二个表达式，则是第二个表达式；否则是与第一个表达式的程序文本完全相同的文本。
+\item \tcode{file}：当前文件，即 \tcode{core::SourceLocation::File} 的值。
+\item \tcode{line}：当前行号，即 \tcode{core::SourceLication::Line} 的值。
+\end{itemize}
+
+\pnum
+实现可以抑制该语句的原始行为，而改为仅仅对两个表达式求值，然后什么也不做。\enternote 与 C 或 C++ 的 \tcode{assert} 宏不同，断言语句在禁用的情况下仍然会对其判断表达式求值。\exitnote 实现也可以以其他方式改变该语句的行为，\enternote 例如，在断言失败时使程序在断言处中断并且开启调试器。 \exitnote
+
+\pnum
+断言语句在函数的前置和后置条件块中的行为与上述不同；参见 \ref{func.inout}。

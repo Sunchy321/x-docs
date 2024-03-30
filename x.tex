@@ -1,0 +1,97 @@
+\documentclass[ebook,10pt,oneside,openany,final]{memoir}
+
+\usepackage[iso,american]
+           {isodate}      % use iso format for dates
+\usepackage[final]
+           {listings}     % code listings
+\usepackage{longtable}    % auto-breaking tables
+\usepackage{ltcaption}    % fix captions for long tables
+\usepackage{booktabs}     % fancy tables
+\usepackage{relsize}      % provide relative font size changes
+\usepackage{textcomp}     % provide \text{l,r}angle
+\usepackage{underscore}   % remove special status of '_' in ordinary text
+\usepackage{verbatim}     % improved verbatim environment
+\usepackage{parskip}      % handle non-indented paragraphs "properly"
+\usepackage{array}        % new column definitions for tables
+\usepackage[normalem]{ulem}
+\usepackage{color}        % define colors for strikeouts and underlines
+\usepackage{amsmath}      % additional math symbols
+\usepackage{mathrsfs}     % mathscr font
+\usepackage{microtype}
+\usepackage{multicol}
+\usepackage{xspace}
+\usepackage{fixme}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[final]{graphicx}
+\usepackage[pdftitle={X 文档},
+            pdfsubject={X 文档},
+            pdfcreator={Sunchy321},
+            bookmarks=true,
+            bookmarksnumbered=true,
+            pdfpagelabels=true,
+            pdfpagemode=UseOutlines,
+            pdfstartview=FitH,
+            linktocpage=true,
+            colorlinks=true,
+            linkcolor=blue,
+            plainpages=false
+           ]{hyperref}
+\usepackage{memhfixc}     % fix interactions between hyperref and memoir
+\usepackage{ctex}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{dsfont}    % 空心的整数
+
+\input{layout}
+\input{styles}
+\input{macros}
+\input{tables}
+
+\makeindex[generalindex]
+\makeindex[libraryindex]
+\makeindex[grammarindex]
+
+%%--------------------------------------------------
+%% turn off all ligatures inside \texttt
+\begin{document}
+\chapterstyle{xstd}
+\pagestyle{xpage}
+
+%%--------------------------------------------------
+%% configuration
+\input{config}
+
+%%--------------------------------------------------
+%% front matter
+\frontmatter
+\include{front}
+
+%%--------------------------------------------------
+%% main body of the document
+\mainmatter
+\setglobalstyles
+
+\include{lex}
+\include{basic}
+\include{type}
+\include{expression}
+\include{statement}
+\include{pattern}
+\include{declaraion}
+\include{function}
+\include{concept}
+\include{class}
+\include{enum}
+\include{attribute}
+\include{access}
+\include{package}
+
+\include{lib-intro}
+\include{sequence}
+
+%%--------------------------------------------------
+%% back matter
+\backmatter
+\include{back}
+\end{document}

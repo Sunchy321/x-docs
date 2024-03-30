@@ -1,0 +1,320 @@
+%!TEX root = x.tex
+
+\rSec0[lex]{词法约定}
+
+\pnum
+\term{程序文本}指将被翻译为 \X 程序的文本的整体或者一部分。它存储在\term{源文件}中。
+
+\rSec1[lex.indent]{缩进}
+
+\pnum
+每一行的第一个非空白字符之前的所有空白字符称为\term{缩进}。两个缩进\term{相等}当且仅当它们由相同的字符构成；缩进 $a$ \term{小于}缩进 $b$ 当且仅当 $a \ne b$ 且 $a$ 是 $b$ 的前缀。实现可以对在同一源文件中的缩进不可比较的情况给出一个警告。
+
+\rSec1[lex.comment]{注释}
+
+\pnum
+有两种形式的\term{注释}：以 \tcode{/*} 开始， \tcode{*/} 结束的\term{块注释} 和以 \tcode{//} 开始，到行末结束的\term{行注释}。注释内部的 \tcode{/*} 或 \tcode{//} 等不具有特殊含义。注释在将程序文本分割为标记以后和空白一起被删除。
+
+\pnum
+以 \tcode{/**} 开始、以 \tcode{*/} 结束，或者以 \tcode{///} 开始，到行末结束的注释称为\term{文档注释}。文档注释用于表示一个程序实体对应的文档。它按照如下规则确定应用到的实体：
+
+\begin{itemize}
+
+\item
+如果对于文档注释 $c$ ，存在程序实体 $e$ 满足
+
+\begin{itemize}
+
+\item
+$c$ 的最后一行处于 $e$ 的程序文本的第一行的上一行；
+
+\item
+$c$ 的每一行的缩进都不小于 $e$ 的第一行的缩进；
+
+\item
+$c$ 的第一行与最后一行的缩进等于 $e$ 的第一行的缩进；以及
+
+\item
+$c$ 和 $e$ 的第一个标记之间只有一个空白。
+
+\end{itemize}
+
+那么 $c$ 是 $e$ 的文档注释。\enterexample
+
+\begin{codeblock}
+/// \tcode{X} 的文档注释
+type X { }
+
+/// 不是 \tcode{t} 的文档注释：间隔了一行
+
+var t = 0
+
+/* 不是 @!\tcode{T}@! 的文档注释：不是 /** 的形式 */
+type T { }
+
+/** 不是 @!\tcode{x}@! 的文档注释：有多余的标记 */ /* 多余的注释 */
+var x = 0
+
+/// 不是 \tcode{m} 的文档注释：缩进不一致
+    var m = 0
+\end{codeblock}
+
+\exitexample
+
+\item
+否则，$c$ 不是任何实体的文档注释并且被当做普通注释处理。实现可以对此给出一个警告。
+
+\end{itemize}
+
+\rSec1[lex.identifier]{标识符}
+
+\begin{bnf}
+\nontermdef{Identifier} \br
+    NormalIdentifier \br
+    LambdaIdentifier
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{NormalIdentifier} \br
+    IdentifierHead IdentifierTail\bnfs
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{IdentifierHead} \br
+    Unicode(Lu, Ll, Lt, Lm, Lo, Nl) \br
+    \terminal{_}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{Alnum} \br
+    \terminal{a} \textnormal{至} \terminal{z} \br
+    \terminal{A} \textnormal{至} \terminal{Z} \br
+    Digit
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{IdentifierTail} \br
+    IdentifierHead \br
+    Unicode(Mn, Mc, Nd, Pc, Cf)
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{LambdaIdentifier} \br
+    \terminal{\$} Digit\bnfp \br
+    \terminal{\$} Identifier
+\end{bnf}
+
+\pnum
+任意长的由字母和数字组成的序列是标识符。大写和小写字母被认为是不同的。每个字符都是有效的。
+
+\pnum
+以 \tcode{\$} 开始后接十进制数字或标识符的序列也是标识符。这些标识符只能在 lambda 作用域中使用。
+
+\rSec1[lex.keyword]{关键字}
+
+\pnum
+表~\ref{tab:keyword}~中的标识符被保留做关键字；此外，以 \tcode{\_\_} 开始的标识符被保留作为关键字。只有在某些特定语法结构中的关键字可以作为标识符使用。其他情况下的关键字不能作为标识符。
+
+\begin{floattable}{关键字}{tab:keyword}{lllll}
+\topline
+\tcode{_}         &
+\tcode{bitand}    &
+\tcode{bitand_eq} &
+\tcode{bitor}     &
+\tcode{bitor_eq}  \\
+\tcode{bits}      &
+\tcode{bool}      &
+\tcode{clone}     &
+\tcode{concept}   &
+\tcode{div}       \\
+\tcode{div_eq}    &
+\tcode{else}      &
+\tcode{false}     &
+\tcode{float}     &
+\tcode{if}        \\
+\tcode{immut}     &
+\tcode{int}       &
+\tcode{let}       &
+\tcode{lvalue}    &
+\tcode{mod}       \\
+\tcode{mod_eq}    &
+\tcode{move}      &
+\tcode{null}      &
+\tcode{return}    &
+\tcode{scope}     \\
+\tcode{switch}    &
+\tcode{then}      &
+\tcode{this}      &
+\tcode{throw}     &
+\tcode{throws}    \\
+\tcode{true}      &
+\tcode{type}      &
+\tcode{typeof}    &
+\tcode{never}     &
+\tcode{var}       \\
+\tcode{void}      &
+\tcode{xor}       &
+\tcode{xor_eq}    &
+& \\
+\end{floattable}
+
+\rSec1[lex.op]{运算符}
+
+\begin{bnf}
+\nontermdef{Operator} \br
+    \terminal{\lq}\bnfq RawOperator
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{RawOperator} \textnormal{one of} \br
+    CustomOperator \terminal{, ; : ( ) [ ] \{ \}}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{CustomOperator} \br
+    CustomOperatorPart\bnfp
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{CustomOperatorPart} \textnormal{one of} \br
+    \terminal{\~ ! \# \% \^ \& * - | + = / ? < > .}
+\end{bnf}
+
+\pnum
+\tcode{.}，\tcode{...} 和 \tcode{=} 被保留不能重载为运算符。
+
+\rSec1[lex.literal]{字面量}
+
+\begin{bnf}
+\nontermdef{Literal} \br
+    IntegerLiteral Suffix\bnfq \br
+    FloatingLiteral Suffix\bnfq \br
+    CharacterLiteral Suffix\bnfq \br
+    StringLiteral Suffix\bnfq
+\end{bnf}
+
+\rSec2[literal.integer]{整数字面量}
+
+\begin{bnf}
+\nontermdef{IntegerLiteral} \br
+    DecimalLiteral \br
+    BinaryLiteral \br
+    HexadecimalLiteral
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{DecimalLiteral} \br
+    Digit \bnflp\terminal{\textquotesingle}\bnfq Digit\bnfrp\bnfs
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{Digit} \textnormal{one of} \br
+    \terminal{0 1 2 3 4 5 6 7 8 9}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{BinaryLiteral} \br
+    \terminal{0b} BinaryDigit \bnflp\terminal{\textquotesingle}\bnfq BinaryDigit\bnfrp\bnfs
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{BinaryDigit} \br
+    \terminal{0} \br
+    \terminal{1}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{HexadecimalLiteral} \br
+    \terminal{0x} HexadecimalDigit \bnflp\terminal{\textquotesingle}\bnfq HexadecimalDigit\bnfrp\bnfs
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{HexadecimalDigit} \textnormal{one of} \br
+    \terminal{0 1 2 3 4 5 6 7 8 9} \br
+    \terminal{A B C D E F}
+\end{bnf}
+
+\pnum
+整数字面量由一系列数字构成。其中的单引号用作分隔并且不影响字面量的值。字面量的前缀用于指示它的进制。最左边的数字具有最大的权重值。\term{十进制字面量}由若干十进制数字构成；\term{十六进制字面量}由前缀 \tcode{0x} 后跟若干大写十六进制数字构成；\term{二进制字面量}前缀 \tcode{0b} 后跟若干二进制数字构成。\footnote{前缀中的字母不能为大写字母；十六进制数字 A - F 不能为小写字母。}
+
+\pnum
+如果整数字面量对应的数学值为 $n$，则整数字面量的值为 $\langle \texttt{int<} n \texttt{,} n \texttt{>}, \texttt{immut}, n \rangle$。如果这个整数类型不存在，程序是非法的。
+
+\rSec2[literal.floating]{浮点字面量}
+
+\rSec2[literal.character]{字符字面量}
+
+\begin{bnf}
+\nontermdef{CharacterLiteral} \br
+    \terminal{\textquotesingle} Cchar \br
+    \terminal{\textquotesingle} EscapeSeq
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{Cchar} \br
+    \textnormal{除了 \textbackslash 以外的非空白可打印字符}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{EscapeSeq} \br
+    CharacterEntity
+    SimpleEscapeSeq
+    UnicodeEscapeSeq
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{SimpleEscapeSeq} \textnormal{one of} \br
+    \terminal{\textbackslash{}0 \textbackslash{}n \textbackslash{}t \textbackslash{}r \textbackslash\textquotesingle\ \textbackslash\textquotedbl}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{UnicodeEscapeSeq} \br
+    \terminal{\textbackslash{}u\{} HexadecimalDigitSeq \terminal{\}}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{HexadecimalDigitSeq} \br
+    HexadecimalDigit \br
+    HexadecimalDigitSeq HexadecimalDigit
+\end{bnf}
+
+\rSec2[literal.string]{字符串字面量}
+
+\begin{bnf}
+\nontermdef{StringLiteral} \br
+    \terminal{\textquotedbl} ScharSeq\bnfq \terminal{\textquotedbl} \br
+    \terminal{@\textquotedbl} RcharSeq\bnfq \terminal{\textquotedbl}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ScharSeq} \br
+    Schar \br
+    EscapeSeq \br
+    ScharSeq Schar \br
+    ScharSeq EscapeSeq
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{Schar} \br
+    \textnormal{除了 \textbackslash 和 \textquotedbl 以外的非空白可打印字符}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{RcharSeq} \br
+    Rchar \br
+    \terminal{\textquotedbl\textquotedbl} \br
+    RcharSeq Rchar \br
+    RcharSeq \terminal{\textquotedbl\textquotedbl}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{Rchar} \br
+    \textnormal{除了 \textquotedbl 以外的非空白可打印字符}
+\end{bnf}
+
+\rSec2[literal.custom]{用户定义字面量}
+
+\begin{bnf}
+\nontermdef{Suffix} \br
+    \terminal{\_} Alnums
+\end{bnf}

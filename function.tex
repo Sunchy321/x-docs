@@ -1,0 +1,23 @@
+%!TEX root = x.tex
+
+\rSec0[func]{函数}
+\indextext{函数}
+
+\pnum
+函数调用按照以下流程进行：
+
+\begin{itemize}
+    \item 将形参的值按照传参方式设置为对应的值。
+    \item 对函数最外层的块进行求值。
+    \begin{itemize}
+        \item 如果这个求值异常结束（因此，这个函数具有 \tcode{throws} 修饰符），将这个异常传递到调用处；
+        \item 否则：
+        \begin{itemize}
+            \item 如果函数的返回类型是 \tcode{void}，这个值被丢弃；
+            \item 如果函数的返回类型是 \tcode{never}，这是一个编译错误 \enternote 只要有一条控制流可能到达结尾就会导致编译错误。\exitnote；
+            \item 否则，将这个值隐式转换到返回类型。（如果不能的话，这是一个编译错误）
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\rSec1[func.inout]{函数前置/后置条件}

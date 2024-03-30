@@ -1,0 +1,25 @@
+%!TEX root = x.tex
+\input{cover-wd}
+% \input{cover-reg}
+
+%%--------------------------------------------------
+%% The table of contents, list of tables, and list of figures
+\markboth{\contentsname}{}
+
+%%--------------------------------------------------
+%% Make a bit more room for our long page numbers.
+\makeatletter
+\renewcommand\@pnumwidth{2.5em}
+\makeatother
+
+\renewcommand{\figurename}{表}%
+\renewcommand{\contentsname}{目录}
+\renewcommand{\listtablename}{表格列表}
+\renewcommand{\listfigurename}{图片列表}
+
+\tableofcontents
+\setcounter{tocdepth}{5}
+\newpage
+\listoftables
+\newpage
+\listoffigures

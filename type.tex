@@ -1,0 +1,190 @@
+%!TEX root = x.tex
+
+\rSec0[typequal]{类型与修饰符}
+
+\rSec1[type]{类型、值和对象}
+\indextext{类型}
+
+\begin{bnf}
+\nontermdef{Type} \br
+    FundaType \br
+    SpecialType \br
+    CompType
+\end{bnf}
+
+$$ \mathcal{V} = \{ \langle T, Q, v \rangle \mid T \in \mathcal{T}, Q \subset \mathcal{Q}, v \in T \} $$
+
+\pnum
+\term{类型}是一个有限集合。\term{修饰符}是一个标识符。\term{值}是类型、修饰符集合和这个类型的成员的三元组。\enternote 实际上，值并不由这三个项完全表征。例如 \tcode{lvalue} 表示有与这个值相关联的对象，这个对象不能由这个值确定。 \exitnote $T$ 称为值 $v$ 的\term{类型}。
+
+\rSec2[type.funda]{基本类型}
+\indextext{类型!基本类型}
+
+\begin{bnf}
+\nontermdef{FundaType} \br
+    \terminal{void} \br
+    \terminal{never} \br
+    \terminal{bool} \br
+    \terminal{int} \br
+    \terminal{uint} \br
+    \terminal{int} \terminal{<} Expression \terminal{,} Expression \terminal{>} \br
+    \terminal{float} \br
+    \terminal{float} \terminal{<} Expression \terminal{>} \br
+\end{bnf}
+
+\pnum
+\tcode{void} 标识只有唯一一个值的类型。把类型为 \tcode{void} 的表达式作为任何运算符的操作数、初值、被模式匹配的表达式都是非法的。\enternote 因为 \tcode{;} 运算符会把左操作数的结果丢弃，因此把 \tcode{void} 类型的表达式作为 \tcode{;} 运算符的左操作数是合法的。\exitnote
+
+$$\tcode{void} \coloneqq \{ \mathrm{void} \}$$
+
+\pnum
+\tcode{never} 标识一个不会使用其值的表达式的类型。
+
+$$\tcode{never} \coloneqq \{ \mathrm{never} \}$$
+
+\pnum
+\tcode{bool} 标识布尔值。
+
+$$\tcode{bool} \coloneqq \{ \mathrm{true}, \mathrm{false} \}$$
+
+\pnum
+\tcode{int<l, h>} 称作\term{整数类型}。
+
+$$\tcode{int<}l\tcode{,}h\tcode{>} \coloneqq \{ x \in \mathcal{Z} \mid l \le x \le h \}$$
+
+存在实现定义的常数 $m$，$M$。$l$ 和 $h$ 须满足
+
+$$ l \ge m $$
+$$ h \le M $$
+$$ 0 \le h - l \le M $$
+
+\tcode{int} 等价于 \tcode{int<m, m + M>}；\tcode{uint} 等价于 \tcode{int<0, M>}。
+
+\pnum
+\tcode{float<s>} 称作\term{浮点类型}。
+
+$$ \tcode{float<}s\tcode{>}^\ast \subset \mathcal{R} $$
+$$ \tcode{float<}s\tcode{>}^\dagger \subset \{ +\infty, -\infty, \mathrm{NaN} \} $$
+$$ \tcode{float<}s\tcode{>} \coloneqq \tcode{float<}s\tcode{>}^\ast \cup \tcode{float<}s\tcode{>}^\dagger $$
+
+$s$ 满足
+
+$$ s \in S $$
+
+其中 $S$ 是实现定义的正整数集合。\tcode{float} 等价于 \tcode{float<s$_\tcode{0}$>}，其中 $s_0$ 是实现定义的常数。
+
+\pnum
+\tcode{bits<n>} 称作\term{位域类型}。
+
+$$ \tcode{bits<}n\tcode{>} \coloneqq \{ 0, 1 \}^n $$
+
+\rSec2[type.special]{特殊类型}
+\indextext{类型!特殊类型}
+
+\begin{bnf}
+\nontermdef{SpecialType} \br
+    \terminal{self} \br
+\end{bnf}
+
+\rSec2[type.comp]{复合类型}
+\indextext{类型!复合类型}
+
+\begin{bnf}
+\nontermdef{CompType} \br
+    Type \terminal{?} \br
+    Type \terminal{[} Expression\bnfq  \terminal{]} \br
+    Type \terminal{\{} \terminal{\}} \br
+    Type \terminal{[} Type \terminal{]}
+    \terminal{(} UnnamedTypes \terminal{)} \br
+    \terminal{(} NamedTypes \terminal{)} \br
+    \terminal{(} UnnamedTypes \terminal{,} NamedTypes \terminal{)} \br
+    \terminal{\{} UnnamedTypes \terminal{\}}
+    Type \terminal{*}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{UnnamedTypes} \br
+    Type \br
+    UnnamedTypes \terminal{,} Type
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{NamedTypes} \br
+    Identifier \terminal{:} Type \br
+    NamedTypes \terminal{,} Identifier \terminal{:} Type
+\end{bnf}
+
+\pnum
+\tcode{T?} 称作\term{可空类型}。
+
+$$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{null} \} $$
+
+\pnum
+\tcode{T[N]} 称作\term{定长数组类型}，\tcode{T\{\}}称作\term{运行时定长数组类型}，\tcode{T[]}称作\term{变长数组类型}。
+
+$$ T\tcode{[}N\tcode{]} \coloneqq T^N $$
+$$ T\tcode{\{\}} \coloneqq \bigcup^\infty_{n=0} T^n $$
+$$ T\tcode{[]} \coloneqq \bigcup^\infty_{n=0} T^n $$
+
+\pnum
+\tcode{T[U]} 称作\term{映射类型}。
+
+$$ T\tcode{[}U\tcode{]} \coloneqq T^U $$
+
+\pnum
+\tcode{(T1, \ldots, Tm, L1: U1, \ldots, Ln: Un)} 称作\term{元组类型}。
+
+$$ \tcode{(}T_1\tcode{,} \ldots\tcode{,} T_m\tcode{,} L_1\tcode{:} U_1\tcode{,} \ldots\tcode{,} L_n\tcode{:} U_n\tcode{)} \coloneqq \prod^m_{i=1} T_i \times \prod^n_{i=1} U_i $$
+
+\pnum
+\tcode{T1|}\ldots\tcode{|Tn} 称作\term{联合类型}。其中各个 \tcode{T$_i$} 是无序的。重复的 \tcode{T$_i$} 将被视为一个。
+
+$$ T_1 \tcode{|} \ldots \tcode{|} T_n \coloneqq \bigcup^n_{i=1} \{ \langle T_i, t_i \rangle \mid t_i \in T_i \} $$
+
+\pnum
+\tcode{T*} 称作\term{指针类型。}
+
+\rSec2[type.common]{公共类型}
+\indextext{类型!公共类型}
+
+\pnum
+存在函数
+
+$$ \otimes: \mathcal{T} \times \mathcal{T} \rightarrow \mathcal{T} \cup \{ \ast \} $$
+
+满足交换律。如果对于类型 $T_1$ 和 $T_2$，$T_1 \otimes T_2 \ne \ast$，称 $T_1 \otimes T_2$ 为 $T_1$ 和 $T_2$ 的\term{公共类型}。
+
+\pnum
+函数 $\otimes$ 按照如下顺序确定：
+
+\begin{itemize}
+\item $T \otimes T \coloneqq T$
+\item $\tcode{never} \otimes T \coloneqq T$
+\item $\tcode{void} \otimes T \coloneqq \ast$
+\item $\tcode{int<}l_1\tcode{,}h_1\tcode{>} \otimes \tcode{int<}l_2\tcode{,}h_2\tcode{>} \coloneqq \tcode{int<}\min\{l_1, l_2\}\tcode{,}\max\{h_1, h_2\}\tcode{>}$
+\item $\tcode{int<}l\tcode{,}h\tcode{>} \otimes \tcode{float<}s\tcode{>} \coloneqq \tcode{float<}s\tcode{>}$
+\item $\tcode{float<}s_1\tcode{>} \otimes \tcode{float<}s_2\tcode{>} \coloneqq \tcode{float<}\max\{s_1, s_2\}\tcode{>}$
+\item $\tcode{bits<}s_1\tcode{>} \otimes \tcode{bits<}s_2\tcode{>} \coloneqq \tcode{bits<}\max\{s_1, s_2\}\tcode{>}$
+\item $T \otimes T\tcode{?} \coloneqq T\tcode{?}$
+\item $T\tcode{[}N\tcode{]} \otimes T\tcode{\{\}} \coloneqq T\tcode{\{\}}$
+\item $T\tcode{[}N\tcode{]} \otimes T\tcode{[]} \coloneqq T\tcode{[]}$
+\item $T\tcode{\{\}} \otimes T\tcode{[]} \coloneqq T\tcode{[]}$
+\item $T \otimes T \tcode{|} T_1 \tcode{|} \ldots \tcode{|} T_{n-1} \coloneqq T \tcode{|} T_1 \tcode{|} \ldots \tcode{|} T_{n-1}$
+\item $T \otimes T_1 \tcode{|} T_2 \tcode{|} \ldots \tcode{|} T_n \coloneqq T \tcode{|} T_1 \tcode{|} \ldots \tcode{|} T_n$
+\item $T \otimes U \coloneqq T \tcode{|} U$
+\end{itemize}
+
+\rSec1[qualifier]{修饰符}
+\indextext{修饰符}
+
+\rSec2[qual.immut]{\tcode{immut}}
+\indextext{修饰符!immut}
+
+\pnum
+\tcode{immut} 表示该值是不可变的。
+
+\rSec2[qual.lvalue]{\tcode{lvalue}}
+\indextext{修饰符!lvalue}
+
+\pnum
+\tcode{lvalue} 表示该值和一个对象相关联。
