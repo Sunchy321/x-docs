@@ -59,10 +59,11 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \term{丢弃表达式 $e$ 的结果}指，在决定 $e$ 的类型时，直接将它确定为 \tcode{never} 而跳过所有步骤；在对 $e$ 求值时，进行所有步骤，但是如果求值正常结束，丢弃最后的值。
 
 \rSec1[expr.primary]{基本表达式}
+\indextext{表达式!基本}
 
 \begin{bnf}
 \nontermdef{PrimaryExpr} \br
-    Literal \br
+    LiteralExpression \br
     Identifier \br
     \terminal{(} Expression \terminal{)} \br
     LambdaExpr
@@ -73,7 +74,39 @@ $$ \tcode{(}e\tcode{)} \rhd \omega \coloneqq e \rhd \omega $$
 \pnum
 括号包起的表达式与其内部的表达式完全等价。
 
-\rSec2[expr.lambda]{Lambda 表达式}
+\rSec2[expr.lit]{字面量表达式}
+\indextext{表达式!字面量}
+
+\begin{bnf}
+\nontermdef{LiteralExpression} \br
+    IntegerLiteral \br
+    FloatLiteral \br
+    StringLiteral \br
+    \terminal{true} \br
+    \terminal{false} \br
+    \terminal{nil}
+\end{bnf}
+
+\pnum
+字面量本身是基本表达式。
+
+\pnum
+整数字面量$i$的值为$i$，类型为$\tcode{int}_i$。如果$i$超出了能够选择的范围，这是一个编译错误。
+
+\pnum
+浮点字面量$f$的值为最接近$f$的浮点数值，类型为\tcode{float}。如果$f$太大，则其值为\tcode{float.Infinity}；如果$f$太小，其值为\tcode{0}。
+
+\pnum
+字符串字面量$s$的值为对应的字符串，类型为\tcode{string}。
+
+\pnum
+布尔字面量的类型为\tcode{bool}。\tcode{true}和\tcode{false}分别对应其值。
+
+\pnum
+\tcode{nil}的类型为$T$\tcode{?}，其中$T$为待推导的类型参数。
+
+\rSec2[expr.lambda]{Lambda表达式}
+\indextext{表达式!Lambda}
 
 \begin{bnf}
 \nontermdef{LambdaExpr} \br
@@ -105,7 +138,13 @@ $$ \tcode{(}e\tcode{)} \rhd \omega \coloneqq e \rhd \omega $$
 \rSec1[expr.semi]{分号运算符}
 \indextext{运算符!分号}
 
+\begin{bnf}
+\nontermdef{SemicolonExpression}\br
+    Expression \terminal{;} Expression\br
+    SimplDeclaration \terminal{;} Expression\br
+\end{bnf}
+
 $$ x \mathbin{\tcode{;}} y \rhd \omega \coloneqq y \rhd \otimes \mathrm{discard}(x)$$
 
 \pnum
-运算符 \tcode{;} 不要求其左端存在空白。对表达式 \tcode{x; y} 的求值首先对 \tcode{x} 求值并将结果丢弃；然后对 \tcode{y} 求值并将它的值作为最后的值。
+分号表达式中，分号左侧可以为一个表达式或声明。如果分号左侧为声明，则该声明会被插入到当前作用域中。如果左侧为表达式，则该表达式将被求值且结果会被丢弃。在那之后，将对右侧表达式进行求值并将其值作为整个表达式的值。

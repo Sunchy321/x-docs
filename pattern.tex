@@ -4,13 +4,32 @@
 
 \begin{bnf}
 \nontermdef{Pattern} \br
+    PatternBody PatternAssterion\bnfs
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{PatternBody} \br
     NullPattern \br
     ExprPattern \br
-    BindPattern
+    BindPattern \br
+    ArrayPattern \br
+    TuplePattern \br
+    RecordPattern \br
+    DictPattern \br
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{PatternAssterion}
+    TypeAssertion
+    IncludeAssertion
+    CondAssertion
 \end{bnf}
 
 \pnum
-模式匹配用于检验一个值是否符合特定的模式，以及在符合特定的模式时从中提取某些成分。值符合特定的模式称为这个值\term{匹配}这个模式。
+模式匹配用于检验一个值是否符合特定的\term{模式}，以及在符合特定的模式时从中提取某些成分。值符合特定的模式称为这个值\term{匹配}这个模式。本节中，$\mathcal{v}$表示待匹配的值，$\mathcal{p}$表示待匹配的模式。
+
+\pnum
+模式$\mathcal{p}$由\term{模式主体}和\term{模式断言}构成。模式主体规定匹配的结构与操作，模式断言则对值的特征进行断言。一个主体可以带有任意数量的断言。
 
 \rSec1[pattern.null]{空模式}
 
@@ -20,7 +39,7 @@
 \end{bnf}
 
 \pnum
-空模式始终认为匹配成功。
+空模式能够匹配任意值。匹配成功后，$\mathcal{v}$的值将被丢弃。
 
 \rSec1[pattern.expr]{表达式模式}
 
@@ -30,7 +49,7 @@
 \end{bnf}
 
 \pnum
-表达式模式中的表达式必须实现了 \tcode{core::Equtable}；它必须是无副作用的。值 \tcode{x} 匹配模式 \tcode{p} 当且仅当 \tcode{x == p}。
+表达式模式中的表达式必须实现了 \tcode{core.Equtable}。$\mathcal{v}$匹配表达式模式$\mathcal{p}$当且仅当$\mathcal{v}\tcode{==}\mathcal{p}$。
 
 \rSec1[pattern.bind]{绑定模式}
 
@@ -40,19 +59,106 @@
     \terminal{let} Identifier TypeNotation\bnfq
 \end{bnf}
 
+\pnum
+绑定模式可以匹配任意值。匹配成功后，该标识符将作为一个变量插入到当前作用域中。如果绑定使用的是\tcode{var}，则该变量具有\tcode{mut}修饰。
+
+\rSec1[pattern.array]{数组模式}
+
 \begin{bnf}
-\nontermdef{TypeNotation} \br
-    \terminal{is} Type \br
-    \terminal{:} Type
+\nontermdef{ArrayPattern} \br
+    \terminal{[} AnyPattern \bnflp\terminal{,} AnyPattern\bnfrp\bnfs\ \terminal{]}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{AnyPattern} \br
+    Pattern\br
+    \terminal{...}
 \end{bnf}
 
 \pnum
-如果绑定模式中不具有类型标记，那么任意值 $\langle T, Q, v \rangle$ 都可以匹配模式 \tcode{let n} 或者 \tcode{var n}；之后 \tcode{n} 将作为一个变量名称插入到当前作用域中，其类型为 \tcode{T}；如果使用的是 \tcode{let} 绑定，则具有限定符 \tcode{immut}。
+数组模式匹配序列中的元素。其中\tcode{...}项（称作\term{任意项模式}）只能出现至多一次，否则这是一个编译错误。
+
+\begin{enumerate}
+    \item 如果值未实现\tcode{core.Sequence}，则匹配失败。
+    \item 如果模式不包含任意项，且$\mathcal{v}$\tcode{.size}与模式中项的数量不相等，则匹配失败。
+    \item 如果模式包含任意项，且$\mathcal{v}$\tcode{.size}小于模式中非任意项的数量，则匹配失败。
+\end{enumerate}
 
 \pnum
-如果绑定模式中具有类型标记，那么值匹配成功当且仅当其类型也满足类型标记的约束；如果能够匹配，接下来将会像没有类型标记那样继续。类型标记的约束如下：
+在那之后，将按如下规则依次对$\mathcal{v}$的元素进行匹配。如果每个匹配都成功，则整个模式$\mathcal{p}$匹配$\mathcal{v}$。
+
+\begin{enumerate}
+    \item 对任意项模式之前的模式（如果不存在任意项则对每个子模式），$\mathcal{p}_i$匹配$\mathcal{v}$\tcode{[}$i$\tcode{]}，其中$i$是子模式的索引（从0开始）。
+    \item 对任意项模式之后的模式，$\mathcal{p}_r$匹配$\mathcal{v}$\tcode{[\$-}$r$\tcode{]}，其中$r$是子模式从后向前数的索引（从0开始）。
+\end{enumerate}
+
+\rSec1[pattern.type]{元组模式}
+
+\begin{bnf}
+\nontermdef{TuplePattern} \br
+    \terminal{(} AnyPattern \bnflp\terminal{,} AnyPattern\bnfrp\bnfs\ \terminal{)}
+\end{bnf}
+
+\pnum
+与数组模式类似，\term{元组模式}匹配元组。
+
+\rSec1[pattern.record]{记录模式}
+
+\begin{bnf}
+\nonterminal{RecordPattern} \br
+    \terminal{\{} RecordPatternBody \terminal{\}}
+\end{bnf}
+
+\begin{bnf}
+\nonterminal{RecordPatternBody} \br
+    RecordItem \bnflp\terminal{,} RecordItem\bnfrp\bnfs
+\end{bnf}
+
+\begin{bnf}
+\nonterminal{RecordItem} \br
+    Identifier \terminal{:} Pattern
+\end{bnf}
+
+\pnum
+\term{记录模式}对记录进行匹配。其中，\term{记录项}是由标识符和模式组成的键值对。如果对于每个对$(k, \mathcal{p})$而言，$\mathcal{v}$\tcode{.}$k$匹配$\mathcal{p}$都成立，则整个模式匹配成功。
+
+\pnum
+与数组和元组匹配不同，记录匹配是开放的，即$\mathcal{v}$可以包含未在模式中列出的项。
+
+\rSec1[pattern.type]{类型断言}
+
+\begin{bnf}
+\nontermdef{TypeAssertion} \br
+    \terminal{is} Type \br
+    \terminal{:} Type \br
+    \terminal{as} Type
+\end{bnf}
+
+\pnum
+\term{类型断言}对值的类型进行约束。它包括以下类型：
 
 \begin{itemize}
-\item \tcode{is T} 要求值的类型为 \tcode{T}。
-\item \tcode{: T} 要求值的类型能够隐式转换到 \tcode{T}。
-\end{itemize}
+    \item \tcode{is T}要求值的类型与\tcode{T}完全一致。
+    \item \tcode{: T}要求值的类型是\tcode{T}的子类型。
+    \item \tcode{as T}要求值的类型能够转换到\tcode{T}，无论显式或隐式。
+    \end{itemize}
+
+\rSec1[pattern.include]{包含断言}
+
+\begin{bnf}
+\nontermdef{IncludeAssertion} \br
+    \terminal{in} Expression
+\end{bnf}
+
+\pnum
+\term{包含断言}要求值包含在某个集合$\mathcal{e}$中。如果$\mathcal{v}$\tcode{ !in }$\mathcal{e}$，则匹配失败。
+
+\rSec1[pattern.cond]{条件断言}
+
+\begin{bnf}
+\nontermdef{CondAssertion} \br
+    \terminal{if} Expression
+\end{bnf}
+
+\pnum
+\term{条件断言}要求值满足某个条件。

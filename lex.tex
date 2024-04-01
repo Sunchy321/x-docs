@@ -122,26 +122,26 @@ var x = 0
 \tcode{bitand_eq} &
 \tcode{bitor}     &
 \tcode{bitor_eq}  \\
-\tcode{bits}      &
 \tcode{bool}      &
 \tcode{clone}     &
 \tcode{concept}   &
-\tcode{div}       \\
-\tcode{div_eq}    &
+\tcode{div}       &
+\tcode{div_eq}    \\
 \tcode{else}      &
 \tcode{false}     &
 \tcode{float}     &
-\tcode{if}        \\
-\tcode{immut}     &
-\tcode{int}       &
+\tcode{if}        &
+\tcode{int}       \\
 \tcode{let}       &
 \tcode{lvalue}    &
-\tcode{mod}       \\
+\tcode{mod}       &
 \tcode{mod_eq}    &
+\tcode{mut}       \\
 \tcode{move}      &
-\tcode{null}      &
+\tcode{nil}       &
 \tcode{return}    &
-\tcode{scope}     \\
+\tcode{scope}     &
+\tcode{string}    \\
 \tcode{switch}    &
 \tcode{then}      &
 \tcode{this}      &
@@ -189,7 +189,6 @@ var x = 0
 \nontermdef{Literal} \br
     IntegerLiteral Suffix\bnfq \br
     FloatingLiteral Suffix\bnfq \br
-    CharacterLiteral Suffix\bnfq \br
     StringLiteral Suffix\bnfq
 \end{bnf}
 
@@ -226,57 +225,23 @@ var x = 0
 \begin{bnf}
 \nontermdef{HexadecimalLiteral} \br
     \terminal{0x} HexadecimalDigit \bnflp\terminal{\textquotesingle}\bnfq HexadecimalDigit\bnfrp\bnfs
+    \terminal{0X} HexadecimalDigit \bnflp\terminal{\textquotesingle}\bnfq HexadecimalDigit\bnfrp\bnfs
 \end{bnf}
 
 \begin{bnf}
 \nontermdef{HexadecimalDigit} \textnormal{one of} \br
     \terminal{0 1 2 3 4 5 6 7 8 9} \br
-    \terminal{A B C D E F}
+    \terminal{A B C D E F} \br
+    \terminal{a b c d e f}
 \end{bnf}
 
 \pnum
-整数字面量由一系列数字构成。其中的单引号用作分隔并且不影响字面量的值。字面量的前缀用于指示它的进制。最左边的数字具有最大的权重值。\term{十进制字面量}由若干十进制数字构成；\term{十六进制字面量}由前缀 \tcode{0x} 后跟若干大写十六进制数字构成；\term{二进制字面量}前缀 \tcode{0b} 后跟若干二进制数字构成。\footnote{前缀中的字母不能为大写字母；十六进制数字 A - F 不能为小写字母。}
+整数字面量由一系列数字构成。其中的单引号用作分隔并且不影响字面量的值。字面量的前缀用于指示它的进制。最左边的数字具有最大的权重值。\term{十进制字面量}由若干十进制数字构成；\term{十六进制字面量}由前缀\tcode{0x}或\tcode{0X}后跟若干十六进制数字构成；\term{二进制字面量}前缀 \tcode{0b} 后跟若干二进制数字构成。\X 不支持八进制字面量。
 
 \pnum
-如果整数字面量对应的数学值为 $n$，则整数字面量的值为 $\langle \texttt{int<} n \texttt{,} n \texttt{>}, \texttt{immut}, n \rangle$。如果这个整数类型不存在，程序是非法的。
+如果整数字面量对应的数学值为$i$，则整数字面量的值为$\tcode{int}_i$。如果$i$太大，则这个值是非法的。
 
 \rSec2[literal.floating]{浮点字面量}
-
-\rSec2[literal.character]{字符字面量}
-
-\begin{bnf}
-\nontermdef{CharacterLiteral} \br
-    \terminal{\textquotesingle} Cchar \br
-    \terminal{\textquotesingle} EscapeSeq
-\end{bnf}
-
-\begin{bnf}
-\nontermdef{Cchar} \br
-    \textnormal{除了 \textbackslash 以外的非空白可打印字符}
-\end{bnf}
-
-\begin{bnf}
-\nontermdef{EscapeSeq} \br
-    CharacterEntity
-    SimpleEscapeSeq
-    UnicodeEscapeSeq
-\end{bnf}
-
-\begin{bnf}
-\nontermdef{SimpleEscapeSeq} \textnormal{one of} \br
-    \terminal{\textbackslash{}0 \textbackslash{}n \textbackslash{}t \textbackslash{}r \textbackslash\textquotesingle\ \textbackslash\textquotedbl}
-\end{bnf}
-
-\begin{bnf}
-\nontermdef{UnicodeEscapeSeq} \br
-    \terminal{\textbackslash{}u\{} HexadecimalDigitSeq \terminal{\}}
-\end{bnf}
-
-\begin{bnf}
-\nontermdef{HexadecimalDigitSeq} \br
-    HexadecimalDigit \br
-    HexadecimalDigitSeq HexadecimalDigit
-\end{bnf}
 
 \rSec2[literal.string]{字符串字面量}
 
