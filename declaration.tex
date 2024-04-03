@@ -1,6 +1,7 @@
 %!TEX root = x.tex
 
 \rSec0[decl]{声明}
+\indextext{声明}
 
 \begin{bnf}
 \nontermdef{Declaration} \br
@@ -9,8 +10,30 @@
 
 \begin{bnf}
 \nontermdef{BlockDecl} \br
-    VariableDecl \br
-    FunctionDecl \br
+    FuncDecl \br
     TypeDecl \br
+    ClassDecl \br
     EnumDecl \br
 \end{bnf}
+
+\rSec1[decl.type]{类型声明}
+\indextext{声明!类型}
+
+\begin{bnf}
+\nontermdef{TypeDecl} \br
+    TypeQual\bnfs \terminal{type} Identifier TypeBody
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{TypeQual} \br
+
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{TypeBody} \br
+    ObjectType
+    \terminal{=} Type
+\end{bnf}
+
+\rSec1[decl.class]{类声明}
+\indextext{声明!类}
