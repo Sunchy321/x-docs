@@ -5,66 +5,10 @@
 \pnum
 \term{程序文本}指将被翻译为 \X 程序的文本的整体或者一部分。它存储在\term{源文件}中。
 
-\rSec1[lex.indent]{缩进}
-
-\pnum
-每一行的第一个非空白字符之前的所有空白字符称为\term{缩进}。两个缩进\term{相等}当且仅当它们由相同的字符构成；缩进 $a$ \term{小于}缩进 $b$ 当且仅当 $a \ne b$ 且 $a$ 是 $b$ 的前缀。实现可以对在同一源文件中的缩进不可比较的情况给出一个警告。
-
 \rSec1[lex.comment]{注释}
 
 \pnum
-有两种形式的\term{注释}：以 \tcode{/*} 开始， \tcode{*/} 结束的\term{块注释} 和以 \tcode{//} 开始，到行末结束的\term{行注释}。注释内部的 \tcode{/*} 或 \tcode{//} 等不具有特殊含义。注释在将程序文本分割为标记以后和空白一起被删除。
-
-\pnum
-以 \tcode{/**} 开始、以 \tcode{*/} 结束，或者以 \tcode{///} 开始，到行末结束的注释称为\term{文档注释}。文档注释用于表示一个程序实体对应的文档。它按照如下规则确定应用到的实体：
-
-\begin{itemize}
-
-\item
-如果对于文档注释 $c$ ，存在程序实体 $e$ 满足
-
-\begin{itemize}
-
-\item
-$c$ 的最后一行处于 $e$ 的程序文本的第一行的上一行；
-
-\item
-$c$ 的每一行的缩进都不小于 $e$ 的第一行的缩进；
-
-\item
-$c$ 的第一行与最后一行的缩进等于 $e$ 的第一行的缩进；以及
-
-\item
-$c$ 和 $e$ 的第一个标记之间只有一个空白。
-
-\end{itemize}
-
-那么 $c$ 是 $e$ 的文档注释。\enterexample
-
-\begin{codeblock}
-/// \tcode{X} 的文档注释
-type X { }
-
-/// 不是 \tcode{t} 的文档注释：间隔了一行
-
-var t = 0
-
-/* 不是 @!\tcode{T}@! 的文档注释：不是 /** 的形式 */
-type T { }
-
-/** 不是 @!\tcode{x}@! 的文档注释：有多余的标记 */ /* 多余的注释 */
-var x = 0
-
-/// 不是 \tcode{m} 的文档注释：缩进不一致
-    var m = 0
-\end{codeblock}
-
-\exitexample
-
-\item
-否则，$c$ 不是任何实体的文档注释并且被当做普通注释处理。实现可以对此给出一个警告。
-
-\end{itemize}
+有两种形式的\term{注释}：以\tcode{/*} 开始，\tcode{*/}结束的\term{块注释}和以\tcode{//} 开始，到行末结束的\term{行注释}。注释内部的 \tcode{/*} 或 \tcode{//} 等不具有特殊含义。注释在将程序文本分割为标记以后和空白一起被删除。
 
 \rSec1[lex.identifier]{标识符}
 
@@ -189,7 +133,8 @@ var x = 0
 \nontermdef{Literal} \br
     IntegerLiteral Suffix\bnfq \br
     FloatingLiteral Suffix\bnfq \br
-    StringLiteral Suffix\bnfq
+    StringLiteral Suffix\bnfq \br
+    SymbolLiteral
 \end{bnf}
 
 \rSec2[literal.integer]{整数字面量}
@@ -203,7 +148,7 @@ var x = 0
 
 \begin{bnf}
 \nontermdef{DecimalLiteral} \br
-    Digit \bnflp\terminal{\textquotesingle}\bnfq Digit\bnfrp\bnfs
+    Digit \bnflp\terminal{\textquotesingle}\bnfq Digit\bnfrp \bnfs
 \end{bnf}
 
 \begin{bnf}
@@ -238,48 +183,105 @@ var x = 0
 \pnum
 整数字面量由一系列数字构成。其中的单引号用作分隔并且不影响字面量的值。字面量的前缀用于指示它的进制。最左边的数字具有最大的权重值。\term{十进制字面量}由若干十进制数字构成；\term{十六进制字面量}由前缀\tcode{0x}或\tcode{0X}后跟若干十六进制数字构成；\term{二进制字面量}前缀 \tcode{0b} 后跟若干二进制数字构成。\X 不支持八进制字面量。
 
-\pnum
-如果整数字面量对应的数学值为$i$，则整数字面量的值为$\tcode{int}_i$。如果$i$太大，则这个值是非法的。
-
 \rSec2[literal.floating]{浮点字面量}
+
+\pnum
+浮点字面量用于表示浮点数。与很多其他语言不同的是，浮点字面量的小数点前后不允许省略数字。
 
 \rSec2[literal.string]{字符串字面量}
 
 \begin{bnf}
 \nontermdef{StringLiteral} \br
-    \terminal{\textquotedbl} ScharSeq\bnfq \terminal{\textquotedbl} \br
-    \terminal{@\textquotedbl} RcharSeq\bnfq \terminal{\textquotedbl}
-\end{bnf}
-
-\begin{bnf}
-\nontermdef{ScharSeq} \br
-    Schar \br
-    EscapeSeq \br
-    ScharSeq Schar \br
-    ScharSeq EscapeSeq
+    \terminal{"} Schar\bnfs\ \terminal{"} \br
+    \terminal{@"} Rchar\bnfs\ \terminal{"} \br
+    \terminal{\$"} SIchar\bnfs\ \terminal{"} \br
+    \terminal{\$@"} RIchar\bnfs\ \terminal{"} \br
+    Mdelim Mchar\bnfs\ Mdelim
 \end{bnf}
 
 \begin{bnf}
 \nontermdef{Schar} \br
-    \textnormal{除了 \textbackslash 和 \textquotedbl 以外的非空白可打印字符}
-\end{bnf}
-
-\begin{bnf}
-\nontermdef{RcharSeq} \br
-    Rchar \br
-    \terminal{\textquotedbl\textquotedbl} \br
-    RcharSeq Rchar \br
-    RcharSeq \terminal{\textquotedbl\textquotedbl}
+    \textnormal{除了\terminal{\textbackslash}和\terminal{"}以外的非换行可打印字符} \br
+    EscapeSeq
 \end{bnf}
 
 \begin{bnf}
 \nontermdef{Rchar} \br
-    \textnormal{除了 \textquotedbl 以外的非空白可打印字符}
+    \textnormal{除了\terminal{"}以外的非换行可打印字符}
+    \terminal{""}
 \end{bnf}
 
-\rSec2[literal.custom]{用户定义字面量}
+\begin{bnf}
+\nontermdef{SIchar} \br
+    \textnormal{除了\terminal{\textbackslash}、\terminal{"}、\terminal{\{}和\terminal{\}}以外的非换行可打印字符} \br
+    EscapeSeq \br
+    \terminal{\{} Expression \terminal{\}} \br
+    \terminal{\{\{} \br
+    \terminal{\}\}}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{RIchar} \br
+    \textnormal{除了\terminal{"}、\terminal{\{}和\terminal{\}}以外的非换行可打印字符} \br
+    "" \br
+    \terminal{\{} Expression \terminal{\}} \br
+    \terminal{\{\{} \br
+    \terminal{\}\}}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{Mdelim} \br
+    """\ "\bnfs
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{Mchar} \br
+    \textnormal{任意可打印字符}
+\end{bnf}
+
+\pnum
+有三种类型的字符串字面量：普通字符串字面量、原始字符串字面量、多行字符串字面量。\term{普通字符串字面量}使用反斜杠开始的转义序列表示其他字符。\term{原始字符串字面量}中所有可打印字符将会表示这个字符本身，除了\tcode{""}表示单个双引号的转义序列之外。这两类字符串字面量不允许包含换行符。
+
+\pnum
+上述两类字符串字面量可以前加\tcode{\$}表示插值字符串。插值字符串中的$\tcode{\{}e\tcode{\}}$序列会被解释为一个字符串插值，其中$e$为表达式。该表达式将被求值后转换为字符串插入当前位置。
+
+\pnum
+\term{多行字符串字面量}表示横跨多行的字符串。它以任意数量但不少于三个的\tcode{"}开始，并以等量的\tcode{"}结束。每一行包含换行符都属于该字符串字面量，但是除了以下字符：
+
+\begin{itemize}
+    \item 开头引号序列之后紧邻的换行会被删除。
+    \item 如果结尾引号序列所在行之前全都是空白字符，则这些字符连同上一行的换行会被删除。
+    \item 如果每一行的空白字符都以结尾引号序列之前的空白字符为前缀，则这些字符都会被删除。
+\end{itemize}
+
+如果结尾行包含空白字符且之前的某一行的空白字符不以这些空白字符为前缀，则这是一个编译错误。
+
+\enterexample
+
+如下字面量为合法的多行字符串字面量：
+
+\tcode{"""} \\
+\tcode{abc} \\
+\tcode{"""}
+
+其等价于\tcode{"abc"}。
+
+\exitexample
+
+\rSec2[literal.symbol]{符号字面量}
+
+\begin{bnf}
+\nontermdef{SymbolLiteral} \br
+    \terminal{'} NormalIdentifier
+\end{bnf}
+
+符号字面量后跟的标识符可以与关键字相同。
+
+\rSec2[literal.suffix]{字面量后缀}
 
 \begin{bnf}
 \nontermdef{Suffix} \br
-    \terminal{\_} Alnums
+    Alnums
 \end{bnf}
+
+整数、浮点数与字符串能带有后缀，指示不同的类别。这些后缀可能是内建的或是用户自定义的。

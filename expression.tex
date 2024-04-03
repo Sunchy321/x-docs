@@ -84,7 +84,8 @@ $$ \tcode{(}e\tcode{)} \rhd \omega \coloneqq e \rhd \omega $$
     StringLiteral \br
     \terminal{true} \br
     \terminal{false} \br
-    \terminal{nil}
+    \terminal{nil} \br
+    \terminal{()}
 \end{bnf}
 
 \pnum
@@ -104,6 +105,9 @@ $$ \tcode{(}e\tcode{)} \rhd \omega \coloneqq e \rhd \omega $$
 
 \pnum
 \tcode{nil}的类型为$T$\tcode{?}，其中$T$为待推导的类型参数。
+
+\pnum
+\tcode{()}的类型为\tcode{void}。
 
 \rSec2[expr.lambda]{Lambda表达式}
 \indextext{表达式!Lambda}
@@ -141,10 +145,10 @@ $$ \tcode{(}e\tcode{)} \rhd \omega \coloneqq e \rhd \omega $$
 \begin{bnf}
 \nontermdef{SemicolonExpression}\br
     Expression \terminal{;} Expression\br
-    SimplDeclaration \terminal{;} Expression\br
+    Binding \terminal{;} Expression\br
 \end{bnf}
 
 $$ x \mathbin{\tcode{;}} y \rhd \omega \coloneqq y \rhd \otimes \mathrm{discard}(x)$$
 
 \pnum
-分号表达式中，分号左侧可以为一个表达式或声明。如果分号左侧为声明，则该声明会被插入到当前作用域中。如果左侧为表达式，则该表达式将被求值且结果会被丢弃。在那之后，将对右侧表达式进行求值并将其值作为整个表达式的值。
+分号表达式中，分号左侧可以为一个表达式或绑定。如果分号左侧为绑定，则该绑定会被插入到当前作用域中。如果左侧为表达式，则该表达式将被求值且结果会被丢弃。在那之后，将对右侧表达式进行求值并将其值作为整个表达式的值。

@@ -1,6 +1,7 @@
 %!TEX root = x.tex
 
 \rSec0[pattern]{模式匹配}
+\indextext{模式匹配}
 
 \begin{bnf}
 \nontermdef{Pattern} \br
@@ -14,8 +15,7 @@
     BindPattern \br
     ArrayPattern \br
     TuplePattern \br
-    RecordPattern \br
-    DictPattern \br
+    ObjectPattern \br
 \end{bnf}
 
 \begin{bnf}
@@ -32,6 +32,7 @@
 模式$\mathcal{p}$由\term{模式主体}和\term{模式断言}构成。模式主体规定匹配的结构与操作，模式断言则对值的特征进行断言。一个主体可以带有任意数量的断言。
 
 \rSec1[pattern.null]{空模式}
+\indextext{模式匹配!空}
 
 \begin{bnf}
 \nontermdef{NullPattern} \br
@@ -42,6 +43,7 @@
 空模式能够匹配任意值。匹配成功后，$\mathcal{v}$的值将被丢弃。
 
 \rSec1[pattern.expr]{表达式模式}
+\indextext{模式匹配!表达式}
 
 \begin{bnf}
 \nontermdef{ExprPattern} \br
@@ -51,18 +53,8 @@
 \pnum
 表达式模式中的表达式必须实现了 \tcode{core.Equtable}。$\mathcal{v}$匹配表达式模式$\mathcal{p}$当且仅当$\mathcal{v}\tcode{==}\mathcal{p}$。
 
-\rSec1[pattern.bind]{绑定模式}
-
-\begin{bnf}
-\nontermdef{BindPattern} \br
-    \terminal{var} Identifier TypeNotation\bnfq \br
-    \terminal{let} Identifier TypeNotation\bnfq
-\end{bnf}
-
-\pnum
-绑定模式可以匹配任意值。匹配成功后，该标识符将作为一个变量插入到当前作用域中。如果绑定使用的是\tcode{var}，则该变量具有\tcode{mut}修饰。
-
 \rSec1[pattern.array]{数组模式}
+\indextext{模式匹配!数组}
 
 \begin{bnf}
 \nontermdef{ArrayPattern} \br
@@ -76,10 +68,9 @@
 \end{bnf}
 
 \pnum
-数组模式匹配序列中的元素。其中\tcode{...}项（称作\term{任意项模式}）只能出现至多一次，否则这是一个编译错误。
+数组模式匹配序列中的元素。其中\tcode{...}项（称作\term{任意项模式}）只能出现至多一次，否则这是一个编译错误。$\mathcal{v}$必须实现\tcode{core.Sequence}，否则这是一个编译错误。
 
 \begin{enumerate}
-    \item 如果值未实现\tcode{core.Sequence}，则匹配失败。
     \item 如果模式不包含任意项，且$\mathcal{v}$\tcode{.size}与模式中项的数量不相等，则匹配失败。
     \item 如果模式包含任意项，且$\mathcal{v}$\tcode{.size}小于模式中非任意项的数量，则匹配失败。
 \end{enumerate}
@@ -93,6 +84,7 @@
 \end{enumerate}
 
 \rSec1[pattern.type]{元组模式}
+\indextext{模式匹配!元组}
 
 \begin{bnf}
 \nontermdef{TuplePattern} \br
@@ -102,30 +94,88 @@
 \pnum
 与数组模式类似，\term{元组模式}匹配元组。
 
-\rSec1[pattern.record]{记录模式}
+\rSec1[pattern.object]{对象模式}
+\indextext{模式匹配!对象}
 
 \begin{bnf}
-\nonterminal{RecordPattern} \br
-    \terminal{\{} RecordPatternBody \terminal{\}}
+\nonterminal{ObjectPattern} \br
+    \terminal{\{} ObjectPatternBody \terminal{\}}
 \end{bnf}
 
 \begin{bnf}
-\nonterminal{RecordPatternBody} \br
-    RecordItem \bnflp\terminal{,} RecordItem\bnfrp\bnfs
+\nonterminal{ObjectPatternBody} \br
+    ObjectItem \bnflp\terminal{,} ObjectItem\bnfrp\bnfs
 \end{bnf}
 
 \begin{bnf}
-\nonterminal{RecordItem} \br
+\nonterminal{ObjectItem} \br
     Identifier \terminal{:} Pattern
 \end{bnf}
 
 \pnum
-\term{记录模式}对记录进行匹配。其中，\term{记录项}是由标识符和模式组成的键值对。如果对于每个对$(k, \mathcal{p})$而言，$\mathcal{v}$\tcode{.}$k$匹配$\mathcal{p}$都成立，则整个模式匹配成功。
+\term{对象模式}对对象进行匹配。如果对于每个对$(k, \mathcal{p})$而言，$\mathcal{v}$\tcode{.}$k$匹配$\mathcal{p}$都成立，则整个模式匹配成功。
 
 \pnum
-与数组和元组匹配不同，记录匹配是开放的，即$\mathcal{v}$可以包含未在模式中列出的项。
+与数组和元组匹配不同，对象匹配是开放的，即$\mathcal{v}$可以包含未在模式中列出的项。
+
+\rSec1[pattern.bind]{绑定模式}
+\indextext{模式匹配!绑定}
+
+\begin{bnf}
+\nontermdef{BindPattern} \br
+    \terminal{var} PatternBind TypeNotation\bnfq \br
+    \terminal{let} PatternBind TypeNotation\bnfq
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{PatternBind} \br
+    Identifier \br
+    ArrayPatternBind \br
+    TuplePatternBind \br
+    ObjectPatternBind \br
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ArrayPatternBind} \br
+    \terminal{[} AnyPatternBind \bnflp\terminal{,} AnyPatternBind\bnfrp\bnfs \terminal{]}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{TuplePatternBind} \br
+    \terminal{(} AnyPatternBind \bnflp\terminal{,} AnyPatternBind\bnfrp\bnfs \terminal{)}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{AnyPatternBind} \br
+    PatternBind \br
+    \terminal{...} \br
+    NullPattern \br
+    ExprPattern
+\end{bnf}
+
+\begin{bnf}
+    \nonterminal{ObjectPatternBind} \br
+        \terminal{\{} ObjectPatternBodyBind \terminal{\}}
+    \end{bnf}
+
+    \begin{bnf}
+    \nonterminal{ObjectPatternBodyBind} \br
+        ObjectItemBind \bnflp\terminal{,} ObjectItemBind\bnfrp\bnfs
+    \end{bnf}
+
+    \begin{bnf}
+    \nonterminal{ObjectItemBind} \br
+        Identifier \terminal{:} PatternBind
+    \end{bnf}
+
+\pnum
+绑定模式可以匹配任意值。匹配成功后，该标识符将作为一个变量插入到当前作用域中。如果绑定使用的是\tcode{var}，则该变量具有\tcode{mut}修饰。
+
+\pnum
+绑定模式可以使用简写：\tcode{let [a, b]}等价于\tcode{[let a, let b]}；\tcode{let [i, _]}等价于\tcode{[let i, _]}。
 
 \rSec1[pattern.type]{类型断言}
+\indextext{模式匹配!类型断言}
 
 \begin{bnf}
 \nontermdef{TypeAssertion} \br
@@ -144,6 +194,7 @@
     \end{itemize}
 
 \rSec1[pattern.include]{包含断言}
+\indextext{模式匹配!包含断言}
 
 \begin{bnf}
 \nontermdef{IncludeAssertion} \br
@@ -154,6 +205,7 @@
 \term{包含断言}要求值包含在某个集合$\mathcal{e}$中。如果$\mathcal{v}$\tcode{ !in }$\mathcal{e}$，则匹配失败。
 
 \rSec1[pattern.cond]{条件断言}
+\indextext{模式匹配!条件断言}
 
 \begin{bnf}
 \nontermdef{CondAssertion} \br
