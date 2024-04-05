@@ -93,15 +93,26 @@
 \newcommand{\CodeStyle}{\ttfamily}
 \newcommand{\CodeStylex}[1]{\texttt{#1}}
 
+\definecolor{grammar-gray}{gray}{0.2}
+
+% General grammar style
+\newcommand{\GrammarStylex}[1]{\textcolor{grammar-gray}{\textsf{\textit{#1}}}}
+
 % Code and definitions embedded in text.
 \newcommand{\tcode}[1]{\CodeStylex{#1}}
-\newcommand{\techterm}[1]{\textit{#1}}
-\newcommand{\defnx}[2]{\indexdefn{#2}\textit{#1}\xspace}
-\newcommand{\defn}[1]{\defnx{#1}{#1}}
 \newcommand{\term}[1]{\textit{#1}}
-\newcommand{\grammarterm}[1]{\textit{#1}}
-\newcommand{\placeholder}[1]{\textit{#1}}
-\newcommand{\placeholdernc}[1]{\textit{#1\nocorr}}
+\newcommand{\gterm}[1]{\GrammarStylex{#1}}
+\newcommand{\fakegrammarterm}[1]{\gterm{#1}}
+\newcommand{\keyword}[1]{\texorpdfstring{\tcode{#1}\protect\indextext{\idxcode{#1}!keyword}}{#1}}                % macro length: 8
+\newcommand{\grammarterm}[1]{\texorpdfstring{\protect\indexgram{\idxgram{#1}}\gterm{#1}}{#1}}
+\newcommand{\grammartermnc}[1]{\indexgram{\idxgram{#1}}\gterm{#1\nocorr}}
+\newcommand{\regrammarterm}[1]{\textit{#1}}
+\newcommand{\placeholder}[1]{\textit{#1}}                                   % macro length: 12
+\newcommand{\placeholdernc}[1]{\textit{#1\nocorr}}                          % macro length: 14
+\newcommand{\exposid}[1]{\tcode{\placeholder{#1}}}                          % macro length: 8
+\newcommand{\exposidnc}[1]{\tcode{\placeholdernc{#1}}\itcorr[-1]}           % macro length: 10
+\newcommand{\defnxname}[1]{\indextext{\idxxname{#1}}\xname{#1}}
+\newcommand{\defnlibxname}[1]{\indexlibrary{\idxxname{#1}}\xname{#1}}
 
 %%--------------------------------------------------
 %% allow line break if needed for justification
@@ -118,6 +129,7 @@
 \newcommand{\bnfp}{\texttt{+}}
 \newcommand{\bnfv}{\texttt{|}}
 \newcommand{\bnfl}{\texttt{\$}}
+\newcommand{\oneof}{\emph{以下之一}}
 
 \newcommand{\bigoh}[1]{\ensuremath{\mathscr{O}(#1)}}
 
@@ -211,12 +223,14 @@
 % Our usual abbreviation for 'listings'.  Comments are in
 % italics.  Arbitrary TeX commands can be used if they're
 % surrounded by @ signs.
-\newcommand{\CodeBlockSetup}{
-    \lstset{escapechar=@!}
+\newcommand{\CodeBlockSetup}{%
+    \lstset{escapechar=@, aboveskip=\parskip, belowskip=0pt,
+            % midpenalty=500, endpenalty=-50,
+            % emptylinepenalty=-250, semicolonpenalty=0,
+            upquote=true}%
     \renewcommand{\tcode}[1]{\textup{\CodeStylex{##1}}}
-    \renewcommand{\techterm}[1]{\textit{\CodeStylex{##1}}}
-    \renewcommand{\term}[1]{\textit{##1}}
-    \renewcommand{\grammarterm}[1]{\textit{##1}}
+    \renewcommand{\term}[1]{\textit{##1}}%
+    \renewcommand{\grammarterm}[1]{\gterm{##1}}%
 }
 
 \lstnewenvironment{codeblock}{\CodeBlockSetup}{}
@@ -230,9 +244,9 @@
 
 %%--------------------------------------------------
 %% Indented text
-\newenvironment{indented}
-{\list{}{}\item\relax}
-{\endlist}
+\newenvironment{indented}[1][]
+{\begin{indenthelper}[#1]\item\relax}
+{\end{indenthelper}}
 
 %%--------------------------------------------------
 %% Library item descriptions
@@ -270,102 +284,44 @@
 
 \newenvironment{bnfbase}
  {
- \newcommand{\nontermdef}[1]{\nonterminal{##1}\indexgrammar{\idxgram{##1}}:}
- \newcommand{\terminal}[1]{{\BnfTermshape ##1}\xspace}
- \newcommand{\descr}[1]{\normalfont{##1}}
+ \newcommand{\nontermdef}[1]{{\BnfNontermshape##1\itcorr}\indexgrammar{\idxgram{##1}}\textnormal{:}}
+ \newcommand{\terminal}[1]{{\BnfTermshape ##1}}
+ \renewcommand{\keyword}[1]{\terminal{##1}\indextext{\idxcode{##1}!keyword}}
+ \renewcommand{\exposid}[1]{\terminal{\textit{##1}}}
+ \renewcommand{\placeholder}[1]{\textrm{\textit{##1}}}
+ \newcommand{\descr}[1]{\textnormal{##1}}
+ \newcommand{\bnfindent}{\hspace*{\bnfindentfirst}}
  \newcommand{\bnfindentfirst}{\BnfIndent}
  \newcommand{\bnfindentinc}{\BnfInc}
  \newcommand{\bnfindentrest}{\BnfRest}
- \begin{minipage}{.9\hsize}
- \newcommand{\br}{\hfill\\}
+ \newcommand{\br}{\hfill\\*}
+ \widowpenalties 1 10000
  \frenchspacing
  }
  {
  \nonfrenchspacing
- \end{minipage}
  }
-
-\newenvironment{BnfTabBase}[1]
-{
- \begin{bnfbase}
- #1
- \begin{indented}
- \begin{tabbing}
- \hspace*{\bnfindentfirst}\=\hspace{\bnfindentinc}\=\hspace{.6in}\=\hspace{.6in}\=\hspace{.6in}\=\hspace{.6in}\=\hspace{.6in}\=\hspace{.6in}\=\hspace{.6in}\=\hspace{.6in}\=\hspace{.6in}\=\hspace{.6in}\=\kill}
-{
- \end{tabbing}
- \end{indented}
- \end{bnfbase}
-}
-
-\newenvironment{bnfkeywordtab}
-{
- \begin{BnfTabBase}{\BnfTermshape}
-}
-{
- \end{BnfTabBase}
-}
-
-\newenvironment{bnftab}
-{
- \begin{BnfTabBase}{\BnfNontermshape}
-}
-{
- \end{BnfTabBase}
-}
 
 \newenvironment{simplebnf}
 {
  \begin{bnfbase}
  \BnfNontermshape
- \begin{indented}
+ \begin{indented}[before*=\setlength{\rightmargin}{-\leftmargin}]
 }
 {
  \end{indented}
  \end{bnfbase}
 }
 
-\newenvironment{bnf}
-{
- \begin{bnfbase}
- \list{}
-	{
-	\setlength{\leftmargin}{\bnfindentrest}
-	\setlength{\listparindent}{-\bnfindentinc}
-	\setlength{\itemindent}{\listparindent}
-	}
- \BnfNontermshape
- \item\relax
-}
-{
-    \br
- \endlist
- \end{bnfbase}
-}
-
-% non-copied versions of bnf environments
-\newenvironment{ncbnftab}
-{
- \begin{bnftab}
-}
-{
- \end{bnftab}
-}
-
-\newenvironment{ncsimplebnf}
-{
- \begin{simplebnf}
-}
-{
- \end{simplebnf}
-}
-
-\newenvironment{ncbnf}
-{
- \begin{bnf}
-}
-{
- \end{bnf}
+\DeclareDocumentEnvironment{bnf}{m O{}}{
+    \begin{bnfbase}
+    \begin{bnflist}
+    \BnfNontermshape
+    \item\relax
+    \nontermdef{#1} \textnormal{#2}\br
+}{
+    \end{bnflist}
+    \end{bnfbase}
 }
 
 %%--------------------------------------------------

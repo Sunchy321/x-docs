@@ -3,13 +3,11 @@
 \rSec0[pattern]{模式匹配}
 \indextext{模式匹配}
 
-\begin{bnf}
-\nontermdef{Pattern} \br
+\begin{bnf}{Pattern}
     PatternBody PatternAssterion\bnfs
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{PatternBody} \br
+\begin{bnf}{PatternBody}
     NullPattern \br
     ExprPattern \br
     BindPattern \br
@@ -18,8 +16,7 @@
     ObjectPattern \br
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{PatternAssterion}
+\begin{bnf}{PatternAssterion}
     TypeAssertion
     IncludeAssertion
     CondAssertion
@@ -34,8 +31,7 @@
 \rSec1[pattern.null]{空模式}
 \indextext{模式匹配!空}
 
-\begin{bnf}
-\nontermdef{NullPattern} \br
+\begin{bnf}{NullPattern}
     \tcode{_}
 \end{bnf}
 
@@ -45,8 +41,7 @@
 \rSec1[pattern.expr]{表达式模式}
 \indextext{模式匹配!表达式}
 
-\begin{bnf}
-\nontermdef{ExprPattern} \br
+\begin{bnf}{ExprPattern}
     Expression
 \end{bnf}
 
@@ -56,13 +51,11 @@
 \rSec1[pattern.array]{数组模式}
 \indextext{模式匹配!数组}
 
-\begin{bnf}
-\nontermdef{ArrayPattern} \br
+\begin{bnf}{ArrayPattern}
     \terminal{[} AnyPattern \bnflp\terminal{,} AnyPattern\bnfrp\bnfs\ \terminal{]}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{AnyPattern} \br
+\begin{bnf}{AnyPattern}
     Pattern\br
     \terminal{...}
 \end{bnf}
@@ -86,8 +79,7 @@
 \rSec1[pattern.type]{元组模式}
 \indextext{模式匹配!元组}
 
-\begin{bnf}
-\nontermdef{TuplePattern} \br
+\begin{bnf}{TuplePattern}
     \terminal{(} AnyPattern \bnflp\terminal{,} AnyPattern\bnfrp\bnfs\ \terminal{)}
 \end{bnf}
 
@@ -97,18 +89,15 @@
 \rSec1[pattern.object]{对象模式}
 \indextext{模式匹配!对象}
 
-\begin{bnf}
-\nonterminal{ObjectPattern} \br
+\begin{bnf}{ObjectPattern}
     \terminal{\{} ObjectPatternBody \terminal{\}}
 \end{bnf}
 
-\begin{bnf}
-\nonterminal{ObjectPatternBody} \br
+\begin{bnf}{ObjectPatternBody}
     ObjectItem \bnflp\terminal{,} ObjectItem\bnfrp\bnfs
 \end{bnf}
 
-\begin{bnf}
-\nonterminal{ObjectItem} \br
+\begin{bnf}{ObjectItem}
     Identifier \terminal{:} Pattern
 \end{bnf}
 
@@ -121,52 +110,44 @@
 \rSec1[pattern.bind]{绑定模式}
 \indextext{模式匹配!绑定}
 
-\begin{bnf}
-\nontermdef{BindPattern} \br
+\begin{bnf}{BindPattern}
     \terminal{var} PatternBind TypeNotation\bnfq \br
     \terminal{let} PatternBind TypeNotation\bnfq
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{PatternBind} \br
+\begin{bnf}{PatternBind}
     Identifier \br
     ArrayPatternBind \br
     TuplePatternBind \br
-    ObjectPatternBind \br
+    ObjectPatternBind
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ArrayPatternBind} \br
+\begin{bnf}{ArrayPatternBind}
     \terminal{[} AnyPatternBind \bnflp\terminal{,} AnyPatternBind\bnfrp\bnfs \terminal{]}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{TuplePatternBind} \br
+\begin{bnf}{TuplePatternBind}
     \terminal{(} AnyPatternBind \bnflp\terminal{,} AnyPatternBind\bnfrp\bnfs \terminal{)}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{AnyPatternBind} \br
+\begin{bnf}{AnyPatternBind}
     PatternBind \br
     \terminal{...} \br
     NullPattern \br
     ExprPattern
 \end{bnf}
 
-\begin{bnf}
-    \nonterminal{ObjectPatternBind} \br
-        \terminal{\{} ObjectPatternBodyBind \terminal{\}}
-    \end{bnf}
+\begin{bnf}{ObjectPatternBind}
+    \terminal{\{} ObjectPatternBodyBind \terminal{\}}
+\end{bnf}
 
-    \begin{bnf}
-    \nonterminal{ObjectPatternBodyBind} \br
-        ObjectItemBind \bnflp\terminal{,} ObjectItemBind\bnfrp\bnfs
-    \end{bnf}
+\begin{bnf}{ObjectPatternBodyBind}
+    ObjectItemBind \bnflp\terminal{,} ObjectItemBind\bnfrp\bnfs
+\end{bnf}
 
-    \begin{bnf}
-    \nonterminal{ObjectItemBind} \br
-        Identifier \terminal{:} PatternBind
-    \end{bnf}
+\begin{bnf}{ObjectItemBind}
+    Identifier \terminal{:} PatternBind
+\end{bnf}
 
 \pnum
 绑定模式可以匹配任意值。匹配成功后，该标识符将作为一个变量插入到当前作用域中。如果绑定使用的是\tcode{var}，则该变量具有\tcode{mut}修饰。
@@ -177,8 +158,7 @@
 \rSec1[pattern.type]{类型断言}
 \indextext{模式匹配!类型断言}
 
-\begin{bnf}
-\nontermdef{TypeAssertion} \br
+\begin{bnf}{TypeAssertion}
     \terminal{is} Type \br
     \terminal{:} Type \br
     \terminal{as} Type
@@ -196,8 +176,7 @@
 \rSec1[pattern.include]{包含断言}
 \indextext{模式匹配!包含断言}
 
-\begin{bnf}
-\nontermdef{IncludeAssertion} \br
+\begin{bnf}{IncludeAssertion}
     \terminal{in} Expression
 \end{bnf}
 
@@ -207,8 +186,7 @@
 \rSec1[pattern.cond]{条件断言}
 \indextext{模式匹配!条件断言}
 
-\begin{bnf}
-\nontermdef{CondAssertion} \br
+\begin{bnf}{CondAssertion}
     \terminal{if} Expression
 \end{bnf}
 

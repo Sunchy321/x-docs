@@ -3,8 +3,7 @@
 \rSec0[expr]{表达式}
 \indextext{表达式}
 
-\begin{bnf}
-\nontermdef{Expression} \br
+\begin{bnf}{Expression}
     PrimaryExpr \br
     Operator Expression \br
     Expression Operator \br
@@ -61,8 +60,7 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \rSec1[expr.primary]{基本表达式}
 \indextext{表达式!基本}
 
-\begin{bnf}
-\nontermdef{PrimaryExpr} \br
+\begin{bnf}{PrimaryExpr}
     LiteralExpression \br
     Identifier \br
     \terminal{(} Expression \terminal{)} \br
@@ -77,8 +75,7 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
 \rSec2[expr.lit]{字面量表达式}
 \indextext{表达式!字面量}
 
-\begin{bnf}
-\nontermdef{LiteralExpression} \br
+\begin{bnf}{LiteralExpression}
     IntegerLiteral \br
     FloatLiteral \br
     StringLiteral \br
@@ -92,58 +89,48 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
     DictLiteral \br
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ArrayLiteral} \br
+\begin{bnf}{ArrayLiteral}
     \terminal{[} ExprList\bnfq \terminal{]}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{TupleLiteral} \br
+\begin{bnf}{TupleLiteral}
     \terminal{(} ExprList\bnfq \terminal{)}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ExprList} \br
+\begin{bnf}{ExprList}
     ExprItem \br
     ExprList \terminal{,} ExprItem
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ExprItem} \br
+\begin{bnf}{ExprItem}
     Expression \br
     \terminal{...} Expression
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ObjectLiteral} \br
+\begin{bnf}{ObjectLiteral}
     \terminal{\{} ObjectItems\bnfq \terminal{\}}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ObjectItems} \br
+\begin{bnf}{ObjectItems}
     ObjectItem \br
     ObjectItems \terminal{,} ObjectItem
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ObjectItem} \br
+\begin{bnf}{ObjectItem}
     Identifier \terminal{:} Expression \br
     \terminal{...} Expression
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{DictLiteral} \br
+\begin{bnf}{DictLiteral}
     \terminal{\{|} DictItems\bnfq \terminal{|\}}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{DictItems} \br
+\begin{bnf}{DictItems}
     DictItem \br
     DictItems \terminal{,} DictItem
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{DictItems} \br
+\begin{bnf}{DictItem}
     Expression \terminal{:} Expression \br
     \terminal{...} Expression
 \end{bnf}
@@ -184,36 +171,32 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
 \rSec2[expr.lambda]{Lambda表达式}
 \indextext{表达式!Lambda}
 
-\begin{bnf}
-\nontermdef{LambdaExpr} \br
+\begin{bnf}{LambdaExpr}
     SimpleLambdaExpr \br
     CompoundLambdaExpr
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{SimpleLambdaExpr} \br
+\begin{bnf}{SimpleLambdaExpr}
     LambdaParameter\bnfq\ \terminal{=>} LambdaBody
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{LambdaParameter} \br
+\begin{bnf}{LambdaParameter}
+    ParamDecl
 \end{bnf}
 
 \rSec1[expr.suffix]{后缀运算符}
 
-\begin{bnf}
-\nontermdef{SuffixExpr} \br
-    PrimaryExpr
+\begin{bnf}{SuffixExpr}
+    PrimaryExpr \br
     SuffixExpr
 \end{bnf}
 
 \rSec1[expr.prefix]{前缀运算符}
 
-\begin{bnf}
-\nontermdef{PrefixExpr} \br
+\begin{bnf}{PrefixExpr}
     SuffixExpr \br
     \terminal{+} PrefixExpr \br
-    \terminal{-} PrefixExpr \br
+    \terminal{-} PrefixExpr
 \end{bnf}
 
 $$ \tcode{+} e \coloneqq e $$
@@ -243,10 +226,10 @@ $$ \tcode{-} \lbrace f, \tcode{float<}s\tcode{>} \rbrace \coloneqq \lbrace -f, \
 \rSec1[expr.semi]{分号运算符}
 \indextext{运算符!分号}
 
-\begin{bnf}
-\nontermdef{SemicolonExpression}\br
-    Expression \terminal{;} Expression\br
-    Binding \terminal{;} Expression\br
+\begin{bnf}{SemiExpr}
+    Expression \br
+    Expression \terminal{;} SemiExpr\br
+    Binding \terminal{;} SemiExpr\br
 \end{bnf}
 
 $$ x \mathbin{\tcode{;}} y \rhd \omega \coloneqq y \rhd \otimes \mathrm{discard}(x)$$

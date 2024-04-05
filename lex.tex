@@ -12,38 +12,27 @@
 
 \rSec1[lex.identifier]{标识符}
 
-\begin{bnf}
-\nontermdef{Identifier} \br
-    NormalIdentifier \br
-    LambdaIdentifier
-\end{bnf}
-
-\begin{bnf}
-\nontermdef{NormalIdentifier} \br
+\begin{bnf}{Identifier}
     IdentifierHead IdentifierTail\bnfs
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{IdentifierHead} \br
+\begin{bnf}{IdentifierHead}
     Unicode(Lu, Ll, Lt, Lm, Lo, Nl) \br
     \terminal{_}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Alnum} \br
+\begin{bnf}{Alnum}
     \terminal{a} \textnormal{至} \terminal{z} \br
     \terminal{A} \textnormal{至} \terminal{Z} \br
     Digit
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{IdentifierTail} \br
+\begin{bnf}{IdentifierTail}
     IdentifierHead \br
     Unicode(Mn, Mc, Nd, Pc, Cf)
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{LambdaIdentifier} \br
+\begin{bnf}{LambdaParameter}
     \terminal{\$} Digit\bnfp \br
     \terminal{\$} Identifier
 \end{bnf}
@@ -104,23 +93,19 @@
 
 \rSec1[lex.op]{运算符}
 
-\begin{bnf}
-\nontermdef{Operator} \br
+\begin{bnf}{Operator}
     \terminal{\lq}\bnfq RawOperator
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{RawOperator} \textnormal{one of} \br
+\begin{bnf}{RawOperator}[\oneof]
     CustomOperator \terminal{, ; : ( ) [ ] \{ \}}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{CustomOperator} \br
+\begin{bnf}{CustomOperator}
     CustomOperatorPart\bnfp
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{CustomOperatorPart} \textnormal{one of} \br
+\begin{bnf}{CustomOperatorPart}[\oneof]
     \terminal{\~ ! \# \% \^ \& * - | + = / ? < > .}
 \end{bnf}
 
@@ -129,8 +114,7 @@
 
 \rSec1[lex.literal]{字面量}
 
-\begin{bnf}
-\nontermdef{Literal} \br
+\begin{bnf}{Literal}
     IntegerLiteral Suffix\bnfq \br
     FloatingLiteral Suffix\bnfq \br
     StringLiteral Suffix\bnfq \br
@@ -139,42 +123,35 @@
 
 \rSec2[literal.integer]{整数字面量}
 
-\begin{bnf}
-\nontermdef{IntegerLiteral} \br
+\begin{bnf}{IntegerLiteral}
     DecimalLiteral \br
     BinaryLiteral \br
     HexadecimalLiteral
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{DecimalLiteral} \br
+\begin{bnf}{DecimalLiteral}
     Digit \bnflp\terminal{\textquotesingle}\bnfq Digit\bnfrp \bnfs
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Digit} \textnormal{one of} \br
+\begin{bnf}{Digit}[\oneof]
     \terminal{0 1 2 3 4 5 6 7 8 9}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{BinaryLiteral} \br
+\begin{bnf}{BinaryLiteral}
     \terminal{0b} BinaryDigit \bnflp\terminal{\textquotesingle}\bnfq BinaryDigit\bnfrp\bnfs
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{BinaryDigit} \br
+\begin{bnf}{BinaryDigit}
     \terminal{0} \br
     \terminal{1}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{HexadecimalLiteral} \br
+\begin{bnf}{HexadecimalLiteral}
     \terminal{0x} HexadecimalDigit \bnflp\terminal{\textquotesingle}\bnfq HexadecimalDigit\bnfrp\bnfs
     \terminal{0X} HexadecimalDigit \bnflp\terminal{\textquotesingle}\bnfq HexadecimalDigit\bnfrp\bnfs
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{HexadecimalDigit} \textnormal{one of} \br
+\begin{bnf}{HexadecimalDigit}[\oneof]
     \terminal{0 1 2 3 4 5 6 7 8 9} \br
     \terminal{A B C D E F} \br
     \terminal{a b c d e f}
@@ -190,8 +167,7 @@
 
 \rSec2[literal.string]{字符串字面量}
 
-\begin{bnf}
-\nontermdef{StringLiteral} \br
+\begin{bnf}{StringLiteral}
     \terminal{"} Schar\bnfs\ \terminal{"} \br
     \terminal{@"} Rchar\bnfs\ \terminal{"} \br
     \terminal{\$"} SIchar\bnfs\ \terminal{"} \br
@@ -199,20 +175,17 @@
     Mdelim Mchar\bnfs\ Mdelim
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Schar} \br
+\begin{bnf}{Schar}
     \textnormal{除了\terminal{\textbackslash}和\terminal{"}以外的非换行可打印字符} \br
     EscapeSeq
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Rchar} \br
-    \textnormal{除了\terminal{"}以外的非换行可打印字符}
+\begin{bnf}{Rchar}
+    \textnormal{除了\terminal{"}以外的非换行可打印字符} \br
     \terminal{""}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{SIchar} \br
+\begin{bnf}{SIchar}
     \textnormal{除了\terminal{\textbackslash}、\terminal{"}、\terminal{\{}和\terminal{\}}以外的非换行可打印字符} \br
     EscapeSeq \br
     \terminal{\{} Expression \terminal{\}} \br
@@ -220,8 +193,7 @@
     \terminal{\}\}}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{RIchar} \br
+\begin{bnf}{RIchar}
     \textnormal{除了\terminal{"}、\terminal{\{}和\terminal{\}}以外的非换行可打印字符} \br
     "" \br
     \terminal{\{} Expression \terminal{\}} \br
@@ -229,13 +201,11 @@
     \terminal{\}\}}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Mdelim} \br
+\begin{bnf}{Mdelim}
     """\ "\bnfs
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Mchar} \br
+\begin{bnf}{Mchar}
     \textnormal{任意可打印字符}
 \end{bnf}
 
@@ -260,9 +230,11 @@
 
 如下字面量为合法的多行字符串字面量：
 
-\tcode{"""} \\
-\tcode{abc} \\
-\tcode{"""}
+\begin{codeblock}
+"""
+abc
+"""
+\end{codeblock}
 
 其等价于\tcode{"abc"}。
 
@@ -270,8 +242,7 @@
 
 \rSec2[literal.symbol]{符号字面量}
 
-\begin{bnf}
-\nontermdef{SymbolLiteral} \br
+\begin{bnf}{SymbolLiteral}
     \terminal{'} NormalIdentifier
 \end{bnf}
 
@@ -279,8 +250,7 @@
 
 \rSec2[literal.suffix]{字面量后缀}
 
-\begin{bnf}
-\nontermdef{Suffix} \br
+\begin{bnf}{SuffixExpr}
     Alnums
 \end{bnf}
 

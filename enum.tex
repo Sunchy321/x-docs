@@ -2,28 +2,23 @@
 
 \rSec0[enum]{枚举}
 
-\begin{bnf}
-\nontermdef{EnumDecl} \br
+\begin{bnf}{EnumDecl}
     \terminal{enum} Identifier EnumBaseType\bnfq \terminal{\{} Enumerators \terminal{\}}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{EnumBaseType} \br
+\begin{bnf}{EnumBaseType}
     \terminal{:} Type
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Enumerators} \br
+\begin{bnf}{Enumerators}
     Enumerator \bnflp \terminal{,} Enumerator \bnfrp\bnfs \terminal{,}\bnfq
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Enumerator} \br
+\begin{bnf}{Enumerator}
     Attribute\bnfq Identifier EnumeratorTail\bnfq
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{EnumeratorTail} \br
+\begin{bnf}{EnumeratorTail}
     \terminal{=} Expression \br
     \terminal{[} Type \terminal{]} \br
     TupleType \br

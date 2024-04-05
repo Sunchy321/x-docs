@@ -5,8 +5,7 @@
 \rSec1[type]{类型、值和对象}
 \indextext{类型}
 
-\begin{bnf}
-\nontermdef{Type} \br
+\begin{bnf}{Type}
     FundaType \br
     SpecialType \br
     CompType
@@ -20,8 +19,7 @@ $$ \mathcal{V} = \{ \langle T, Q, v \rangle \mid T \in \mathcal{T}, Q \subset \m
 \rSec2[type.funda]{基本类型}
 \indextext{类型!基本类型}
 
-\begin{bnf}
-\nontermdef{FundaType} \br
+\begin{bnf}{FundaType}
     \terminal{void} \br
     \terminal{never} \br
     \terminal{bool} \br
@@ -73,16 +71,14 @@ $$ \tcode{float<}s\tcode{>} \coloneqq \tcode{float}^\ast \cup \tcode{float}^\dag
 \rSec2[type.special]{特殊类型}
 \indextext{类型!特殊类型}
 
-\begin{bnf}
-\nontermdef{SpecialType} \br
+\begin{bnf}{SpecialType}
     \terminal{self} \br
 \end{bnf}
 
 \rSec2[type.comp]{复合类型}
 \indextext{类型!复合类型}
 
-\begin{bnf}
-\nontermdef{CompType} \br
+\begin{bnf}{CompType}
     Type \terminal{?} \br
     % Type \terminal{[} Expression\bnfq  \terminal{]} \br
     Type \terminal{[} Type \terminal{]}
@@ -93,14 +89,12 @@ $$ \tcode{float<}s\tcode{>} \coloneqq \tcode{float}^\ast \cup \tcode{float}^\dag
     Type \terminal{*}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{UnnamedTypes} \br
+\begin{bnf}{UnnamedTypes}
     Type \br
     UnnamedTypes \terminal{,} Type
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{NamedTypes} \br
+\begin{bnf}{NamedTypes}
     Identifier \terminal{:} Type \br
     NamedTypes \terminal{,} Identifier \terminal{:} Type
 \end{bnf}

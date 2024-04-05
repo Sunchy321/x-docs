@@ -3,8 +3,7 @@
 \rSec0[stmt]{语句}
 \indextext{语句}
 
-\begin{bnf}
-\nontermdef{Statement} \br
+\begin{bnf}{Statement}
     Block \br
     BindingStmt \br
     IfStmt \br
@@ -25,13 +24,11 @@ if x.filter{ true }
 \rSec1[stmt.block]{块}
 \indextext{语句!块}
 
-\begin{bnf}
-\nontermdef{Block} \br
+\begin{bnf}{Block}
     \terminal{\{} BlockItem\bnfs\ \terminal{\}}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{BlockItem} \br
+\begin{bnf}{BlockItem}
     Expression \terminal{;}\bnfq \br
     BlockDecl
 \end{bnf}
@@ -42,13 +39,11 @@ if x.filter{ true }
 \rSec1[stmt.bind]{绑定语句}
 \indextext{语句!绑定}
 
-\begin{bnf}
-\nontermdef{BindingStmt} \br
+\begin{bnf}{BindingStmt}
     Binding \terminal{;}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Binding} \br
+\begin{bnf}{Binding}
     Pattern \terminal{=} Expression \terminal{;}
 \end{bnf}
 
@@ -61,16 +56,14 @@ if x.filter{ true }
 \rSec1[stmt.if]{\tcode{if} 语句}
 \indextext{语句!if}
 
-\begin{bnf}
-\nontermdef{IfStmt} \br
+\begin{bnf}{IfStmt}
     \terminal{if} Condition \terminal{then} Expression \br
     \terminal{if} Condition \terminal{then} Expression \terminal{else} Expression \br
     \terminal{if} Condition Block \br
     \terminal{if} Condition Block \terminal{else} Block
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Condition} \br
+\begin{bnf}{Condition}
     Expression \br
     Binding
 \end{bnf}
@@ -94,23 +87,19 @@ if x.filter{ true }
 \rSec1[stmt.match]{\tcode{match} 语句}
 \indextext{语句!match}
 
-\begin{bnf}
-\nontermdef{MatchStmt} \br
+\begin{bnf}{MatchStmt}
     \terminal{match} Expression MatchBlock
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{MatchBlock} \br
+\begin{bnf}{MatchBlock}
     \terminal{\{} BlockItem\bnfs MatchItem\bnfs \terminal{\}}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{MatchItem} \br
+\begin{bnf}{MatchItem}
     Matcher Expression\bnfp
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Matcher} \br
+\begin{bnf}{Matcher}
     Pattern \terminal{->}
 \end{bnf}
 
@@ -131,8 +120,7 @@ if x.filter{ true }
 \rSec1[stmt.while]{\tcode{while} 语句}
 \indextext{语句!while}
 
-\begin{bnf}
-\nontermdef{WhileStmt} \br
+\begin{bnf}{WhileStmt}
     \terminal{while} Expression\bnfq Block
 \end{bnf}
 
@@ -145,8 +133,7 @@ if x.filter{ true }
 \rSec1[stmt.for]{\tcode{for}语句}
 \indextext{语句!for}
 
-\begin{bnf}
-\nontermdef{ForStmt} \br
+\begin{bnf}{ForStmt}
     \terminal{for} Pattern \terminal{:} Expression Block
 \end{bnf}
 
@@ -156,18 +143,15 @@ if x.filter{ true }
 \rSec1[stmt.control]{控制语句}
 \indextext{语句!控制}
 
-\begin{bnf}
-\nontermdef{BreakStmt} \br
+\begin{bnf}{BreakStmt}
     \terminal{break} \terminal{;}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ContinueStmt} \br
+\begin{bnf}{ContinueStmt}
     \terminal{continue} \terminal{;}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ReturnStmt} \br
+\begin{bnf}{ReturnStmt}
     \terminal{return} Expression\bnfq \terminal{;}
 \end{bnf}
 

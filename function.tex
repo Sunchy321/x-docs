@@ -3,37 +3,31 @@
 \rSec0[func]{函数}
 \indextext{函数}
 
-\begin{bnf}
-\nontermdef{FuncDecl} \br
+\begin{bnf}{FuncDecl}
     FuncQual\bnfs \terminal{func} FuncName Parameter ReturnType\bnfq Block
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{FuncName} \br
+\begin{bnf}{FuncName}
     Identifier \br
     \terminal{init} \br
     \terminal{deinit} \br
     \terminal{operator} Operator
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{Parameter} \br
+\begin{bnf}{Parameter}
     \terminal{(} ParamList\bnfq \terminal{)}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ParamList} \br
+\begin{bnf}{ParamList}
     ParamDecl \br
     ParamList \terminal{,} ParamDecl
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ParamDecl} \br
+\begin{bnf}{ParamDecl}
     ParamName TypeNotation\bnfq
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{ParamName} \br
+\begin{bnf}{ParamName}
     Identifier \br
     \terminal{this}
 \end{bnf}

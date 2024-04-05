@@ -3,13 +3,11 @@
 \rSec0[decl]{声明}
 \indextext{声明}
 
-\begin{bnf}
-\nontermdef{Declaration} \br
+\begin{bnf}{Declaration}
     BlockDecl \br
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{BlockDecl} \br
+\begin{bnf}{BlockDecl}
     FuncDecl \br
     TypeDecl \br
     ClassDecl \br
@@ -19,19 +17,16 @@
 \rSec1[decl.type]{类型声明}
 \indextext{声明!类型}
 
-\begin{bnf}
-\nontermdef{TypeDecl} \br
+\begin{bnf}{TypeDecl}
     TypeQual\bnfs \terminal{type} Identifier TypeBody
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{TypeQual} \br
-
+\begin{bnf}[TypeQual]
+    \terminal{pure}
 \end{bnf}
 
-\begin{bnf}
-\nontermdef{TypeBody} \br
-    ObjectType
+\begin{bnf}{TypeBody}
+    ObjectType \br
     \terminal{=} Type
 \end{bnf}
 
