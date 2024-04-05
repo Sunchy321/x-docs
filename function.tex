@@ -5,12 +5,35 @@
 
 \begin{bnf}
 \nontermdef{FuncDecl} \br
-    FuncQual\bnfs \terminal{func} FuncName ParamList ReturnType\bnfq Block
+    FuncQual\bnfs \terminal{func} FuncName Parameter ReturnType\bnfq Block
 \end{bnf}
 
 \begin{bnf}
 \nontermdef{FuncName} \br
     Identifier \br
     \terminal{init} \br
+    \terminal{deinit} \br
     \terminal{operator} Operator
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{Parameter} \br
+    \terminal{(} ParamList\bnfq \terminal{)}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ParamList} \br
+    ParamDecl \br
+    ParamList \terminal{,} ParamDecl
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ParamDecl} \br
+    ParamName TypeNotation\bnfq
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ParamName} \br
+    Identifier \br
+    \terminal{this}
 \end{bnf}

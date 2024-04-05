@@ -47,7 +47,7 @@ $$ \mathrm{\rhd}: \mathcal{E} \times \Omega \rightarrow (\mathcal{V} \cup \mathc
 
 \indextext{求值}
 \pnum
-$\mathrm{e \rhd \omega}$ 称作\term{在环境 $\omega$ 下对 $e$ 求值}。设 $\mathrm{e \rhd \omega} = \langle v, \omega^\prime \rangle$。如果 $v \in \mathcal{V}$，称\term{求值正常结束}，$v$ 是 $e$ 的\term{值}；否则，称\term{求值以抛出 $v$ 异常结束}，$e$ 的值为 \tcode{never()}。$v = \ast$ 意味着求值过程中程序终止了。若无特别说明，对表达式 $e$ 的子表达式 $e_0$ 求值以抛出 $v$ 异常结束也会导致对 $e$ 的求值以抛出 $v$ 异常结束。
+$\mathrm{e \rhd \omega}$ 称作\term{在环境 $\omega$ 下对 $e$ 求值}。设 $\mathrm{e \rhd \omega} = \langle v, \omega^\prime \rangle$。如果 $v \in \mathcal{V}$，称\term{求值正常结束}，$v$ 是 $e$ 的\term{值}；否则，称\term{求值以抛出$v$异常结束}，$e$的类型为\tcode{never}。$v = \ast$ 意味着求值过程中程序终止了。若无特别说明，对表达式$e$的子表达式$e_0$求值以抛出$v$异常结束也会导致对$e$的求值以抛出$v$异常结束。
 
 \pnum
 $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。如果 $\omega = \omega^\prime$，称 $e$ 是\term{无副作用}的；如果 $e$ 是无副作用的且 $v$ 与 $\omega$ 无关，称 $e$ 是\term{纯}的。
@@ -69,7 +69,7 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
     LambdaExpr
 \end{bnf}
 
-$$ \tcode{(}e\tcode{)} \rhd \omega \coloneqq e \rhd \omega $$
+$$ \tcode{(}e\tcode{)} \coloneqq e $$
 
 \pnum
 括号包起的表达式与其内部的表达式完全等价。
@@ -85,7 +85,67 @@ $$ \tcode{(}e\tcode{)} \rhd \omega \coloneqq e \rhd \omega $$
     \terminal{true} \br
     \terminal{false} \br
     \terminal{nil} \br
-    \terminal{()}
+    \terminal{()} \br
+    ArrayLiteral \br
+    TupleLiteral \br
+    ObjectLiteral \br
+    DictLiteral \br
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ArrayLiteral} \br
+    \terminal{[} ExprList\bnfq \terminal{]}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{TupleLiteral} \br
+    \terminal{(} ExprList\bnfq \terminal{)}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ExprList} \br
+    ExprItem \br
+    ExprList \terminal{,} ExprItem
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ExprItem} \br
+    Expression \br
+    \terminal{...} Expression
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ObjectLiteral} \br
+    \terminal{\{} ObjectItems\bnfq \terminal{\}}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ObjectItems} \br
+    ObjectItem \br
+    ObjectItems \terminal{,} ObjectItem
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{ObjectItem} \br
+    Identifier \terminal{:} Expression \br
+    \terminal{...} Expression
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{DictLiteral} \br
+    \terminal{\{|} DictItems\bnfq \terminal{|\}}
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{DictItems} \br
+    DictItem \br
+    DictItems \terminal{,} DictItem
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{DictItems} \br
+    Expression \terminal{:} Expression \br
+    \terminal{...} Expression
 \end{bnf}
 
 \pnum
@@ -109,6 +169,18 @@ $$ \tcode{(}e\tcode{)} \rhd \omega \coloneqq e \rhd \omega $$
 \pnum
 \tcode{()}的类型为\tcode{void}。
 
+\pnum
+数组字面量$\tcode{[}e_1\tcode{,} e_2\tcode{,} \ldots\tcode{,} e_n\tcode{]}$表示一个显式写出其各元素的数组值。其类型为$T\tcode{[]}$，其中$T$为各表达式的公共类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须实现\tcode{core.Sequence}。
+
+\pnum
+元组字面量$\tcode{(}e_1\tcode{,} e_2\tcode{,} \ldots\tcode{,} e_n\tcode{)}$表示一个显式写出其各元素的元组值。其类型为$(T_1, T_2, \ldots, T_n)$，其中$T_i$为$e_i$的类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须也是一个元组。
+
+\pnum
+对象字面量$\tcode{\{}x_1\tcode{:} e_1\tcode{,} x_2\tcode{:} e_2\tcode{,} \ldots\tcode{,} x_n\tcode{:} e_n\tcode{\}}$表示一个显式写出其各元素的对象值。其类型为$\{x_1: T_1, x_2: T_2, \ldots, x_n: T_n\}$，其中$T_i$为$e_i$的类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须是对象类型。
+
+\pnum
+字典字面量$\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{|\}}$表示一个显式写出其各元素的字典值。其类型为$T\tcode{[}K\tcode{]}$，其中$T$为各$v_i$的类型，$K$为各$k_i$的公共类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须是字典类型。
+
 \rSec2[expr.lambda]{Lambda表达式}
 \indextext{表达式!Lambda}
 
@@ -129,10 +201,39 @@ $$ \tcode{(}e\tcode{)} \rhd \omega \coloneqq e \rhd \omega $$
 
 \rSec1[expr.suffix]{后缀运算符}
 
-\rSec1[expr.add]{加法运算符}
+\begin{bnf}
+\nontermdef{SuffixExpr} \br
+    PrimaryExpr
+    SuffixExpr
+\end{bnf}
+
+\rSec1[expr.prefix]{前缀运算符}
+
+\begin{bnf}
+\nontermdef{PrefixExpr} \br
+    SuffixExpr \br
+    \terminal{+} PrefixExpr \br
+    \terminal{-} PrefixExpr \br
+\end{bnf}
+
+$$ \tcode{+} e \coloneqq e $$
+$$ \tcode{-} \lbrace i, \tcode{int}_{l,h} \rbrace \coloneqq \lbrace -i, \tcode{int}_{-h,-l} \rbrace $$
+$$ \tcode{-} \lbrace f, \tcode{float<}s\tcode{>} \rbrace \coloneqq \lbrace -f, \tcode{float<}s\tcode{>}\rbrace $$
 
 \pnum
-运算符 \tcode{+} 和 \tcode{-} 分别表示加法和减法。
+前缀运算符\tcode{+}和\ \tcode{-}\ 分别表示正号和负号。其中\tcode{+}的值为其操作数的值，而\tcode{-}的值为其相反数。操作数类型必须为\tcode{int}或$\tcode{float<}s\tcode{>}$。
+
+\rSec1[expr.mul]{乘法运算符}
+\indextext{运算符!乘法}
+
+\pnum
+运算符\tcode{*}、\tcode{/}和\tcode{\%}分别表示乘法、除法和余数。
+
+\rSec1[expr.add]{加法运算符}
+\indextext{运算符!加法}
+
+\pnum
+运算符\tcode{+}和\ \tcode{-}\ 分别表示加法和减法。
 
 \rSec1[expr.toplvl]{顶层运算符}
 
