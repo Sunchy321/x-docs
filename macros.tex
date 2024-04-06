@@ -126,9 +126,8 @@
 \newcommand{\bnfrp}{\texttt{)}}
 \newcommand{\bnfq}{\texttt{?}\ }
 \newcommand{\bnfs}{\texttt{*}\ }
-\newcommand{\bnfp}{\texttt{+}}
+\newcommand{\bnfp}{\texttt{+}\ }
 \newcommand{\bnfv}{\texttt{|}}
-\newcommand{\bnfl}{\texttt{\$}}
 \newcommand{\oneof}{\emph{以下之一}}
 
 \newcommand{\bigoh}[1]{\ensuremath{\mathscr{O}(#1)}}
@@ -203,6 +202,8 @@
     % morekeywords={int, uint, bool, never, void, self, immut},
     % morekeywords={concept, const, enum, extend, func, impl, let, qual, type, var},
     % morekeywords={pure},
+    morekeywords={if, while, for},
+    morekeywords={enum},
     morecomment=[l]{//},
     morecomment=[s]{/*}{*/}
 }

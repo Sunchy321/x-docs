@@ -7,40 +7,40 @@
     PrimaryExpr \br
     Operator Expression \br
     Expression Operator \br
-    Expression Operator Expression \br
+    Expression Operator Expression
 \end{bnf}
 
-\pnum
-\term{表达式}由\term{运算符}与操作数按照顺序组合在一起，它表示一个计算过程。运算符是若干标点符号的组合、一个标识符或是语言规定的特殊结构。运算符可以是前缀、后缀或者是中缀的，这决定了运算符与其操作数的结合方式。运算符组是运算符的集合，每一个运算符都属于某个运算符组。运算符组之间有一个弱偏序关系，决定了它们的\term{优先级}。完全由中缀运算符构成的运算符组有\term{结合性}：左结合的组每个运算符从左到右选择操作数；右结合的组从右到左；无结合的组两个运算符不能选择同一个操作数。
+% \pnum
+% \term{表达式}由\term{运算符}与操作数按照顺序组合在一起，它表示一个计算过程。运算符是若干标点符号的组合、一个标识符或是语言规定的特殊结构。运算符可以是前缀、后缀或者是中缀的，这决定了运算符与其操作数的结合方式。运算符组是运算符的集合，每一个运算符都属于某个运算符组。运算符组之间有一个弱偏序关系，决定了它们的\term{优先级}。完全由中缀运算符构成的运算符组有\term{结合性}：左结合的组每个运算符从左到右选择操作数；右结合的组从右到左；无结合的组两个运算符不能选择同一个操作数。
 
 \pnum
 \ref{expr.suffix} 到 \ref{expr.semi} 各节按照优先级从高到低依次对运算符组进行描述。若无特别说明，每一节描述一个运算符组。
 
-\pnum
-解析表达式按照如下顺序：
+% \pnum
+% 解析表达式按照如下顺序：
 
-\begin{itemize}
-\item 构造基本表达式、运算符和 ID 表达式。
-\item 将 \tcode{.} 和后面的 ID 表达式结合为一个后缀运算符。
-\item 将每个重载为运算符的标识符\footnote{这里指本身作为 ID 表达式的而不是作为 ID 表达式的一部分的标识符。}替换为运算符。
-\item 对于每组连续的基本表达式，如果除了第一个以外都形如 \tcode{(...)}、\tcode{[...]} 或 \tcode{\{...\}}，将它们替换为后缀运算符；否则这是一个编译错误。\enternote 因为块也是基本表达式，它也会被替换为后缀运算符。然后如果有的话，它会与之前的函数调用运算符结合成一个函数调用运算符。\exitnote
-\item 确定每个运算符是前缀、后缀或中缀的。对于每组连续的运算符，如果存在一个运算符满足：
-\begin{itemize}
-    \item 它要么是 \tcode{;} 要么两边都有空白；
-    \item 它可以作为中缀运算符；
-    \item 它前面的所有运算符都可以作为后缀运算符；\enternote 由上文已经限定为前缀运算符的运算符在这里不能作为后缀运算符；反之亦然 \exitnote
-    \item 它后面的所有运算符都可以作为前缀运算符。
-\end{itemize}
-那么这个运算符是中缀运算符，这个运算符之前的所有运算符是后缀运算符，这个运算符之后的所有运算符是前缀运算符。如果存在多于一个或者不存在这样的运算符，这是一个编译错误。
-\item 运算符按照优先级选择操作数。对于优先级最高（可能不止一个）的运算符组：
-\begin{itemize}
-    \item 每个运算符选择各自的操作数。如果不同的组之间选择了相同的操作数，这是一个编译错误。如果选择的表达式不是基本表达式也不是优先级高于这个运算符组的运算符构成的表达式，这是一个编译错误。
-    \item 如果这个组由前缀、中缀和后缀混合而成或是无结合的中缀运算符组，选择相同的操作数的运算符引发一个错误；
-    \item 如果这个组是前缀组或者是右结合的中缀组，每个运算符从右到左把自己和操作数替换为一个子表达式；
-    \item 如果这个组是后缀组或者是左结合的中缀组，每个运算符从左到右把自己和操作数替换为一个子表达式。
-\end{itemize}
-\item 如果最后仍然剩余大于一个子表达式，这是一个编译错误。
-\end{itemize}
+% \begin{itemize}
+% \item 构造基本表达式、运算符和 ID 表达式。
+% \item 将 \tcode{.} 和后面的 ID 表达式结合为一个后缀运算符。
+% \item 将每个重载为运算符的标识符\footnote{这里指本身作为 ID 表达式的而不是作为 ID 表达式的一部分的标识符。}替换为运算符。
+% \item 对于每组连续的基本表达式，如果除了第一个以外都形如 \tcode{(...)}、\tcode{[...]} 或 \tcode{\{...\}}，将它们替换为后缀运算符；否则这是一个编译错误。\enternote 因为块也是基本表达式，它也会被替换为后缀运算符。然后如果有的话，它会与之前的函数调用运算符结合成一个函数调用运算符。\exitnote
+% \item 确定每个运算符是前缀、后缀或中缀的。对于每组连续的运算符，如果存在一个运算符满足：
+% \begin{itemize}
+%     \item 它要么是 \tcode{;} 要么两边都有空白；
+%     \item 它可以作为中缀运算符；
+%     \item 它前面的所有运算符都可以作为后缀运算符；\enternote 由上文已经限定为前缀运算符的运算符在这里不能作为后缀运算符；反之亦然 \exitnote
+%     \item 它后面的所有运算符都可以作为前缀运算符。
+% \end{itemize}
+% 那么这个运算符是中缀运算符，这个运算符之前的所有运算符是后缀运算符，这个运算符之后的所有运算符是前缀运算符。如果存在多于一个或者不存在这样的运算符，这是一个编译错误。
+% \item 运算符按照优先级选择操作数。对于优先级最高（可能不止一个）的运算符组：
+% \begin{itemize}
+%     \item 每个运算符选择各自的操作数。如果不同的组之间选择了相同的操作数，这是一个编译错误。如果选择的表达式不是基本表达式也不是优先级高于这个运算符组的运算符构成的表达式，这是一个编译错误。
+%     \item 如果这个组由前缀、中缀和后缀混合而成或是无结合的中缀运算符组，选择相同的操作数的运算符引发一个错误；
+%     \item 如果这个组是前缀组或者是右结合的中缀组，每个运算符从右到左把自己和操作数替换为一个子表达式；
+%     \item 如果这个组是后缀组或者是左结合的中缀组，每个运算符从左到右把自己和操作数替换为一个子表达式。
+% \end{itemize}
+% \item 如果最后仍然剩余大于一个子表达式，这是一个编译错误。
+% \end{itemize}
 
 $$ \mathrm{\rhd}: \mathcal{E} \times \Omega \rightarrow (\mathcal{V} \cup \mathcal{V}^\dag \cup \{\ast\}) \times \Omega $$
 
@@ -55,6 +55,9 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 下文的数学定义式中，$\coloneqq$ 右边的 $e$ 表示对 $e$ 求值之后的 $v$；$\otimes e$ 表示求值后的环境；$\rhd e$ 表示求值的结果。如果表达式是无副作用的，将 $\omega$ 部分省略。
 
 \pnum
+对含有子表达式的表达式求值时，总是先对其子表达式按出现次序从左到右求值。
+
+\pnum
 \term{丢弃表达式 $e$ 的结果}指，在决定 $e$ 的类型时，直接将它确定为 \tcode{never} 而跳过所有步骤；在对 $e$ 求值时，进行所有步骤，但是如果求值正常结束，丢弃最后的值。
 
 \rSec1[expr.primary]{基本表达式}
@@ -63,6 +66,7 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \begin{bnf}{PrimaryExpr}
     LiteralExpression \br
     Identifier \br
+    LambdaParameter \br
     \terminal{(} Expression \terminal{)} \br
     LambdaExpr
 \end{bnf}
@@ -86,7 +90,7 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
     ArrayLiteral \br
     TupleLiteral \br
     ObjectLiteral \br
-    DictLiteral \br
+    DictLiteral
 \end{bnf}
 
 \begin{bnf}{ArrayLiteral}
@@ -184,14 +188,42 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
     ParamDecl
 \end{bnf}
 
+\rSec2[expr.lambda-param]{Lambda参数}
+
+\begin{bnf}{LambdaParameter}
+    \terminal{\$} Digit\bnfp \br
+    \terminal{\$} Identifier
+\end{bnf}
+
+\pnum
+Lambda参数是一个特殊的标识符，用于在Lambda表达式中引用参数。Lambda参数的类型是待推导的。
+
 \rSec1[expr.suffix]{后缀运算符}
+\indextext{运算符!后缀}
 
 \begin{bnf}{SuffixExpr}
     PrimaryExpr \br
-    SuffixExpr
+    SuffixExpr \terminal{[} ExprList\bnfq \terminal{]} \br
+    SuffixExpr \terminal{(} ExprList\bnfq \terminal{)} \br
+    SuffixExpr \terminal{\{} ObjectItems\bnfq \terminal{\}} \br
+    SuffixExpr \terminal{.} Identifier \br
+    SuffixExpr \terminal{.} Digit\bnfp \br
+    SuffixExpr \terminal{.} \terminal{init} \br
+    SuffixExpr \terminal{.} \terminal{deinit} \br
+    SuffixExpr \terminal{.} \terminal{await} \br
+    SuffixExpr \terminal{as} Type \br
+    SuffixExpr \terminal{+?} \br
+    SuffixExpr \terminal{-?}
 \end{bnf}
 
+\rSec2[expr.sub]{下标运算符}
+\indextext{运算符!下标}
+
+\pnum
+
+
 \rSec1[expr.prefix]{前缀运算符}
+\indextext{运算符!前缀}
 
 \begin{bnf}{PrefixExpr}
     SuffixExpr \br
@@ -209,19 +241,119 @@ $$ \tcode{-} \lbrace f, \tcode{float<}s\tcode{>} \rbrace \coloneqq \lbrace -f, \
 \rSec1[expr.mul]{乘法运算符}
 \indextext{运算符!乘法}
 
+\begin{bnf}{MulExpr}
+    PrefixExpr \br
+    MulExpr \terminal{*} PrefixExpr \br
+    MulExpr \terminal{/} PrefixExpr \br
+    MulExpr \terminal{\%} PrefixExpr
+\end{bnf}
+
 \pnum
-运算符\tcode{*}、\tcode{/}和\tcode{\%}分别表示乘法、除法和余数。
+运算符\tcode{*}、\tcode{/}和\tcode{\%}分别表示乘法、除法和余数。乘除法只对整数类型进行溢出检查，而不对定长整数类型和浮点类型进行。除零检测对整数类型和定长整数类型都生效。
 
 \rSec1[expr.add]{加法运算符}
 \indextext{运算符!加法}
 
-\pnum
-运算符\tcode{+}和\ \tcode{-}\ 分别表示加法和减法。
+\begin{bnf}{AddExpr}
+    MulExpr \br
+    AddExpr \terminal{+} MulExpr \br
+    AddExpr \terminal{-} MulExpr
+\end{bnf}
 
-\rSec1[expr.toplvl]{顶层运算符}
+\pnum
+运算符\tcode{+}和\ \tcode{-}\ 分别表示加法和减法。其操作必须为算术类型。加减法只对整数类型进行溢出检查，而不对定长整数类型和浮点类型进行。
+
+\rSec1[expr.shift]{移位运算符}
+\indextext{运算符!移位}
+
+\begin{bnf}{ShiftExpr}
+    AddExpr \br
+    ShiftExpr \terminal{shl} AddExpr \br
+    ShiftExpr \terminal{shr} AddExpr
+\end{bnf}
 
 \pnum
-顶层运算符的结果类型都是 \tcode{void}。
+运算符\tcode{shl}和\tcode{shr}表示按位左移和右移。其操作数必须为定长整数类型。在同一个表达式中混合使用\tcode{shl}和\tcode{shr}是一个编译错误。
+
+\rSec1[expr.bit]{位运算符}
+\indextext{运算符!位}
+
+\begin{bnf}{BitwiseExpr}
+    ShiftExpr \br
+    BitwiseExpr \terminal{'\&} ShiftExpr \br
+    BitwiseExpr \terminal{'\^{}} ShiftExpr \br
+    BitwiseExpr \terminal{'|} ShiftExpr
+\end{bnf}
+
+\pnum
+运算符\tcode{'\&}、\tcode{'\^}和\tcode{'|}分别表示按位与、按位异或和按位或。其操作数必须为定长整数类型。在同一个表达式中混合使用\tcode{'\&}、\tcode{'\^}和\tcode{'|}是一个编译错误。
+
+\rSec1[expr.range]{区间运算符}
+\indextext{运算符!区间}
+
+\begin{bnf}{RangeExpr}
+    BitwiseExpr \br
+    BitwiseExpr \terminal{..} BitwiseExpr
+    BitwiseExpr \terminal{..=} BitwiseExpr
+\end{bnf}
+
+\pnum
+运算符\tcode{..}用于生成左闭右开区间。运算符\tcode{..=}用于形成闭区间。
+
+\rSec1[expr.cmp]{比较运算符}
+\indextext{运算符!比较}
+
+\begin{bnf}{CompareExpr}
+    RangeExpr \br
+    CompareExpr \terminal{==} RangeExpr \br
+    CompareExpr \terminal{!=} RangeExpr \br
+    CompareExpr \terminal{<} RangeExpr \br
+    CompareExpr \terminal{>} RangeExpr \br
+    CompareExpr \terminal{<=} RangeExpr \br
+    CompareExpr \terminal{>=} RangeExpr \br
+    CompareExpr \terminal{cmp} RangeExpr
+\end{bnf}
+
+\pnum
+$a\ \tcode{cmp}\ b$比较两个表达式，其结果类型为\tcode{core.Order}。其余比较运算符的结果类型为\tcode{bool}。
+
+\pnum
+相同方向的比较运算符可以连续使用。$a\ \tcode{<}\ b\ \tcode{<}\ c$等价于$a\ \tcode{<}\ b\ \tcode{\&}\ b\ \tcode{<}\ c$。以其他方式混合使用运算符是一个编译错误。
+
+\rSec1[expr.logic]{逻辑运算符}
+\indextext{运算符!逻辑}
+
+\begin{bnf}{LogicExpr}
+    CompareExpr \br
+    LogicExpr \terminal{\&} CompareExpr \br
+    LogicExpr \terminal{|} CompareExpr
+\end{bnf}
+
+\pnum
+\tcode{\&}和\tcode{|}是逻辑运算符。两者的操作数都必须实现\tcode{core.Boolean}。它们都使用短路求值。
+
+\rSec1[expr.assign]{赋值运算符}
+\indextext{运算符!赋值}
+
+\begin{bnf}{AssignExpr}
+    LogicExpr \br
+    SuffixExpr \terminal{++} \br
+    SuffixExpr \terminal{--} \br
+    SuffixExpr \terminal{=} LogicExpr \br
+    SuffixExpr \terminal{+=} LogicExpr \br
+    SuffixExpr \terminal{-=} LogicExpr \br
+    SuffixExpr \terminal{*=} LogicExpr \br
+    SuffixExpr \terminal{/=} LogicExpr \br
+    SuffixExpr \terminal{shl_eq} LogicExpr \br
+    SuffixExpr \terminal{shr_eq} LogicExpr \br
+    SuffixExpr \terminal{\%=} LogicExpr \br
+    SuffixExpr \terminal{'\&=} LogicExpr \br
+    SuffixExpr \terminal{'\^{}=} LogicExpr \br
+    SuffixExpr \terminal{'|=} LogicExpr
+\end{bnf}
+
+\pnum
+赋值表达式的结果类型是\tcode{void}。
 
 \rSec1[expr.semi]{分号运算符}
 \indextext{运算符!分号}
@@ -229,7 +361,7 @@ $$ \tcode{-} \lbrace f, \tcode{float<}s\tcode{>} \rbrace \coloneqq \lbrace -f, \
 \begin{bnf}{SemiExpr}
     Expression \br
     Expression \terminal{;} SemiExpr\br
-    Binding \terminal{;} SemiExpr\br
+    Binding \terminal{;} SemiExpr
 \end{bnf}
 
 $$ x \mathbin{\tcode{;}} y \rhd \omega \coloneqq y \rhd \otimes \mathrm{discard}(x)$$

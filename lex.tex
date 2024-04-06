@@ -3,7 +3,7 @@
 \rSec0[lex]{词法约定}
 
 \pnum
-\term{程序文本}指将被翻译为 \X 程序的文本的整体或者一部分。它存储在\term{源文件}中。
+\term{程序文本}指将被翻译为\X{}程序的文本的整体或者一部分。它存储在\term{源文件}中，并以UTF-8编码读取。
 
 \rSec1[lex.comment]{注释}
 
@@ -17,84 +17,71 @@
 \end{bnf}
 
 \begin{bnf}{IdentifierHead}
-    Unicode(Lu, Ll, Lt, Lm, Lo, Nl) \br
+    Unicode(XID_Start) \br
     \terminal{_}
-\end{bnf}
-
-\begin{bnf}{Alnum}
-    \terminal{a} \textnormal{至} \terminal{z} \br
-    \terminal{A} \textnormal{至} \terminal{Z} \br
-    Digit
 \end{bnf}
 
 \begin{bnf}{IdentifierTail}
     IdentifierHead \br
-    Unicode(Mn, Mc, Nd, Pc, Cf)
-\end{bnf}
-
-\begin{bnf}{LambdaParameter}
-    \terminal{\$} Digit\bnfp \br
-    \terminal{\$} Identifier
+    Unicode(XID_Continue)
 \end{bnf}
 
 \pnum
-任意长的由字母和数字组成的序列是标识符。大写和小写字母被认为是不同的。每个字符都是有效的。
-
-\pnum
-以 \tcode{\$} 开始后接十进制数字或标识符的序列也是标识符。这些标识符只能在 lambda 作用域中使用。
+\term{标识符}以具有Unicode XID_Start属性的字符或\tcode{_}开始，后跟零个或数个具有Unicode XID_Continue属性的字符，但不能与关键字相同。标识符区分大小写。
 
 \rSec1[lex.keyword]{关键字}
 
 \pnum
-表~\ref{tab:keyword}~中的标识符被保留做关键字；此外，以 \tcode{\_\_} 开始的标识符被保留作为关键字。只有在某些特定语法结构中的关键字可以作为标识符使用。其他情况下的关键字不能作为标识符。
+表~\ref{tab:keyword}~中的标识符被保留做关键字。关键字不能作为标识符使用。
 
 \begin{floattable}{关键字}{tab:keyword}{lllll}
 \topline
 \tcode{_}         &
-\tcode{bitand}    &
-\tcode{bitand_eq} &
-\tcode{bitor}     &
-\tcode{bitor_eq}  \\
 \tcode{bool}      &
-\tcode{clone}     &
-\tcode{concept}   &
-\tcode{div}       &
-\tcode{div_eq}    \\
+\tcode{cmp}       &
 \tcode{else}      &
+\tcode{enum}      \\
 \tcode{false}     &
 \tcode{float}     &
+\tcode{for}       &
 \tcode{if}        &
 \tcode{int}       \\
 \tcode{let}       &
-\tcode{lvalue}    &
-\tcode{mod}       &
-\tcode{mod_eq}    &
-\tcode{mut}       \\
-\tcode{move}      &
-\tcode{nil}       &
+\tcode{match}     &
+\tcode{mut}       &
+\tcode{never}     &
+\tcode{nil}       \\
 \tcode{return}    &
-\tcode{scope}     &
-\tcode{string}    \\
-\tcode{switch}    &
+\tcode{self}      &
+\tcode{shl}       &
+\tcode{shl_eq}    &
+\tcode{shr}       \\
+\tcode{shr_rq}    &
+\tcode{string}    &
 \tcode{then}      &
 \tcode{this}      &
-\tcode{throw}     &
-\tcode{throws}    \\
+\tcode{throw}     \\
 \tcode{true}      &
 \tcode{type}      &
 \tcode{typeof}    &
-\tcode{never}     &
+\tcode{uint}      &
 \tcode{var}       \\
 \tcode{void}      &
-\tcode{xor}       &
-\tcode{xor_eq}    &
-& \\
+\tcode{while}     &&&\\
+\end{floattable}
+
+\pnum
+表~\ref{tab:context-keyword}~中的标识符称为\term{上下文关键字}。在特定的语法结构中它将被解析为关键字，在其他位置可以当作一般标识符使用。
+
+\begin{floattable}{上下文关键字}{tab:context-keyword}{lllll}
+\topline
+\tcode{then} &&&&\\
 \end{floattable}
 
 \rSec1[lex.op]{运算符}
 
 \begin{bnf}{Operator}
-    \terminal{\lq}\bnfq RawOperator
+    RawOperator
 \end{bnf}
 
 \begin{bnf}{RawOperator}[\oneof]
@@ -106,7 +93,7 @@
 \end{bnf}
 
 \begin{bnf}{CustomOperatorPart}[\oneof]
-    \terminal{\~ ! \# \% \^ \& * - | + = / ? < > .}
+    \terminal{\~ ! \# \% \^ \& * - | + = / ? < > . '}
 \end{bnf}
 
 \pnum
@@ -115,22 +102,22 @@
 \rSec1[lex.literal]{字面量}
 
 \begin{bnf}{Literal}
-    IntegerLiteral Suffix\bnfq \br
-    FloatingLiteral Suffix\bnfq \br
-    StringLiteral Suffix\bnfq \br
+    IntegerLiteral \br
+    FloatingLiteral \br
+    StringLiteral \br
     SymbolLiteral
 \end{bnf}
 
 \rSec2[literal.integer]{整数字面量}
 
 \begin{bnf}{IntegerLiteral}
-    DecimalLiteral \br
-    BinaryLiteral \br
-    HexadecimalLiteral
+    DecimalLiteral Suffix\bnfq  \br
+    BinaryLiteral Suffix\bnfq \br
+    HexadecimalLiteral Suffix\bnfq
 \end{bnf}
 
 \begin{bnf}{DecimalLiteral}
-    Digit \bnflp\terminal{\textquotesingle}\bnfq Digit\bnfrp \bnfs
+    Digit \bnflp\terminal{_}\bnfq Digit\bnfrp \bnfs
 \end{bnf}
 
 \begin{bnf}{Digit}[\oneof]
@@ -138,7 +125,7 @@
 \end{bnf}
 
 \begin{bnf}{BinaryLiteral}
-    \terminal{0b} BinaryDigit \bnflp\terminal{\textquotesingle}\bnfq BinaryDigit\bnfrp\bnfs
+    \terminal{0b} BinaryDigit \bnflp\terminal{_}\bnfq BinaryDigit\bnfrp\bnfs
 \end{bnf}
 
 \begin{bnf}{BinaryDigit}
@@ -147,8 +134,8 @@
 \end{bnf}
 
 \begin{bnf}{HexadecimalLiteral}
-    \terminal{0x} HexadecimalDigit \bnflp\terminal{\textquotesingle}\bnfq HexadecimalDigit\bnfrp\bnfs
-    \terminal{0X} HexadecimalDigit \bnflp\terminal{\textquotesingle}\bnfq HexadecimalDigit\bnfrp\bnfs
+    \terminal{0x} HexadecimalDigit \bnflp\terminal{_}\bnfq HexadecimalDigit\bnfrp\bnfs
+    \terminal{0X} HexadecimalDigit \bnflp\terminal{_}\bnfq HexadecimalDigit\bnfrp\bnfs
 \end{bnf}
 
 \begin{bnf}{HexadecimalDigit}[\oneof]
@@ -168,16 +155,25 @@
 \rSec2[literal.string]{字符串字面量}
 
 \begin{bnf}{StringLiteral}
-    \terminal{"} Schar\bnfs\ \terminal{"} \br
-    \terminal{@"} Rchar\bnfs\ \terminal{"} \br
-    \terminal{\$"} SIchar\bnfs\ \terminal{"} \br
-    \terminal{\$@"} RIchar\bnfs\ \terminal{"} \br
-    Mdelim Mchar\bnfs\ Mdelim
+    \terminal{"} Schar\bnfs\ \terminal{"} Suffix\bnfq \br
+    \terminal{@"} Rchar\bnfs\ \terminal{"} Suffix\bnfq \br
+    \terminal{\$"} SIchar\bnfs\ \terminal{"} Suffix\bnfq \br
+    \terminal{\$@"} RIchar\bnfs\ \terminal{"} Suffix\bnfq \br
+    Mdelim Mchar\bnfs Suffix\bnfq Mdelim
 \end{bnf}
 
 \begin{bnf}{Schar}
     \textnormal{除了\terminal{\textbackslash}和\terminal{"}以外的非换行可打印字符} \br
     EscapeSeq
+\end{bnf}
+
+\begin{bnf}{EscapeSeq}
+    \terminal{\textbackslash} SimpleEscape \br
+    \terminal{\textbackslash{}u\{} HexadecimalDigit\bnfp \terminal{\}}
+\end{bnf}
+
+\begin{bnf}{SimpleEscape}[one of]
+    \terminal{' " ? \textbackslash a b f n r t v}
 \end{bnf}
 
 \begin{bnf}{Rchar}
@@ -243,15 +239,59 @@ abc
 \rSec2[literal.symbol]{符号字面量}
 
 \begin{bnf}{SymbolLiteral}
-    \terminal{'} NormalIdentifier
+    \terminal{'} Identifier
 \end{bnf}
 
 符号字面量后跟的标识符可以与关键字相同。
 
 \rSec2[literal.suffix]{字面量后缀}
 
-\begin{bnf}{SuffixExpr}
-    Alnums
+\begin{bnf}{Suffix}
+    \terminal{_}\bnfq SuffixIdentifier
 \end{bnf}
 
-整数、浮点数与字符串能带有后缀，指示不同的类别。这些后缀可能是内建的或是用户自定义的。
+\begin{bnf}{SuffixIdentifier}
+    SuffixIdentifierHead SuffixIdentifierTail\bnfs
+\end{bnf}
+
+\begin{bnf}{SuffixIdentifierHead}
+    Unicode(XID_Start)
+\end{bnf}
+
+\begin{bnf}{SuffixIdentifierTail}
+    SuffixIdentifierHead \br
+    Unicode(XID_Continue)
+\end{bnf}
+
+\pnum
+整数、浮点数与字符串能带有后缀，指示不同的类别。后缀由字母开始，后跟任意数量的字母或数字。字面量与后缀之间可以添加\tcode{_}分隔。后缀可能是内建的或是用户自定义的。内建后缀将该字面量的类型确定为对应的类型。
+
+\pnum
+整数字面量可以有以下内建后缀：
+
+\begin{floattable}{整数字面量后缀}{tab:integer-suffix}{c|c||c|c}
+    \topline
+    后缀 & 对应的类型 & 后缀 & 对应的类型 \\
+    \hline
+    \tcode{i8} & \tcode{int<8>} &
+    \tcode{i16} & \tcode{int<16>} \\
+    \tcode{i32} & \tcode{int<32>} &
+    \tcode{i64} & \tcode{int<64>} \\
+    \tcode{u8} & \tcode{uint<8>} &
+    \tcode{u16} & \tcode{uint<16>} \\
+    \tcode{u32} & \tcode{uint<32>} &
+    \tcode{u64} & \tcode{uint<64>} \\
+    \tcode{f} 或 \tcode{f64} & \tcode{float<64>} &
+    \tcode{f32} & \tcode{float<32>} \\
+\end{floattable}
+
+\pnum
+浮点字面量可以有以下内建后缀：
+
+\begin{floattable}{浮点字面量后缀}{tab:floating-suffix}{c|c}
+    \topline
+    后缀 & 对应的类型 \\
+    \hline
+    \tcode{f64} & \tcode{float<64>} \\
+    \tcode{f32} & \tcode{float<32>} \\
+\end{floattable}

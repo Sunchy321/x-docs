@@ -30,49 +30,50 @@ $$ \mathcal{V} = \{ \langle T, Q, v \rangle \mid T \in \mathcal{T}, Q \subset \m
     \terminal{float} \terminal{<} Expression \terminal{>} \br
 \end{bnf}
 
+$$\tcode{void} \coloneqq \{ \mathrm{void} \}$$
+
 \pnum
 \tcode{void}标识只有唯一一个值的类型。
 
-$$\tcode{void} \coloneqq \{ \mathrm{void} \}$$
+$$\tcode{never} \coloneqq \{ \}$$
 
 \pnum
 \tcode{never}标识没有值的类型。
 
-$$\tcode{never} \coloneqq \{ \mathrm{never} \}$$
+$$\tcode{bool} \coloneqq \{ \mathrm{true}, \mathrm{false} \}$$
 
 \pnum
 \tcode{bool} 标识布尔值。
 
-$$\tcode{bool} \coloneqq \{ \mathrm{true}, \mathrm{false} \}$$
+$$\tcode{int}_{l,h} \coloneqq \{ x \in \mathcal{Z} \mid l \le x \le h \} $$
 
 \pnum
-\tcode{int} 称作\term{整数类型}。
-
-$$\tcode{int} \coloneqq \{ x \in \mathcal{Z} \mid l \le x \le h \} $$
-
-其中$l$和$h$为待推导常数。在本规范中，带有特定$l$和$h$的\tcode{int}类型将记作$\tcode{int}_{l, h}$。如果$l = h$，则记作$\tcode{int}_l$。存在实现定义的常数$m$和$M$。$l$和$h$须满足
+$\tcode{int}_{l,h}$称作\term{整数类型}，其中$l$和$h$为待推导常数。在本规范中，如果$l = h$，则记作$\tcode{int}_l$。存在实现定义的常数$m$和$M$。$l$和$h$须满足
 $$ l \ge m $$
 $$ h \le M $$
 $$ 0 \le h - l \le M $$
 
-\tcode{uint}是$\tcode{int}_{l,h}$的别名，但满足$l>=0$。
-
-\tcode{byte}是$\tcode{int}_{l,h}$的别名，但满足$l>=0$且$h<=255$。
+\tcode{uint}是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$。\\
+\tcode{byte}是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$且$h\le255$。
 
 \pnum
-\tcode{float}称作\term{浮点类型}。
+$\tcode{int<}w\tcode{>}$是$\tcode{int}_{l,h}$的别名，但满足$l\ge-2^{w-1}$且$h\le2^{w-1}-1$。$\tcode{uint<}w\tcode{>}$是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$且$h\le2^w-1$。其中$w$可以取8、16、32、64或128。它们称作\tcode{定长整数类型}，表示长度固定的整数。只能在定长整数类型上进行位运算。
 
 $$ \tcode{float<}s\tcode{>}^\ast \subset \mathcal{R} $$
 $$ \tcode{float<}s\tcode{>}^\dagger \subset \{ +\infty, -\infty, \mathrm{NaN} \} $$
 $$ \tcode{float<}s\tcode{>} \coloneqq \tcode{float}^\ast \cup \tcode{float}^\dagger $$
 
-其中$s$为32或64。\tcode{float}为\tcode{float<64>}的别名。
+\pnum
+\tcode{float}和$\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tcode{float}为\tcode{float<64>}的别名。
+
+\pnum
+整数类型、定长整数类型和浮点类型称为\tcode{算术类型}。
 
 \rSec2[type.special]{特殊类型}
 \indextext{类型!特殊类型}
 
 \begin{bnf}{SpecialType}
-    \terminal{self} \br
+    \terminal{self}
 \end{bnf}
 
 \rSec2[type.comp]{复合类型}
