@@ -246,7 +246,7 @@
     \terminal{\textbackslash{}u\{} HexadecimalDigit\bnfp \terminal{\}}
 \end{bnf}
 
-\begin{bnf}{SimpleEscape}[one of]
+\begin{bnf}{SimpleEscape}[\oneof]
     \terminal{' " ? \textbackslash a b f n r t v}
 \end{bnf}
 
@@ -265,14 +265,14 @@
 
 \begin{bnf}{RIchar}
     \textnormal{除了\terminal{"}、\terminal{\{}和\terminal{\}}以外的非换行可打印字符} \br
-    "" \br
+    \terminal{""} \br
     \terminal{\{} Expression \terminal{\}} \br
     \terminal{\{\{} \br
     \terminal{\}\}}
 \end{bnf}
 
 \begin{bnf}{Mdelim}
-    """\ "\bnfs
+    \terminal{"""} \terminal{"}\bnfs
 \end{bnf}
 
 \begin{bnf}{Mchar}
@@ -280,10 +280,10 @@
 \end{bnf}
 
 \pnum
-字符串字面量表示UTF-8字符串，其类型为\tcode{string}。它有三种类型：普通字符串字面量、原始字符串字面量、多行字符串字面量。\term{普通字符串字面量}使用反斜杠开始的转义序列表示其他字符。\term{原始字符串字面量}中所有可打印字符将会表示这个字符本身，除了\tcode{""}表示单个双引号的转义序列之外。这两类字符串字面量不允许包含换行符。
+字符串字面量表示UTF-8字符串，其类型为\tcode{string}。它有三种种类：普通字符串字面量、原始字符串字面量、多行字符串字面量。\term{普通字符串字面量}使用反斜杠开始的转义序列表示其他字符。\term{原始字符串字面量}中所有可打印字符将会表示这个字符本身，除了\tcode{""}表示单个双引号的转义序列之外。这两类字符串字面量不允许包含换行符。
 
 \pnum
-上述两类字符串字面量可以前加\tcode{\$}表示插值字符串。插值字符串中的$\tcode{\{}e\tcode{\}}$序列会被解释为一个字符串插值，其中$e$为表达式。该表达式将被求值后转换为字符串插入当前位置。
+上述两类字符串字面量可以前加\tcode{\$}表示插值字符串。插值字符串中的$\tcode{\{}e\tcode{\}}$序列会被解释为一个字符串插值，其中$e$为表达式。该表达式将被求值后转换为字符串插入当前位置。插值字符串中除了原有的转义序列外，还有\tcode{\{\{}和\tcode{\}\}}作为单个大括号的转义序列。
 
 \pnum
 \term{多行字符串字面量}表示横跨多行的字符串。它以任意数量但不少于三个的\tcode{"}开始，并以等量的\tcode{"}结束。每一行包含换行符都属于该字符串字面量，但是除了以下字符：
@@ -352,5 +352,15 @@ $$ \tcode{false} \coloneqq \langle \mathrm{false}, \tcode{bool} \rangle $$
 \end{bnf}
 
 \pnum
-整数、浮点数与字符串能带有后缀，指示不同的类别。后缀由字母开始，后跟任意数量的字母或数字。字面量与后缀之间可以添加\tcode{_}分隔。后缀可能是内建的或是用户自定义的。内建后缀将该字面量的类型确定为对应的类型。
+整数、浮点数与字符串能带有内建或用户自定义的后缀。后缀由字母开始，后跟任意数量的字母或数字，字面量与后缀之间可以添加\tcode{_}分隔。用户自定义的后缀不能与内建后缀相同，否则这是一个编译错误。
 
+\pnum
+假设字面量$l$带有自定义后缀$s$。如果$l$是整数字面量，则它等价于以下第一个合法的表达式：
+\begin{codeblock}
+    operator ""\var{s}($l$)
+\end{codeblock}
+其中$i$是$l$移除后缀的形式；
+\begin{codeblock}
+    operator ""$s$($t$)
+\end{codeblock}
+其中$t$是包含$i$所有字符的字符串字面量。

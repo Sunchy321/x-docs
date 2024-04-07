@@ -199,10 +199,12 @@
 % don't get special treatment.
 
 \lstdefinelanguage{X} {
-    % morekeywords={int, uint, bool, never, void, self, immut},
-    % morekeywords={concept, const, enum, extend, func, impl, let, qual, type, var},
+    morekeywords={void, never, int, uint, float, bool, string, self, mut, const },
     morekeywords={if, while, for},
-    morekeywords={enum},
+    morekeywords={var, let},
+    morekeywords={func, enum, class, type, trait, impl},
+    morekeywords={true, false}
+    morekeywords={operator}
     morecomment=[l]{//},
     morecomment=[s]{/*}{*/}
 }
@@ -231,6 +233,7 @@
     \renewcommand{\tcode}[1]{\textup{\CodeStylex{##1}}}
     \renewcommand{\term}[1]{\textit{##1}}%
     \renewcommand{\grammarterm}[1]{\gterm{##1}}%
+    \newcommand{\var}[1]{$##1$}%
 }
 
 \lstnewenvironment{codeblock}{\CodeBlockSetup}{}
