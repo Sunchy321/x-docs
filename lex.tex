@@ -8,7 +8,7 @@
 \rSec1[lex.comment]{注释}
 
 \pnum
-有两种形式的\term{注释}：以\tcode{/*} 开始，\tcode{*/}结束的\term{块注释}和以\tcode{//} 开始，到行末结束的\term{行注释}。注释内部的 \tcode{/*} 或 \tcode{//} 等不具有特殊含义。注释在将程序文本分割为标记以后和空白一起被删除。
+有两种形式的\term{注释}：以\tcode{/*} 开始，\tcode{*/}结束的\term{块注释}和以\tcode{//} 开始，到行末结束的\term{行注释}。注释可以嵌套。在将程序文本分割为标记以后，注释和空白一起被删除。
 
 \rSec1[lex.identifier]{标识符}
 
@@ -37,14 +37,19 @@
 \begin{floattable}{关键字}{tab:keyword}{lllll}
 \topline
 \tcode{_}         &
+\tcode{async}     &
+\tcode{await}     &
 \tcode{bool}      &
-\tcode{cmp}       &
+\tcode{cmp}       \\
+\tcode{const}     &
+\tcode{deinit}    &
 \tcode{else}      &
-\tcode{enum}      \\
-\tcode{false}     &
+\tcode{enum}      &
+\tcode{false}     \\
 \tcode{float}     &
 \tcode{for}       &
 \tcode{if}        &
+\tcode{init}      &
 \tcode{int}       \\
 \tcode{let}       &
 \tcode{match}     &
@@ -80,12 +85,8 @@
 
 \rSec1[lex.op]{运算符}
 
-\begin{bnf}{Operator}
-    RawOperator
-\end{bnf}
-
-\begin{bnf}{RawOperator}[\oneof]
-    CustomOperator \terminal{, ; : ( ) [ ] \{ \}}
+\begin{bnf}{Operator}[\oneof]
+    CustomOperator \terminal{, ; : ( ) [ ] \{ \} \{| |\} }
 \end{bnf}
 
 \begin{bnf}{CustomOperator}
@@ -105,19 +106,25 @@
     IntegerLiteral \br
     FloatingLiteral \br
     StringLiteral \br
-    SymbolLiteral
+    SymbolLiteral \br
+    BooleanLiteral
 \end{bnf}
 
 \rSec2[literal.integer]{整数字面量}
 
 \begin{bnf}{IntegerLiteral}
-    DecimalLiteral Suffix\bnfq  \br
+    DecimalLiteral Suffix\bnfq \br
     BinaryLiteral Suffix\bnfq \br
     HexadecimalLiteral Suffix\bnfq
 \end{bnf}
 
 \begin{bnf}{DecimalLiteral}
-    Digit \bnflp\terminal{_}\bnfq Digit\bnfrp \bnfs
+    Digits
+\end{bnf}
+
+\begin{bnf}{Digits}
+    Digit \br
+    Digits \terminal{_}\bnfq Digit
 \end{bnf}
 
 \begin{bnf}{Digit}[\oneof]
@@ -125,7 +132,8 @@
 \end{bnf}
 
 \begin{bnf}{BinaryLiteral}
-    \terminal{0b} BinaryDigit \bnflp\terminal{_}\bnfq BinaryDigit\bnfrp\bnfs
+    \terminal{0b} BinaryDigit \bnflp\terminal{_}\bnfq BinaryDigit\bnfrp\bnfs \br
+    \terminal{0B} BinaryDigit \bnflp\terminal{_}\bnfq BinaryDigit\bnfrp\bnfs
 \end{bnf}
 
 \begin{bnf}{BinaryDigit}
@@ -134,8 +142,16 @@
 \end{bnf}
 
 \begin{bnf}{HexadecimalLiteral}
-    \terminal{0x} HexadecimalDigit \bnflp\terminal{_}\bnfq HexadecimalDigit\bnfrp\bnfs
-    \terminal{0X} HexadecimalDigit \bnflp\terminal{_}\bnfq HexadecimalDigit\bnfrp\bnfs
+    HexadecimalPrefix HexadecimalDigits
+\end{bnf}
+
+\begin{bnf}{HexadecimalPrefix}[\oneof]
+    \terminal{0x 0X}
+\end{bnf}
+
+\begin{bnf}{HexadecimalDigits}
+    HexadecimalDigit \br
+    HexadecimalDigits \terminal{_}\bnfs HexadecimalDigit
 \end{bnf}
 
 \begin{bnf}{HexadecimalDigit}[\oneof]
@@ -145,12 +161,70 @@
 \end{bnf}
 
 \pnum
-整数字面量由一系列数字构成。其中的单引号用作分隔并且不影响字面量的值。字面量的前缀用于指示它的进制。最左边的数字具有最大的权重值。\term{十进制字面量}由若干十进制数字构成；\term{十六进制字面量}由前缀\tcode{0x}或\tcode{0X}后跟若干十六进制数字构成；\term{二进制字面量}前缀 \tcode{0b} 后跟若干二进制数字构成。\X 不支持八进制字面量。
+整数字面量由一系列数字构成。其中的下划线用作分隔并且不影响字面量的值。字面量的前缀用于指示它的进制。\term{十进制字面量}由若干十进制数字构成；\term{十六进制字面量}由前缀\tcode{0x}或\tcode{0X}后跟若干十六进制数字构成；\term{二进制字面量}前缀\tcode{0b}或\tcode{0B}后跟若干二进制数字构成。\X 不支持八进制字面量。
+
+\pnum
+整数字面量的值为其数字序列表示的值，依不同前缀分别为十进制、十六进制或二进制。最左侧的数字为最高位。字面量的类型参见表格~\ref{tab:integer-suffix}，其中$i$为其字面值：
+
+\begin{floattable}{整数字面量后缀}{tab:integer-suffix}{c|c||c|c}
+    \topline
+    后缀 & 对应的类型 & 后缀 & 对应的类型 \\
+    \hline
+    无          & $\tcode{int}_i$     & \tcode{u}   & $\tcode{uint}_i$     \\
+    \tcode{i8}  & $\tcode{int<8>}_i$  & \tcode{u8}  & $\tcode{uint<8>}_i$  \\
+    \tcode{i16} & $\tcode{int<16>}_i$ & \tcode{u16} & $\tcode{uint<16>}_i$ \\
+    \tcode{i32} & $\tcode{int<32>}_i$ & \tcode{u32} & $\tcode{uint<32>}_i$ \\
+    \tcode{i64} & $\tcode{int<64>}_i$ & \tcode{u64} & $\tcode{uint<64>}_i$ \\
+    \tcode{f} 或 \tcode{f64} & \tcode{float<64>} &
+    \tcode{f32} & \tcode{float<32>} \\
+\end{floattable}
+
+如果字面量的字面值超出了其类型的约束范围，则这是一个编译错误。
 
 \rSec2[literal.floating]{浮点字面量}
 
+\begin{bnf}{FloatingLiteral}
+    DecimalFloatingLiteral Suffix\bnfq \br
+    HexadecimalFloatingLiteral Suffix\bnfq
+\end{bnf}
+
+\begin{bnf}{DecimalFloatingLiteral}
+    Digits \terminal{.} Digits ExponentPart\bnfq \br
+    Digits ExponentPart
+\end{bnf}
+
+\begin{bnf}{HexadecimalFloatingLiteral}
+    HexadecimalPrefix HexadecimalDigits \terminal{.} HexadecimalDigits BinaryExponentPart\bnfq \br
+    HexadecimalPrefix HexadecimalDigits BinaryExponentPart
+\end{bnf}
+
+\begin{bnf}{ExponentPart}
+    \terminal{e} Sign\bnfq Digits \br
+    \terminal{E} Sign\bnfq Digits
+\end{bnf}
+
+\begin{bnf}{BinaryExponentPart}
+    \terminal{p} Sign\bnfq Digits \br
+    \terminal{P} Sign\bnfq Digits
+\end{bnf}
+
+\begin{bnf}{Sign}[\oneof]
+    \terminal{+ -}
+\end{bnf}
+
 \pnum
-浮点字面量用于表示浮点数。与很多其他语言不同的是，浮点字面量的小数点前后不允许省略数字。
+浮点字面量用于表示浮点数,其中的下划线用作分隔并且不影响字面量的值。浮点字面量的小数点前后不允许省略数字。
+
+\pnum
+浮点字面量的类型按表~\ref{tab:floating-suffix}~确定。其值依如下方式确定：如果它包含指数部分，则命$e$为指数部分按十进制数字解析得到的数；否则，$e$为0。对十进制浮点字面量而言，命$s$为除去指数的部分按十进制数字解析得到的数，则令$f=s\times 10^e$。对十六进制浮点字面量而言，命$s$为除去指数的部分按十六进制数字解析得到的数，则令$f=s\times 2^e$。浮点字面量的值为其类型中最接近$f$的值。如果$f$太大，则值为对应的正无限大；如果$f$太小，则值为0。
+
+\begin{floattable}{浮点字面量后缀}{tab:floating-suffix}{c|c}
+    \topline
+    后缀 & 对应的类型 \\
+    \hline
+    无或\tcode{f64} & \tcode{float<64>} \\
+    \tcode{f32} & \tcode{float<32>} \\
+\end{floattable}
 
 \rSec2[literal.string]{字符串字面量}
 
@@ -206,7 +280,7 @@
 \end{bnf}
 
 \pnum
-有三种类型的字符串字面量：普通字符串字面量、原始字符串字面量、多行字符串字面量。\term{普通字符串字面量}使用反斜杠开始的转义序列表示其他字符。\term{原始字符串字面量}中所有可打印字符将会表示这个字符本身，除了\tcode{""}表示单个双引号的转义序列之外。这两类字符串字面量不允许包含换行符。
+字符串字面量表示UTF-8字符串，其类型为\tcode{string}。它有三种类型：普通字符串字面量、原始字符串字面量、多行字符串字面量。\term{普通字符串字面量}使用反斜杠开始的转义序列表示其他字符。\term{原始字符串字面量}中所有可打印字符将会表示这个字符本身，除了\tcode{""}表示单个双引号的转义序列之外。这两类字符串字面量不允许包含换行符。
 
 \pnum
 上述两类字符串字面量可以前加\tcode{\$}表示插值字符串。插值字符串中的$\tcode{\{}e\tcode{\}}$序列会被解释为一个字符串插值，其中$e$为表达式。该表达式将被求值后转换为字符串插入当前位置。
@@ -242,7 +316,21 @@ abc
     \terminal{'} Identifier
 \end{bnf}
 
+\pnum
 符号字面量后跟的标识符可以与关键字相同。
+
+\rSec2[literal.boolen]{布尔字面量}
+
+\begin{bnf}{BooleanLiteral}
+    \terminal{true} \br
+    \terminal{false}
+\end{bnf}
+
+$$ \tcode{true} \coloneqq \langle \mathrm{true}, \tcode{bool} \rangle $$
+$$ \tcode{false} \coloneqq \langle \mathrm{false}, \tcode{bool} \rangle $$
+
+\pnum
+布尔字面量的类型为\tcode{bool}。\tcode{true}和\tcode{false}分别对应其真值与假值。
 
 \rSec2[literal.suffix]{字面量后缀}
 
@@ -266,32 +354,3 @@ abc
 \pnum
 整数、浮点数与字符串能带有后缀，指示不同的类别。后缀由字母开始，后跟任意数量的字母或数字。字面量与后缀之间可以添加\tcode{_}分隔。后缀可能是内建的或是用户自定义的。内建后缀将该字面量的类型确定为对应的类型。
 
-\pnum
-整数字面量可以有以下内建后缀：
-
-\begin{floattable}{整数字面量后缀}{tab:integer-suffix}{c|c||c|c}
-    \topline
-    后缀 & 对应的类型 & 后缀 & 对应的类型 \\
-    \hline
-    \tcode{i8} & \tcode{int<8>} &
-    \tcode{i16} & \tcode{int<16>} \\
-    \tcode{i32} & \tcode{int<32>} &
-    \tcode{i64} & \tcode{int<64>} \\
-    \tcode{u8} & \tcode{uint<8>} &
-    \tcode{u16} & \tcode{uint<16>} \\
-    \tcode{u32} & \tcode{uint<32>} &
-    \tcode{u64} & \tcode{uint<64>} \\
-    \tcode{f} 或 \tcode{f64} & \tcode{float<64>} &
-    \tcode{f32} & \tcode{float<32>} \\
-\end{floattable}
-
-\pnum
-浮点字面量可以有以下内建后缀：
-
-\begin{floattable}{浮点字面量后缀}{tab:floating-suffix}{c|c}
-    \topline
-    后缀 & 对应的类型 \\
-    \hline
-    \tcode{f64} & \tcode{float<64>} \\
-    \tcode{f32} & \tcode{float<32>} \\
-\end{floattable}

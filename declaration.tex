@@ -4,14 +4,14 @@
 \indextext{声明}
 
 \begin{bnf}{Declaration}
-    BlockDecl \br
+    BlockDecl
 \end{bnf}
 
 \begin{bnf}{BlockDecl}
     FuncDecl \br
     TypeDecl \br
     ClassDecl \br
-    EnumDecl \br
+    EnumDecl
 \end{bnf}
 
 \rSec1[decl.type]{类型声明}
@@ -21,8 +21,8 @@
     TypeQual\bnfs \terminal{type} Identifier TypeBody
 \end{bnf}
 
-\begin{bnf}[TypeQual]
-    \terminal{pure}
+\begin{bnf}{TypeQual}
+    \terminal{const}
 \end{bnf}
 
 \begin{bnf}{TypeBody}

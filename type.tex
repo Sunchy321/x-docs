@@ -1,6 +1,6 @@
 %!TEX root = x.tex
 
-\rSec0[typequal]{类型与修饰符}
+\rSec0[typesystem]{类型系统}
 
 \rSec1[type]{类型、值和对象}
 \indextext{类型}
@@ -11,10 +11,10 @@
     CompType
 \end{bnf}
 
-$$ \mathcal{V} = \{ \langle T, Q, v \rangle \mid T \in \mathcal{T}, Q \subset \mathcal{Q}, v \in T \} $$
+$$ \mathcal{V} = \{ \langle v, T \rangle \mid T \in \mathcal{T}, v \in T \} $$
 
 \pnum
-\term{类型}是一个有限集合。\term{修饰符}是一个标识符。\term{值}是类型、修饰符集合和这个类型的成员的三元组。\enternote 实际上，值并不由这三个项完全表征。例如 \tcode{lvalue} 表示有与这个值相关联的对象，这个对象不能由这个值确定。 \exitnote $T$ 称为值 $v$ 的\term{类型}。
+\term{类型}是一个集合。\term{值}是类型和这个类型的成员的元组。$T$称为值$v$的\term{类型}。
 
 \rSec2[type.funda]{基本类型}
 \indextext{类型!基本类型}
@@ -25,9 +25,10 @@ $$ \mathcal{V} = \{ \langle T, Q, v \rangle \mid T \in \mathcal{T}, Q \subset \m
     \terminal{bool} \br
     \terminal{int} \br
     \terminal{uint} \br
-    \terminal{int} \terminal{<} Expression \terminal{,} Expression \terminal{>} \br
+    \terminal{int} \terminal{<} Expression \terminal{>} \br
+    \terminal{uint} \terminal{<} Expression \terminal{>} \br
     \terminal{float} \br
-    \terminal{float} \terminal{<} Expression \terminal{>} \br
+    \terminal{float} \terminal{<} Expression \terminal{>}
 \end{bnf}
 
 $$\tcode{void} \coloneqq \{ \mathrm{void} \}$$
@@ -43,7 +44,7 @@ $$\tcode{never} \coloneqq \{ \}$$
 $$\tcode{bool} \coloneqq \{ \mathrm{true}, \mathrm{false} \}$$
 
 \pnum
-\tcode{bool} 标识布尔值。
+\tcode{bool}标识具有真或假两个值的类型。
 
 $$\tcode{int}_{l,h} \coloneqq \{ x \in \mathcal{Z} \mid l \le x \le h \} $$
 
@@ -53,8 +54,7 @@ $$ l \ge m $$
 $$ h \le M $$
 $$ 0 \le h - l \le M $$
 
-\tcode{uint}是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$。\\
-\tcode{byte}是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$且$h\le255$。
+\tcode{uint}是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$。
 
 \pnum
 $\tcode{int<}w\tcode{>}$是$\tcode{int}_{l,h}$的别名，但满足$l\ge-2^{w-1}$且$h\le2^{w-1}-1$。$\tcode{uint<}w\tcode{>}$是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$且$h\le2^w-1$。其中$w$可以取8、16、32、64或128。它们称作\tcode{定长整数类型}，表示长度固定的整数。只能在定长整数类型上进行位运算。
@@ -64,10 +64,10 @@ $$ \tcode{float<}s\tcode{>}^\dagger \subset \{ +\infty, -\infty, \mathrm{NaN} \}
 $$ \tcode{float<}s\tcode{>} \coloneqq \tcode{float}^\ast \cup \tcode{float}^\dagger $$
 
 \pnum
-\tcode{float}和$\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tcode{float}为\tcode{float<64>}的别名。
+$\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tcode{float}为\tcode{float<64>}的别名。
 
 \pnum
-整数类型、定长整数类型和浮点类型称为\tcode{算术类型}。
+整数类型、定长整数类型和浮点类型称为\term{算术类型}。
 
 \rSec2[type.special]{特殊类型}
 \indextext{类型!特殊类型}
@@ -76,56 +76,89 @@ $$ \tcode{float<}s\tcode{>} \coloneqq \tcode{float}^\ast \cup \tcode{float}^\dag
     \terminal{self}
 \end{bnf}
 
+\pnum
+\tcode{self}用于在方法或概念中指示类型自身。
+
 \rSec2[type.comp]{复合类型}
 \indextext{类型!复合类型}
 
 \begin{bnf}{CompType}
     Type \terminal{?} \br
-    % Type \terminal{[} Expression\bnfq  \terminal{]} \br
-    Type \terminal{[} Type \terminal{]}
-    \terminal{(} UnnamedTypes \terminal{)} \br
-    \terminal{(} NamedTypes \terminal{)} \br
-    \terminal{(} UnnamedTypes \terminal{,} NamedTypes \terminal{)} \br
-    \terminal{\{} UnnamedTypes \terminal{\}}
-    Type \terminal{*}
+    Type \terminal{[} \terminal{]} \br
+    Type \terminal{[} Type \terminal{]} \br
+    \terminal{(} TupleTypes\bnfs \terminal{)} \br
+    \terminal{\{} ObjectTypes \terminal{\}} \br
+    \terminal{(} TupleTypes\bnfs \terminal{)} \terminal{->} Type \br
+    UnionType
 \end{bnf}
 
-\begin{bnf}{UnnamedTypes}
+\begin{bnf}{TupleTypes}
     Type \br
-    UnnamedTypes \terminal{,} Type
+    TupleTypes \terminal{,} Type
 \end{bnf}
 
-\begin{bnf}{NamedTypes}
-    Identifier \terminal{:} Type \br
-    NamedTypes \terminal{,} Identifier \terminal{:} Type
+\begin{bnf}{ObjectTypes}
+    ObjectType \br
+    ObjectTypes \terminal{,} ObjectType
 \end{bnf}
 
-\pnum
-\tcode{T?}为\term{可空类型}。
+\begin{bnf}{ObjectType}
+    ObjectTypeQualifier\bnfs Identifier \terminal{:} Type
+\end{bnf}
+
+\begin{bnf}{ObjectTypeQualifier}
+    \terminal{let} \br
+    \terminal{var}
+\end{bnf}
+
+\begin{bnf}{UnionType}
+    Type \terminal{|} Type \br
+    UnionType \terminal{|} Type
+\end{bnf}
 
 $$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil} \} $$
 
 \pnum
-\tcode{T[]}为\term{数组类型}。
+$T\tcode{?}$为\term{可空类型}。
 
 $$ T\tcode{[]} \coloneqq \bigcup^\infty_{n=0} T^n $$
 
 \pnum
-\tcode{T[U]}为\term{字典类型}。
+$T\tcode{[]}$为\term{数组类型}。
 
-$$ T\tcode{[}U\tcode{]} \coloneqq T^U $$
-
-\pnum
-\tcode{(T1, \ldots, Tm)} 称作\term{元组类型}。
-
-$$ \tcode{(}T_1\tcode{,} \ldots\tcode{,} T_m\tcode{,}\tcode{)} \coloneqq \prod^m_{i=1} T_i$$
+$$ T\tcode{[}K\tcode{]} \coloneqq T^K $$
 
 \pnum
-\tcode{T1|}\ldots\tcode{|Tn} 称作\term{联合类型}。其中各个 \tcode{T$_i$} 是无序的。重复的 \tcode{T$_i$} 将被视为一个。
+$T\tcode{[}K\tcode{]}$为\term{字典类型}。
 
-$$ T_1 \tcode{|} \ldots \tcode{|} T_n \coloneqq \bigcup^n_{i=1} \{ \langle T_i, t_i \rangle \mid t_i \in T_i \} $$
+$$ \tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{,}\tcode{)} \coloneqq \prod^n_{i=1} T_i $$
+$$ \tcode{()} \coloneqq \tcode{void} $$
 
-\rSec2[type.common]{公共类型}
+\pnum
+$\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{)}$称作\term{元组类型}。特别地，只有一个元素的元组与其内部元素类型等价；没有元素的元组与\tcode{void}等价。
+
+$$ \tcode{\{} K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n \tcode{\}} \coloneqq \prod^n_{i=1} T_i $$
+
+\pnum
+$\tcode{\{}K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n\tcode{\}}$称作\term{对象类型}。
+
+\pnum
+$\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{) -> }R$称作\term{函数类型}。
+
+$$ T_1 \tcode{|} \ldots \tcode{|} T_n \coloneqq \bigcup^n_{i=1} \{ \langle v_i, T_i \rangle \mid v_i \in T_i \} $$
+
+\pnum
+$T_1\tcode{|}\ldots\tcode{|}T_n$ 称作\term{联合类型}。其中各个$T_i$是无序的。相同的$T_i$将被视为一个。
+
+\rSec2[type.named]{具名类型}
+
+\begin{bnf}{NamedType}
+    EntityID \br
+    FundaType \br
+    SpecialType
+\end{bnf}
+
+\rSec1[type.common]{公共类型}
 \indextext{类型!公共类型}
 
 \pnum
@@ -141,11 +174,10 @@ $$ \otimes: \mathcal{T} \times \mathcal{T} \rightarrow \mathcal{T} \cup \{ \ast 
 \begin{itemize}
 \item $T \otimes T \coloneqq T$
 \item $\tcode{never} \otimes T \coloneqq T$
-\item $\tcode{void} \otimes T \coloneqq \ast$
+\item $\tcode{void} \otimes T \coloneqq \tcode{void}$
 \item $\tcode{int}_{l_1,h_1} \otimes \tcode{int}_{l_2,h_2} \coloneqq \tcode{int}_{\min\{l_1, l_2\},\max\{h_1, h_2\}}$
-\item $\tcode{int}_{l,h} \otimes \tcode{float} \coloneqq \tcode{float}$
-\item $\tcode{int}_{l,h} \otimes \tcode{float32} \coloneqq \tcode{float32}$
-\item $\tcode{float} \otimes \tcode{float32} \coloneqq \tcode{float}$
+\item $\tcode{int}_{l,h} \otimes \tcode{float<}s\tcode{>} \coloneqq \tcode{float<}s\tcode{>}$
+\item $\tcode{float<}s_1\tcode{>} \otimes \tcode{float<}s_2\tcode{>} \coloneqq \tcode{float<}\max\{s_1, s_2\}\tcode{>}$
 \item $T \otimes T\tcode{?} \coloneqq T\tcode{?}$
 \item $T \otimes T \tcode{|} T_1 \tcode{|} \ldots \tcode{|} T_{n-1} \coloneqq T \tcode{|} T_1 \tcode{|} \ldots \tcode{|} T_{n-1}$
 \item $T \otimes T_1 \tcode{|} T_2 \tcode{|} \ldots \tcode{|} T_n \coloneqq T \tcode{|} T_1 \tcode{|} \ldots \tcode{|} T_n$

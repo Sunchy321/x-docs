@@ -46,7 +46,7 @@ $$ \mathrm{\rhd}: \mathcal{E} \times \Omega \rightarrow (\mathcal{V} \cup \mathc
 
 \indextext{求值}
 \pnum
-$\mathrm{e \rhd \omega}$ 称作\term{在环境 $\omega$ 下对 $e$ 求值}。设 $\mathrm{e \rhd \omega} = \langle v, \omega^\prime \rangle$。如果 $v \in \mathcal{V}$，称\term{求值正常结束}，$v$ 是 $e$ 的\term{值}；否则，称\term{求值以抛出$v$异常结束}，$e$的类型为\tcode{never}。$v = \ast$ 意味着求值过程中程序终止了。若无特别说明，对表达式$e$的子表达式$e_0$求值以抛出$v$异常结束也会导致对$e$的求值以抛出$v$异常结束。
+$\mathrm{e \rhd \omega}$ 称作\term{在环境 $\omega$ 下对 $e$ 求值}。设 $\mathrm{e \rhd \omega} = \langle v, \omega^\prime \rangle$。如果 $v \in \mathcal{V}$，称\term{求值正常结束}，$v$ 是 $e$ 的\term{值}；否则，称\term{求值以抛出$v$异常结束}。$v = \ast$ 意味着求值过程中程序终止了。若无特别说明，对表达式$e$的子表达式$e_0$求值以抛出$v$异常结束也会导致对$e$的求值以抛出$v$异常结束。
 
 \pnum
 $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。如果 $\omega = \omega^\prime$，称 $e$ 是\term{无副作用}的；如果 $e$ 是无副作用的且 $v$ 与 $\omega$ 无关，称 $e$ 是\term{纯}的。
@@ -81,12 +81,10 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
 
 \begin{bnf}{LiteralExpression}
     IntegerLiteral \br
-    FloatLiteral \br
+    FloatingLiteral \br
     StringLiteral \br
-    \terminal{true} \br
-    \terminal{false} \br
+    BooleanLiteral \br
     \terminal{nil} \br
-    \terminal{()} \br
     ArrayLiteral \br
     TupleLiteral \br
     ObjectLiteral \br
@@ -98,12 +96,17 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
 \end{bnf}
 
 \begin{bnf}{TupleLiteral}
-    \terminal{(} ExprList\bnfq \terminal{)}
+    \terminal{(} TupleExprList\bnfq \terminal{)}
 \end{bnf}
 
 \begin{bnf}{ExprList}
     ExprItem \br
     ExprList \terminal{,} ExprItem
+\end{bnf}
+
+\begin{bnf}{TupleExprList}
+    ExprItem \terminal{,} ExprItem \br
+    TupleExprList \terminal{,} ExprItem
 \end{bnf}
 
 \begin{bnf}{ExprItem}
@@ -112,7 +115,7 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
 \end{bnf}
 
 \begin{bnf}{ObjectLiteral}
-    \terminal{\{} ObjectItems\bnfq \terminal{\}}
+    \terminal{\{} ObjectItems \terminal{\}}
 \end{bnf}
 
 \begin{bnf}{ObjectItems}
@@ -140,52 +143,36 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
 \end{bnf}
 
 \pnum
-字面量本身是基本表达式。
+字面量本身是基本表达式。整数字面量、浮点字面量、字符串字面量和布尔字面量的值分别参见\ref{literal.integer}、\ref{literal.floating}、\ref{literal.string}和\ref{literal.boolean}节的定义。
 
 \pnum
-整数字面量$i$的值为$i$，类型为$\tcode{int}_i$。如果$i$超出了能够选择的范围，这是一个编译错误。
+\tcode{nil}的类型为$T\tcode{?}$，其中$T$为待推导的类型参数。
 
 \pnum
-浮点字面量$f$的值为最接近$f$的浮点数值，类型为\tcode{float}。如果$f$太大，则其值为\tcode{float.Infinity}；如果$f$太小，其值为\tcode{0}。
+数组字面量$\tcode{[}e_1\tcode{,}\ldots\tcode{,}e_n\tcode{]}$表示一个显式写出其各元素的数组值。其类型为$T\tcode{[]}$，其中$T$为各表达式的公共类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须实现\tcode{core.Sequence}。如果数组字面量不包含任何成员，则$T$是一个待推导的类型。
 
 \pnum
-字符串字面量$s$的值为对应的字符串，类型为\tcode{string}。
+元组字面量$\tcode{(}e_1\tcode{,}\ldots\tcode{,}e_n\tcode{)}$表示一个显式写出其各元素的元组值。其类型为$\tcode{(}T_1\tcode{,}\ldots\tcode{,}T_n\tcode{)}$，其中$T_i$为$e_i$的类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须也是一个元组。特别的，\tcode{()}的类型为\tcode{void}，是\tcode{void}的唯一值。
 
 \pnum
-布尔字面量的类型为\tcode{bool}。\tcode{true}和\tcode{false}分别对应其值。
+对象字面量$\tcode{\{}k_1\tcode{:}e_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}e_n\tcode{\}}$表示一个显式写出其各元素的对象值。其类型为$\tcode{\{}k_1\tcode{:}T_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}T_n\tcode{\}}$，其中$T_i$为$e_i$的类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各成员以相同标签显式插入在该位置。$e$必须是对象类型。\enternote 对象字面量必须至少包含一个键值对。\tcode{\{\}}将被解析为一个块。 \exitnote
 
 \pnum
-\tcode{nil}的类型为$T$\tcode{?}，其中$T$为待推导的类型参数。
-
-\pnum
-\tcode{()}的类型为\tcode{void}。
-
-\pnum
-数组字面量$\tcode{[}e_1\tcode{,} e_2\tcode{,} \ldots\tcode{,} e_n\tcode{]}$表示一个显式写出其各元素的数组值。其类型为$T\tcode{[]}$，其中$T$为各表达式的公共类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须实现\tcode{core.Sequence}。
-
-\pnum
-元组字面量$\tcode{(}e_1\tcode{,} e_2\tcode{,} \ldots\tcode{,} e_n\tcode{)}$表示一个显式写出其各元素的元组值。其类型为$(T_1, T_2, \ldots, T_n)$，其中$T_i$为$e_i$的类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须也是一个元组。
-
-\pnum
-对象字面量$\tcode{\{}x_1\tcode{:} e_1\tcode{,} x_2\tcode{:} e_2\tcode{,} \ldots\tcode{,} x_n\tcode{:} e_n\tcode{\}}$表示一个显式写出其各元素的对象值。其类型为$\{x_1: T_1, x_2: T_2, \ldots, x_n: T_n\}$，其中$T_i$为$e_i$的类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须是对象类型。
-
-\pnum
-字典字面量$\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{|\}}$表示一个显式写出其各元素的字典值。其类型为$T\tcode{[}K\tcode{]}$，其中$T$为各$v_i$的类型，$K$为各$k_i$的公共类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须是字典类型。
+字典字面量$\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{|\}}$表示一个显式写出其各元素的字典值。其类型为$T\tcode{[}K\tcode{]}$，其中$T$为各$v_i$的类型，$K$为各$k_i$的公共类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素对显式插入在该位置。$e$必须是字典类型。如果字典字面量不包含任何类型，则$T$和$K$是待推导的类型。
 
 \rSec2[expr.lambda]{Lambda表达式}
 \indextext{表达式!Lambda}
 
 \begin{bnf}{LambdaExpr}
-    SimpleLambdaExpr \br
-    CompoundLambdaExpr
-\end{bnf}
-
-\begin{bnf}{SimpleLambdaExpr}
-    LambdaParameter\bnfq\ \terminal{=>} LambdaBody
+    FuncQual\bnfs LambdaParameter ReturnType\bnfs \terminal{=>} LambdaBody
 \end{bnf}
 
 \begin{bnf}{LambdaParameter}
     ParamDecl
+\end{bnf}
+
+\begin{bnf}{LambdaBody}
+    Expression
 \end{bnf}
 
 \rSec2[expr.lambda-param]{Lambda参数}
@@ -204,10 +191,9 @@ Lambda参数是一个特殊的标识符，用于在Lambda表达式中引用参�
 \begin{bnf}{SuffixExpr}
     PrimaryExpr \br
     SuffixExpr \terminal{[} ExprList\bnfq \terminal{]} \br
-    SuffixExpr \terminal{(} ExprList\bnfq \terminal{)} \br
-    SuffixExpr \terminal{\{} ObjectItems\bnfq \terminal{\}} \br
+    SuffixExpr \terminal{(} ExprList\bnfq \terminal{)} Block\bnfs \br
     SuffixExpr \terminal{.} Identifier \br
-    SuffixExpr \terminal{.} Digit\bnfp \br
+    SuffixExpr \terminal{.} IntegerLiteral \br
     SuffixExpr \terminal{.} \terminal{init} \br
     SuffixExpr \terminal{.} \terminal{deinit} \br
     SuffixExpr \terminal{.} \terminal{await} \br
@@ -231,12 +217,8 @@ Lambda参数是一个特殊的标识符，用于在Lambda表达式中引用参�
     \terminal{-} PrefixExpr
 \end{bnf}
 
-$$ \tcode{+} e \coloneqq e $$
-$$ \tcode{-} \lbrace i, \tcode{int}_{l,h} \rbrace \coloneqq \lbrace -i, \tcode{int}_{-h,-l} \rbrace $$
-$$ \tcode{-} \lbrace f, \tcode{float<}s\tcode{>} \rbrace \coloneqq \lbrace -f, \tcode{float<}s\tcode{>}\rbrace $$
-
 \pnum
-前缀运算符\tcode{+}和\ \tcode{-}\ 分别表示正号和负号。其中\tcode{+}的值为其操作数的值，而\tcode{-}的值为其相反数。操作数类型必须为\tcode{int}或$\tcode{float<}s\tcode{>}$。
+前缀运算符\tcode{+}和\ \tcode{-}\ 分别表示正号和负号。其中\tcode{+}的值为其操作数的值，而\tcode{-}的值为其相反数。操作数类型必须为算术类型。
 
 \rSec1[expr.mul]{乘法运算符}
 \indextext{运算符!乘法}
@@ -257,7 +239,7 @@ $$ \tcode{-} \lbrace f, \tcode{float<}s\tcode{>} \rbrace \coloneqq \lbrace -f, \
 \begin{bnf}{AddExpr}
     MulExpr \br
     AddExpr \terminal{+} MulExpr \br
-    AddExpr \terminal{-} MulExpr
+    AddExpr \terminal{-} MulExpr \br
 \end{bnf}
 
 \pnum
@@ -286,7 +268,7 @@ $$ \tcode{-} \lbrace f, \tcode{float<}s\tcode{>} \rbrace \coloneqq \lbrace -f, \
 \end{bnf}
 
 \pnum
-运算符\tcode{'\&}、\tcode{'\^}和\tcode{'|}分别表示按位与、按位异或和按位或。其操作数必须为定长整数类型。在同一个表达式中混合使用\tcode{'\&}、\tcode{'\^}和\tcode{'|}是一个编译错误。
+运算符\tcode{'\&}、\tcode{'\^{}}和\tcode{'|}分别表示按位与、按位异或和按位或。其操作数必须为定长整数类型。在同一个表达式中混合使用\tcode{'\&}、\tcode{'\^{}}和\tcode{'|}是一个编译错误。
 
 \rSec1[expr.range]{区间运算符}
 \indextext{运算符!区间}
@@ -300,25 +282,64 @@ $$ \tcode{-} \lbrace f, \tcode{float<}s\tcode{>} \rbrace \coloneqq \lbrace -f, \
 \pnum
 运算符\tcode{..}用于生成左闭右开区间。运算符\tcode{..=}用于形成闭区间。
 
-\rSec1[expr.cmp]{比较运算符}
+\rSec1[expr.connect]{连接运算符}
+
+\begin{bnf}{ConnectExpr}
+    RangeExpr \br
+    ConnectExpr \terminal{\~} RangeExpr
+\end{bnf}
+
+\pnum
+运算符\tcode{\~}用于连接字符串或集合。其操作数的类型必须满足以下条件之一：
+
+\begin{itemize}
+    \item 两个操作数都是\tcode{string}；
+    \item 一个操作数满足$\tcode{core.Sequence<}T\tcode{>}$，另一个是$T$；
+    \item 两个操作数都满足$\tcode{core.Sequence<}T\tcode{>}$。
+\end{itemize}
+
+对第一种情况，结果等于将两个字符串左右连接得到的结果；对第二种情况，$x\ \tcode{\~}\ y$等于$\tcode{[}x\tcode{,}\ \tcode{...}y\tcode{]}$或$\tcode{[...}x\tcode{,}\ y\tcode{]}$，取决于哪个操作数是序列；对第三种情况，$x\ \tcode{\~}\ y$等于$\tcode{[...}x\tcode{,}\ \tcode{...}y\tcode{]}$。
+
+\rSec1[expr.cmp-in]{比较运算符和包含运算符}
 \indextext{运算符!比较}
+\indextext{运算符!包含}
 
 \begin{bnf}{CompareExpr}
     RangeExpr \br
     CompareExpr \terminal{==} RangeExpr \br
     CompareExpr \terminal{!=} RangeExpr \br
     CompareExpr \terminal{<} RangeExpr \br
+    CompareExpr \terminal{!<} RangeExpr \br
     CompareExpr \terminal{>} RangeExpr \br
+    CompareExpr \terminal{!>} RangeExpr \br
     CompareExpr \terminal{<=} RangeExpr \br
     CompareExpr \terminal{>=} RangeExpr \br
-    CompareExpr \terminal{cmp} RangeExpr
+    CompareExpr \terminal{<>} RangeExpr \br
+    CompareExpr \terminal{cmp} RangeExpr \br
+    CompareExpr \terminal{in} RangeExpr \br
+    CompareExpr \terminal{!} \terminal{in} RangeExpr
 \end{bnf}
+
+\begin{align*}
+a\ \tcode{==}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.equal} \\
+a\ \tcode{!=}\ b &\iff a\ \tcode{cmp}\ b \ne \tcode{.equal} \\
+a\ \tcode{<}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.less} \\
+a\ \tcode{!<}\ b &\iff a\ \tcode{cmp}\ b \ne \tcode{.less} \\
+a\ \tcode{>}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.greater} \\
+a\ \tcode{!>}\ b &\iff a\ \tcode{cmp}\ b \ne \tcode{.greater} \\
+a\ \tcode{<=}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.less}\ \mathrm{or} \ \tcode{.equal} \\
+a\ \tcode{>=}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.greater}\ \mathrm{or} \ \tcode{.equal} \\
+a\ \tcode{<>}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.less}\ \mathrm{or} \ \tcode{.greater}
+\end{align*}
 
 \pnum
 $a\ \tcode{cmp}\ b$比较两个表达式，其结果类型为\tcode{core.Order}。其余比较运算符的结果类型为\tcode{bool}。
 
 \pnum
-相同方向的比较运算符可以连续使用。$a\ \tcode{<}\ b\ \tcode{<}\ c$等价于$a\ \tcode{<}\ b\ \tcode{\&}\ b\ \tcode{<}\ c$。以其他方式混合使用运算符是一个编译错误。
+\tcode{<}、\tcode{<=}和\tcode{==}可以连续使用。$a\ \tcode{<}\ b\ \tcode{<=}\ c$等价于$a\ \tcode{<}\ b\ \tcode{\&}\ b\ \tcode{<=}\ c$。\tcode{>}、\tcode{>=}和\tcode{==}也可以用类似方式混合。以其他方式在一个表达式中使用超过一个比较运算符是一个编译错误。
+
+\pnum
+$a\ \tcode{in}\ b$检测$a$是否在$b$中。$a\ \tcode{!in}\ b$检测$a$是否不在$b$中。$b$必须实现\tcode{core.Sequence}。
 
 \rSec1[expr.logic]{逻辑运算符}
 \indextext{运算符!逻辑}
@@ -330,38 +351,53 @@ $a\ \tcode{cmp}\ b$比较两个表达式，其结果类型为\tcode{core.Order}�
 \end{bnf}
 
 \pnum
-\tcode{\&}和\tcode{|}是逻辑运算符。两者的操作数都必须实现\tcode{core.Boolean}。它们都使用短路求值。
+\tcode{\&}和\tcode{|}是逻辑运算符。两者的操作数都必须实现\tcode{core.Boolean}。它们都使用短路求值。在同一个表达式中混合使用两个运算符是一个编译错误。
 
 \rSec1[expr.assign]{赋值运算符}
 \indextext{运算符!赋值}
 
 \begin{bnf}{AssignExpr}
     LogicExpr \br
-    SuffixExpr \terminal{++} \br
-    SuffixExpr \terminal{--} \br
     SuffixExpr \terminal{=} LogicExpr \br
     SuffixExpr \terminal{+=} LogicExpr \br
     SuffixExpr \terminal{-=} LogicExpr \br
     SuffixExpr \terminal{*=} LogicExpr \br
     SuffixExpr \terminal{/=} LogicExpr \br
+    SuffixExpr \terminal{\%=} LogicExpr \br
     SuffixExpr \terminal{shl_eq} LogicExpr \br
     SuffixExpr \terminal{shr_eq} LogicExpr \br
-    SuffixExpr \terminal{\%=} LogicExpr \br
     SuffixExpr \terminal{'\&=} LogicExpr \br
     SuffixExpr \terminal{'\^{}=} LogicExpr \br
-    SuffixExpr \terminal{'|=} LogicExpr
+    SuffixExpr \terminal{'|=} LogicExpr \br
+    SuffixExpr \terminal{++} \br
+    SuffixExpr \terminal{--} \br
+    SuffixExpr \terminal{<\~} LogicExpr \br
+    LogicExpr \terminal{\~>} SuffixExpr
 \end{bnf}
 
 \pnum
 赋值表达式的结果类型是\tcode{void}。
 
+\pnum
+\tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是可变的，且右操作数必须能隐式转换到左操作数。
+
+\pnum
+复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\^{}=}和\tcode{'|=}分别表示加、减、乘、除、取余、左移、右移、按位与、按位异或和按位或赋值。
+对这些运算符而言，$a\ op\tcode{=}\ b$或$a\ op\tcode{_eq}\ b$等价于$a\ \tcode{=}\ a\ op\ b$，但$a$只被求值一次。
+
+\pnum
+自增运算符$e\tcode{++}$等价于$e\ \tcode{=}\ e\tcode{+?}$，自减运算符$e\tcode{--}$等价于$e\ \tcode{=}\ e\tcode{-?}$，但$e$只被求值一次。
+
+\pnum
+追加运算符$e\ \tcode{<\~}\ v$等价于$e\ \tcode{=}\ e\ \tcode{\~}\ v$，$v\ \tcode{\~>}\ e$等价于$e\ \tcode{=}\ v\ \tcode{\~}\ e$，但$e$只被求值一次。
+
 \rSec1[expr.semi]{分号运算符}
 \indextext{运算符!分号}
 
-\begin{bnf}{SemiExpr}
-    Expression \br
-    Expression \terminal{;} SemiExpr\br
-    Binding \terminal{;} SemiExpr
+\begin{bnf}{Expression}
+    AssignExpr \br
+    AssignExpr \terminal{;} Expression\br
+    Binding \terminal{;} Expression
 \end{bnf}
 
 $$ x \mathbin{\tcode{;}} y \rhd \omega \coloneqq y \rhd \otimes \mathrm{discard}(x)$$
