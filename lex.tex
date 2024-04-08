@@ -43,36 +43,37 @@
 \tcode{cmp}       \\
 \tcode{const}     &
 \tcode{deinit}    &
+\tcode{do}        &
 \tcode{else}      &
-\tcode{enum}      &
-\tcode{false}     \\
+\tcode{enum}      \\
+\tcode{false}     &
 \tcode{float}     &
 \tcode{for}       &
 \tcode{if}        &
-\tcode{init}      &
-\tcode{int}       \\
+\tcode{init}      \\
+\tcode{int}       &
 \tcode{let}       &
 \tcode{match}     &
 \tcode{mut}       &
-\tcode{never}     &
-\tcode{nil}       \\
+\tcode{never}     \\
+\tcode{nil}       &
 \tcode{return}    &
 \tcode{self}      &
 \tcode{shl}       &
-\tcode{shl_eq}    &
-\tcode{shr}       \\
+\tcode{shl_eq}    \\
+\tcode{shr}       &
 \tcode{shr_rq}    &
 \tcode{string}    &
 \tcode{then}      &
-\tcode{this}      &
-\tcode{throw}     \\
+\tcode{this}      \\
+\tcode{throw}     &
 \tcode{true}      &
 \tcode{type}      &
 \tcode{typeof}    &
-\tcode{uint}      &
-\tcode{var}       \\
+\tcode{uint}      \\
+\tcode{var}       &
 \tcode{void}      &
-\tcode{while}     &&&\\
+\tcode{while}     &&\\
 \end{floattable}
 
 \pnum
@@ -80,7 +81,11 @@
 
 \begin{floattable}{上下文关键字}{tab:context-keyword}{lllll}
 \topline
-\tcode{then} &&&&\\
+\tcode{didSet}  &
+\tcode{get}     &
+\tcode{set}     &
+\tcode{then}    &
+\tcode{willSet} \\
 \end{floattable}
 
 \rSec1[lex.op]{运算符}
@@ -313,13 +318,14 @@ abc
 \rSec2[literal.symbol]{符号字面量}
 
 \begin{bnf}{SymbolLiteral}
-    \terminal{'} Identifier
+    \terminal{'} Identifier \br
+    \terminal{'(} UnqualID \terminal{)}
 \end{bnf}
 
 \pnum
-符号字面量后跟的标识符可以与关键字相同。
+符号字面量用于标识成员名称，其类型为\tcode{symbol}，值为其标识符或内部ID的值。其内部ID不能为另一个符号字面量。
 
-\rSec2[literal.boolen]{布尔字面量}
+\rSec2[literal.boolean]{布尔字面量}
 
 \begin{bnf}{BooleanLiteral}
     \terminal{true} \br

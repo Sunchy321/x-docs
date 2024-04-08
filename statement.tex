@@ -5,10 +5,15 @@
 
 \begin{bnf}{Statement}
     Block \br
-    BindingStmt \br
-    IfStmt \br
-    SwitchStmt \br
-    AssertStmt
+    BindingStatement \br
+    IfStatement \br
+    MatchStatement \br
+    WhileStatement \br
+    ForStatement \br
+    BreakStatement \br
+    ContinueStatement \br
+    ReturnStatement \br
+    ThrowStatement
 \end{bnf}
 
 \pnum
@@ -30,7 +35,8 @@ if x.filter{ true }
 
 \begin{bnf}{BlockItem}
     Expression \terminal{;}\bnfq \br
-    BlockDecl
+    BlockDecl \br
+    Statement
 \end{bnf}
 
 \pnum
@@ -39,7 +45,7 @@ if x.filter{ true }
 \rSec1[stmt.bind]{绑定语句}
 \indextext{语句!绑定}
 
-\begin{bnf}{BindingStmt}
+\begin{bnf}{BindingStatement}
     Binding \terminal{;}
 \end{bnf}
 
@@ -56,9 +62,7 @@ if x.filter{ true }
 \rSec1[stmt.if]{\tcode{if} 语句}
 \indextext{语句!if}
 
-\begin{bnf}{IfStmt}
-    \terminal{if} Condition \terminal{then} Expression \br
-    \terminal{if} Condition \terminal{then} Expression \terminal{else} Expression \br
+\begin{bnf}{IfStatement}
     \terminal{if} Condition Block \br
     \terminal{if} Condition Block \terminal{else} Block
 \end{bnf}
@@ -69,58 +73,40 @@ if x.filter{ true }
 \end{bnf}
 
 \pnum
-\term{条件}可以为任意对象声明后跟一个表达式或模式匹配。如果条件为表达式$e$\footnote{因为赋值表达式的类型是\tcode{void}，形如\tcode{p = e}的程序文本将始终被看做一个模式匹配而不是赋值表达式。}，那么这个表达式的类型必须实现\tcode{core.Boolean}。条件成立当且仅当$e$求值为真（\ref{core.oolean}）。如果条件是绑定，那条件成立当且仅当绑定成功。该绑定必须可以失败。
+如果条件为表达式$e$\footnote{因为赋值表达式的类型是\tcode{void}，形如\tcode{p = e}的程序文本将始终被看做一个模式匹配而不是赋值表达式。}，那么这个表达式的类型必须实现\tcode{core.Boolean}。条件成立当且仅当$e$求值为真。如果条件是绑定，那条件成立当且仅当绑定成功。该绑定必须可以失败。
 
 \pnum
-将\tcode{if}语句的第一个表达式记作$T$，第二个表达式（如果有）记作$F$。对\tcode{if}语句的求值按以下顺序进行：
-
-\begin{itemize}
-
-\item 如果条件成立，对$T$求值，然后将它的值作为整个语句的值。
-\item 否则，如果存在$F$，那么对它求值，然后将它的值作为整个语句的值。
-\item 否则，整个语句的值为\tcode{()}。
-
-\end{itemize}
-
-只有一个表达式会被求值。整个语句的类型是$T$和$F$的公共类型（如果$F$不存在的话视为\tcode{void}）。
+如果\tcode{if}语句的条件成立，执行第一个子块。否则，若有\tcode{else}子块，执行\tcode{else}子块。
 
 \rSec1[stmt.match]{\tcode{match} 语句}
 \indextext{语句!match}
 
-\begin{bnf}{MatchStmt}
+\begin{bnf}{MatchStatement}
     \terminal{match} Expression MatchBlock
 \end{bnf}
 
 \begin{bnf}{MatchBlock}
-    \terminal{\{} BlockItem\bnfs MatchItem\bnfs \terminal{\}}
+    \terminal{\{} BlockItem\bnfs MatchItem\bnfp \terminal{\}}
 \end{bnf}
 
 \begin{bnf}{MatchItem}
-    Matcher Expression\bnfp
-\end{bnf}
-
-\begin{bnf}{Matcher}
-    Pattern \terminal{->}
+    Pattern \terminal{->} Statement
 \end{bnf}
 
 \pnum
-\term{\tcode{match}语句}对其后跟的表达式进行模式匹配。整个语句的类型为每个匹配项表达式类型的公共类型。
-
-\pnum
+\term{\tcode{match}语句}对其后跟的表达式进行模式匹配。
 \tcode{match}语句的各项中的模式必须覆盖被匹配表达式的所有可能值，否则这是一个编译错误。
-
-\pnum
 对\tcode{match}语句的求值将按如下顺序进行：
 
 \begin{itemize}
     \item 如果语句匹配块之前有项，执行这些项。他们的作用域是整个块。
-    \item 按出现顺序对每个项进行匹配。如果某个项的模式匹配成功，则对其后的表达式进行求值，将其作为整个match表达式的值。所有其他项的表达式都不会进行求值。
+    \item 按出现顺序对每个项进行匹配。如果某个项的模式匹配成功，则执行其后的语句。所有其他项都不会进行求值。
 \end{itemize}
 
 \rSec1[stmt.while]{\tcode{while} 语句}
 \indextext{语句!while}
 
-\begin{bnf}{WhileStmt}
+\begin{bnf}{WhileStatement}
     \terminal{while} Expression\bnfq Block
 \end{bnf}
 
@@ -133,36 +119,44 @@ if x.filter{ true }
 \rSec1[stmt.for]{\tcode{for}语句}
 \indextext{语句!for}
 
-\begin{bnf}{ForStmt}
+\begin{bnf}{ForStatement}
     \terminal{for} Pattern \terminal{:} Expression Block
 \end{bnf}
 
 \pnum
-\term{\tcode{for}语句}进行明确的范围循环。形如$\tcode{for}\ p\ \tcode{:}\ e\ B$的\tcode{for}语句需满足：$e$实现了\tcode{core.Sequence}；$\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译错误。$p$中注入的变量在整个\tcode{for}语句的范围内生效。整个语句的类型为\tcode{void}。
+\term{\tcode{for}语句}进行明确的范围循环。形如$\tcode{for}\ p\ \tcode{:}\ e\ B$的\tcode{for}语句需满足：$e$实现了\tcode{core.Sequence}且
+$\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译错误。$p$中注入的变量在整个\tcode{for}语句的范围内生效。整个语句的类型为\tcode{void}。
 
 \rSec1[stmt.control]{控制语句}
 \indextext{语句!控制}
 
-\begin{bnf}{BreakStmt}
+\begin{bnf}{BreakStatement}
     \terminal{break} \terminal{;}
 \end{bnf}
 
-\begin{bnf}{ContinueStmt}
+\begin{bnf}{ContinueStatement}
     \terminal{continue} \terminal{;}
 \end{bnf}
 
-\begin{bnf}{ReturnStmt}
+\begin{bnf}{ReturnStatement}
     \terminal{return} Expression\bnfq \terminal{;}
 \end{bnf}
 
-\pnum
-控制语句包括\tcode{break}语句、\tcode{continue}语句和\tcode{return}语句。
+\begin{bnf}{ThrowStatement}
+    \terminal{throw} Expression\bnfq \terminal{;}
+\end{bnf}
 
 \pnum
-\tcode{break}语句只能在\tcode{while}或\tcode{for}语句中使用。它终止最内层的循环语句。
+控制语句包括\tcode{break}语句、\tcode{continue}语句、\tcode{return}语句和\tcode{throw}语句。
 
 \pnum
-\tcode{continue}语句只能在\tcode{while}或\tcode{for}语句中使用。它终止最内侧循环语句的本次循环。
+\tcode{break}语句只能在\tcode{while}或\tcode{for}语句中使用。它终止最内层的循环语句，将控制流移动到该语句之后。
 
 \pnum
-\tcode{return}语句只能在函数块中使用。它中止函数块的执行，并将后跟的表达式作为整个函数的返回值。如果表达式被省略，则等价于\tcode{()}。
+\tcode{continue}语句只能在\tcode{while}或\tcode{for}语句中使用。它终止最内侧循环语句的本次循环。将控制流移动到该语句的下一次循环开始。
+
+\pnum
+\tcode{return}语句只能在函数作用域（\ref{scope.func}）中使用。它中止当前函数的执行，并将后跟的表达式作为整个函数的返回值。如果表达式被省略，则等价于\tcode{()}。
+
+\pnum
+\tcode{throw}语句只能在函数作用域中使用。它终止当前函数的执行，并将后跟的表达式作为异常抛出。如果表达式被省略，除非语句当前处于\tcode{catch}块中，此时将会重新抛出原异常；否则这是一个编译错误。

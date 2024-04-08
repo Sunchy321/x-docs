@@ -64,17 +64,20 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \indextext{表达式!基本}
 
 \begin{bnf}{PrimaryExpr}
+    \terminal{(} Expression \terminal{)} \br
     LiteralExpression \br
     Identifier \br
+    \terminal{this} \br
+    \terminal{\$} \br
+    StmtExpr \br
     LambdaParameter \br
-    \terminal{(} Expression \terminal{)} \br
-    LambdaExpr
+    LambdaExpr \br
+    DoExpr
+    % NameofExpr \br TODO: nameof 宏
 \end{bnf}
 
-$$ \tcode{(}e\tcode{)} \coloneqq e $$
-
 \pnum
-括号包起的表达式与其内部的表达式完全等价。
+表达式$\tcode{(}e\tcode{)}$等价于$e$，括号只作分组用途。\enternote 注意括号表达式不是一元元组。\exitnote
 
 \rSec2[expr.lit]{字面量表达式}
 \indextext{表达式!字面量}
@@ -125,6 +128,7 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
 
 \begin{bnf}{ObjectItem}
     Identifier \terminal{:} Expression \br
+    Identifier \br
     \terminal{...} Expression
 \end{bnf}
 
@@ -158,7 +162,57 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
 对象字面量$\tcode{\{}k_1\tcode{:}e_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}e_n\tcode{\}}$表示一个显式写出其各元素的对象值。其类型为$\tcode{\{}k_1\tcode{:}T_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}T_n\tcode{\}}$，其中$T_i$为$e_i$的类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各成员以相同标签显式插入在该位置。$e$必须是对象类型。\enternote 对象字面量必须至少包含一个键值对。\tcode{\{\}}将被解析为一个块。 \exitnote
 
 \pnum
+对象字面量$\tcode{\{}e\tcode{\}}$是$\tcode{\{}e\tcode{:}e\tcode{\}}$的简写。$e$必须是一个标识符。
+
+\pnum
 字典字面量$\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{|\}}$表示一个显式写出其各元素的字典值。其类型为$T\tcode{[}K\tcode{]}$，其中$T$为各$v_i$的类型，$K$为各$k_i$的公共类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素对显式插入在该位置。$e$必须是字典类型。如果字典字面量不包含任何类型，则$T$和$K$是待推导的类型。
+
+\rSec2[expr.this]{\tcode{this}}
+\indextext{表达式!this}
+
+\pnum
+表达式\tcode{this}在类方法或扩展方法中表示当前方法的调用者。如果没有在参数中显式指定\tcode{this}的类型，则其类型为\tcode{self}。
+
+\rSec2[expr.dollar]{\tcode{\$}}
+\indextext{表达式!\$}
+
+\pnum
+表达式\tcode{\$}只能在序列作用域（\ref{scope.sequence}）中使用。如果当前序列为$s$，则\tcode{\$}等价于$s\tcode{.size}$。
+该$s$必须实现了\tcode{core.Sequence}。在其他位置使用\tcode{\$}是一个编译错误。
+
+\rSec2[expr.stmt]{语句表达式}
+\indextext{表达式!语句}
+
+\begin{bnf}{StmtExpr}
+    Block \br
+    IfExpr \br
+    MatchStatement \br
+    \terminal{break} \br
+    \terminal{continue} \br
+    \terminal{return} Expression\bnfq \br
+    \terminal{throw} Expression\bnfq
+\end{bnf}
+
+\begin{bnf}{IfExpr}
+    IfStatement \br
+    \terminal{if} Condition \terminal{then} Expression \br
+    \terminal{if} Condition \terminal{then} Expression \terminal{else} Expression
+\end{bnf}
+
+\pnum
+部分语句也有对应的表达式。
+
+\pnum
+块表达式的值是其末尾表达式的值。如果该表达式被省略，其类型为\tcode{void}。
+
+\pnum
+\tcode{if}表达式的类型是其两个分支表达式的公共类型。如果\tcode{else}分支被省略，则视为\tcode{void}。其值为最终执行的那个分支的值。只有一个分支会被求值。
+
+\pnum
+\tcode{match}表达式的类型为其所有分支的公共类型，值为最终匹配成功的分支的值。只有一个分支会被求值。
+
+\pnum
+\tcode{break}、\tcode{continue}、\tcode{return}和\tcode{throw}表达式的语义与其对应的语句的语义相同，类型为\tcode{never}。
 
 \rSec2[expr.lambda]{Lambda表达式}
 \indextext{表达式!Lambda}
@@ -175,7 +229,7 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
     Expression
 \end{bnf}
 
-\rSec2[expr.lambda-param]{Lambda参数}
+\rSec3[expr.lambda.param]{Lambda参数}
 
 \begin{bnf}{LambdaParameter}
     \terminal{\$} Digit\bnfp \br
@@ -183,42 +237,212 @@ $$ \tcode{(}e\tcode{)} \coloneqq e $$
 \end{bnf}
 
 \pnum
-Lambda参数是一个特殊的标识符，用于在Lambda表达式中引用参数。Lambda参数的类型是待推导的。
+Lambda参数只能在lambda作用域（\ref{scope.lambda}）中使用，用于引用匿名参数。其类型是待推导的。
+不在lambda作用域中使用lambda参数，或在显式指定参数的lambda表达式中使用lambda参数，是一个编译错误。
+
+\pnum
+$\tcode{\$}$后跟数字$i$指代第$i$个参数。$\tcode{\$}$后跟标识符$n$指代具名参数$n$。
+
+\rSec3[expr.do]{\tcode{do}表达式}
+\indextext{表达式!do}
+
+\begin{bnf}{DoExpr}
+    \terminal{do} Block \br
+    \terminal{do} \terminal{!} Block
+\end{bnf}
+
+\pnum
+\tcode{do}后跟一个块创建一个没有显式指定参数的lambda表达式。\tcode{do!}后跟一个块创建一个无参的lambda表达式并立即调用它，将其值作为整个表达式的值。
+
+\enterexample
+\begin{codeblock}
+let arr = [1, 2, 3];
+
+let first1 = arr.first { $0 > 2 }; // 获取第一个满足条件的元素
+
+let firstFinder = do {
+    for let v : $0 {
+        if v > 2 { return v; }
+    }
+    nil
+};
+
+let first2 = firstFinder(arr); // 与上面等价
+
+let first3 = do! {
+    for let v : arr {
+        if v > 2 { return v; }
+    }
+    nil
+}; // 与上面等价
+
+\end{codeblock}
+\exitexample
 
 \rSec1[expr.suffix]{后缀运算符}
 \indextext{运算符!后缀}
 
 \begin{bnf}{SuffixExpr}
     PrimaryExpr \br
-    SuffixExpr \terminal{[} ExprList\bnfq \terminal{]} \br
-    SuffixExpr \terminal{(} ExprList\bnfq \terminal{)} Block\bnfs \br
-    SuffixExpr \terminal{.} Identifier \br
-    SuffixExpr \terminal{.} IntegerLiteral \br
-    SuffixExpr \terminal{.} \terminal{init} \br
-    SuffixExpr \terminal{.} \terminal{deinit} \br
-    SuffixExpr \terminal{.} \terminal{await} \br
-    SuffixExpr \terminal{as} Type \br
-    SuffixExpr \terminal{+?} \br
-    SuffixExpr \terminal{-?}
+    IndexExpr \br
+    FuncCallExpr \br
+    MemberAccessExpr \br
+    AwaitExpr \br
+    NullCheckExpr \br
+    PrevNextExpr
 \end{bnf}
 
 \rSec2[expr.sub]{下标运算符}
 \indextext{运算符!下标}
 
-\pnum
+\begin{bnf}{IndexExpr}
+    SuffixExpr \terminal{[} ExprList\bnfq \terminal{]}
+\end{bnf}
 
+\pnum
+下标运算符用于对数组进行访问。$a\tcode{[}i\tcode{]}$表示数组$a$的第$i$个元素。用户自定义的下标运算符可以接受多于一个参数。
+
+\rSec2[expr.call]{函数调用运算符}
+\indextext{运算符!函数调用}
+
+\begin{bnf}{FuncCallExpr}
+    SuffixExpr \terminal{(} Arguments\bnfq \terminal{)} Block\bnfs \br
+    SuffixExpr Block
+\end{bnf}
+
+\begin{bnf}{Arguments}
+    UnnamedArgs \br
+    NamedArgs \br
+    UnnamedArgs \terminal{,} NamedArgs
+\end{bnf}
+
+\begin{bnf}{UnnamedArgs}
+    Expression \br
+    UnnamedArgs \terminal{,} Expression
+\end{bnf}
+
+\begin{bnf}{NamedArgs}
+    Identifier \terminal{:} Expression \br
+    NamedArgs \terminal{,} Identifier \terminal{:} Expression
+\end{bnf}
+
+\pnum
+函数调用运算符用于调用函数。括号内的项作为参数传递给函数。
+
+\pnum
+如果函数调用运算符的左操作数形如$o\tcode{.}f$，其中$f$是一个名称且不是$o$的成员名称，则这称作\term{方法调用}。此时，$o$将作为$f$的第一个位置参数传递给函数$f$。
+
+\pnum
+函数调用运算符可以后跟一个块。这个块将作为一个匿名lambda块，创建一个lambda表达式并作为函数的最后一个位置参数传递给函数。若此时函数没有任何其他参数，则函数调用的小括号可以省略。
+
+\rSec2[expr.member]{成员访问运算符}
+\indextext{运算符!成员访问}
+
+\begin{bnf}{MemberAccessExpr}
+    SuffixExpr \terminal{.} UnqualID \br
+    SuffixExpr \terminal{.} IntegerLiteral \br
+    SuffixExpr \terminal{.} \terminal{(} Expression \terminal{)}
+\end{bnf}
+
+\pnum
+成员访问运算符用于访问对象的成员。$o\tcode{.}m$表示对象$o$的成员$m$。如果$o$没有成员$m$，若它后跟一个函数调用运算符，则作为方法调用处理；否则这是一个编译错误。
+
+\pnum
+$o\tcode{.}i$用于元组成员的访问，表示$o$的第$i$个元素。$i$必须是一个不包含前缀或后缀的十进制字面量。如果$i$大于元组的长度，这是一个编译错误。
+
+\pnum
+$o\tcode{.(}e\tcode{)}$首先对$e$求值。如果得到一个\tcode{symbol}类型的值，则对$o$进行成员访问。如果得到一个整数类型的值，则对$o$进行元组成员访问。否则，这是一个编译错误。$e$必须是常量表达式。
+
+\rSec2[expr.await]{\tcode{await}运算符}
+\indextext{运算符!await}
+
+\begin{bnf}{AwaitExpr}
+    SuffixExpr \terminal{.} \terminal{await}
+\end{bnf}
+
+\pnum
+\tcode{await}运算符用于等待一个异步表达式的结果。$e\tcode{.await}$挂起当前计算，直到$e$的值可用。如果$e$的类型是$\tcode{core.Future<}T\tcode{>}$，则$e\tcode{.await}$的类型是$T$。
+
+\rSec2[expr.null]{空值检测运算符}
+\indextext{运算符!空值检测}
+
+\begin{bnf}{NullCheckExpr}
+    SuffixExpr \terminal{?} \br
+    SuffixExpr \terminal{!}
+\end{bnf}
+
+\pnum
+$e\tcode{?}$对$e$进行空值检测。如果$e$的值不为\tcode{nil}，则$e\tcode{?}$的值为$e$；否则，该表达式直到空值检测运算符为止的整个表达式的值为\tcode{nil}。$e$的类型必须是$T\tcode{?}$。即使空值检测运算符检测为空，表达式的其它部分仍然会被求值。
+
+\enterexample
+\begin{codeblock}
+let a: int? = nil;
+
+a + 1 // 编译错误，不存在接受\tcode{int?}和\tcode{int}的加法运算符
+a? + 1 // \tcode{nil}
+(a + 1)? // \tcode{nil}，多余的运算符
+a? + 1 ?? 1 // $1$，\tcode{?}不会越过\tcode{??}运算符
+(a? + 1) ?? 1 // 同上，但是更清晰
+\end{codeblock}
+\exitexample
+
+\pnum
+$e\tcode{!}$与$e\tcode{?}$类似，但它在$e$为\tcode{nil}的时候抛出\tcode{core.Exception.checkedNil}。
+
+\pnum
+如果空值检测运算符的操作数类型是$T\tcode{?}$，则整个表达式的类型为$T$。
+如果空值检测运算符的左操作数不是可空类型，则空值检测运算符将被忽略。实现可以为此提出一个警告。
+
+\rSec2[expr.prev-next]{前驱后继运算符}
+\indextext{运算符!前驱后继}
+
+\begin{bnf}{PrevNextExpr}
+    SuffixExpr \terminal{+!} \br
+    SuffixExpr \terminal{-!}
+\end{bnf}
+
+\pnum
+$e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类型是算数类型，$e\tcode{+!}$等价于$e+1$，$e\tcode{-!}$等价于$e-1$。
 
 \rSec1[expr.prefix]{前缀运算符}
 \indextext{运算符!前缀}
 
 \begin{bnf}{PrefixExpr}
     SuffixExpr \br
+    MathPrefixExpr \br
+    NegationExpr
+\end{bnf}
+
+\rSec2[expr.prefix-math]{数学前缀运算符}
+\indextext{运算符!数学前缀}
+
+\begin{bnf}{MathPrefixExpr}
     \terminal{+} PrefixExpr \br
     \terminal{-} PrefixExpr
 \end{bnf}
 
 \pnum
 前缀运算符\tcode{+}和\ \tcode{-}\ 分别表示正号和负号。其中\tcode{+}的值为其操作数的值，而\tcode{-}的值为其相反数。操作数类型必须为算术类型。
+
+\rSec2[expr.negation]{逻辑否运算符}
+\indextext{运算符!逻辑否}
+
+\begin{bnf}{NegationExpr}
+    \terminal{!} PrefixExpr
+\end{bnf}
+
+\pnum
+逻辑否运算符\tcode{!}用于对布尔值取反。如果操作数为\tcode{true}，则结果为\tcode{false}；如果操作数为\tcode{false}，则结果为\tcode{true}。
+
+\rSec2[expr.bitwise]{位取反运算符}
+\indextext{运算符!位取反}
+
+\begin{bnf}{BitwiseNegationExpr}
+    \terminal{'\~} PrefixExpr
+\end{bnf}
+
+\pnum
+位取反运算符\tcode{'\~}进行按位取反。操作数的类型必须是定长整数类型。
 
 \rSec1[expr.mul]{乘法运算符}
 \indextext{运算符!乘法}
@@ -239,7 +463,7 @@ Lambda参数是一个特殊的标识符，用于在Lambda表达式中引用参�
 \begin{bnf}{AddExpr}
     MulExpr \br
     AddExpr \terminal{+} MulExpr \br
-    AddExpr \terminal{-} MulExpr \br
+    AddExpr \terminal{-} MulExpr
 \end{bnf}
 
 \pnum
@@ -270,13 +494,27 @@ Lambda参数是一个特殊的标识符，用于在Lambda表达式中引用参�
 \pnum
 运算符\tcode{'\&}、\tcode{'\^{}}和\tcode{'|}分别表示按位与、按位异或和按位或。其操作数必须为定长整数类型。在同一个表达式中混合使用\tcode{'\&}、\tcode{'\^{}}和\tcode{'|}是一个编译错误。
 
+\rSec1[expr.null-coal]{空值合并运算符}
+\indextext{运算符!空值合并}
+
+\begin{bnf}{NullCoalExpr}
+    BitwiseExpr \br
+    NullCoalExpr \terminal{??} BitwiseExpr
+\end{bnf}
+
+\pnum
+$a\tcode{??}b$首先对$a$求值，如果其结果不是\tcode{nil}，则表达式的值为$a$，且$b$不会被求值；否则表达式的值为$b$。
+
+\pnum
+如果$a$的类型不是可空类型，则这是一个编译错误。如果$a$的类型为$A\tcode{?}$，$b$的类型为$B$，则表达式的类型为$A$和$B$的公共类型。
+
 \rSec1[expr.range]{区间运算符}
 \indextext{运算符!区间}
 
 \begin{bnf}{RangeExpr}
-    BitwiseExpr \br
-    BitwiseExpr \terminal{..} BitwiseExpr
-    BitwiseExpr \terminal{..=} BitwiseExpr
+    NullCoalExpr \br
+    NullCoalExpr \terminal{..} NullCoalExpr
+    NullCoalExpr \terminal{..=} NullCoalExpr
 \end{bnf}
 
 \pnum
@@ -301,23 +539,45 @@ Lambda参数是一个特殊的标识符，用于在Lambda表达式中引用参�
 对第一种情况，结果等于将两个字符串左右连接得到的结果；对第二种情况，$x\ \tcode{\~}\ y$等于$\tcode{[}x\tcode{,}\ \tcode{...}y\tcode{]}$或$\tcode{[...}x\tcode{,}\ y\tcode{]}$，取决于哪个操作数是序列；对第三种情况，$x\ \tcode{\~}\ y$等于$\tcode{[...}x\tcode{,}\ \tcode{...}y\tcode{]}$。
 
 \rSec1[expr.cmp-in]{比较运算符和包含运算符}
+
+\begin{bnf}{BooleanExpr}
+    RangeExpr \br
+    CompareExpr \br
+    IncludeExpr
+\end{bnf}
+
+\pnum
+本节中的运算符的结果都是\tcode{bool}。
+
+\rSec2[expr.compare]{比较运算符}
 \indextext{运算符!比较}
-\indextext{运算符!包含}
 
 \begin{bnf}{CompareExpr}
-    RangeExpr \br
-    CompareExpr \terminal{==} RangeExpr \br
-    CompareExpr \terminal{!=} RangeExpr \br
-    CompareExpr \terminal{<} RangeExpr \br
-    CompareExpr \terminal{!<} RangeExpr \br
-    CompareExpr \terminal{>} RangeExpr \br
-    CompareExpr \terminal{!>} RangeExpr \br
-    CompareExpr \terminal{<=} RangeExpr \br
-    CompareExpr \terminal{>=} RangeExpr \br
-    CompareExpr \terminal{<>} RangeExpr \br
-    CompareExpr \terminal{cmp} RangeExpr \br
-    CompareExpr \terminal{in} RangeExpr \br
-    CompareExpr \terminal{!} \terminal{in} RangeExpr
+    RangeExpr \terminal{!=} RangeExpr \br
+    RangeExpr \terminal{!<} RangeExpr \br
+    RangeExpr \terminal{!>} RangeExpr \br
+    RangeExpr \terminal{<>} RangeExpr \br
+    RangeExpr \terminal{cmp} RangeExpr \br
+    LessChainExpr \br
+    GreaterChainExpr \br
+\end{bnf}
+
+\begin{bnf}{LessChainExpr}
+    RangeExpr LessChainOperator RangeExpr \br
+    LessChainExpr LessChainOperator RangeExpr \br
+\end{bnf}
+
+\begin{bnf}{LessChainOperator}[\oneof]
+    < == <=
+\end{bnf}
+
+\begin{bnf}{GreaterChainExpr}
+    RangeExpr GreaterChainOperator RangeExpr \br
+    GreaterChainExpr GreaterChainOperator RangeExpr
+\end{bnf}
+
+\begin{bnf}{GreaterChainOperator}[\oneof]
+    > == >=
 \end{bnf}
 
 \begin{align*}
@@ -341,13 +601,24 @@ $a\ \tcode{cmp}\ b$比较两个表达式，其结果类型为\tcode{core.Order}�
 \pnum
 $a\ \tcode{in}\ b$检测$a$是否在$b$中。$a\ \tcode{!in}\ b$检测$a$是否不在$b$中。$b$必须实现\tcode{core.Sequence}。
 
+\rSec2[expr.include]{包含运算符}
+\indextext{运算符!包含}
+
+\begin{bnf}{IncludeExpr}
+    RangeExpr \terminal{in} RangeExpr \br
+    RangeExpr \terminal{!} \terminal{in} RangeExpr
+\end{bnf}
+
+\pnum
+$a\ \tcode{in}\ b$检测$a$是否在$b$中。$a\ \tcode{!in}\ b$检测$a$是否不在$b$中。$b$必须实现\tcode{core.Sequence}。
+
 \rSec1[expr.logic]{逻辑运算符}
 \indextext{运算符!逻辑}
 
 \begin{bnf}{LogicExpr}
-    CompareExpr \br
-    LogicExpr \terminal{\&} CompareExpr \br
-    LogicExpr \terminal{|} CompareExpr
+    BooleanExpr \br
+    LogicExpr \terminal{\&} BooleanExpr \br
+    LogicExpr \terminal{|} BooleanExpr
 \end{bnf}
 
 \pnum
@@ -369,6 +640,7 @@ $a\ \tcode{in}\ b$检测$a$是否在$b$中。$a\ \tcode{!in}\ b$检测$a$是否�
     SuffixExpr \terminal{'\&=} LogicExpr \br
     SuffixExpr \terminal{'\^{}=} LogicExpr \br
     SuffixExpr \terminal{'|=} LogicExpr \br
+    SuffixExpr \terminal{??=} LogicExpr \br
     SuffixExpr \terminal{++} \br
     SuffixExpr \terminal{--} \br
     SuffixExpr \terminal{<\~} LogicExpr \br
@@ -379,14 +651,14 @@ $a\ \tcode{in}\ b$检测$a$是否在$b$中。$a\ \tcode{!in}\ b$检测$a$是否�
 赋值表达式的结果类型是\tcode{void}。
 
 \pnum
-\tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是可变的，且右操作数必须能隐式转换到左操作数。
+\tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是\tcode{mut}的，且右操作数必须能隐式转换到左操作数。
 
 \pnum
 复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\^{}=}和\tcode{'|=}分别表示加、减、乘、除、取余、左移、右移、按位与、按位异或和按位或赋值。
 对这些运算符而言，$a\ op\tcode{=}\ b$或$a\ op\tcode{_eq}\ b$等价于$a\ \tcode{=}\ a\ op\ b$，但$a$只被求值一次。
 
 \pnum
-自增运算符$e\tcode{++}$等价于$e\ \tcode{=}\ e\tcode{+?}$，自减运算符$e\tcode{--}$等价于$e\ \tcode{=}\ e\tcode{-?}$，但$e$只被求值一次。
+自增运算符$e\tcode{++}$等价于$e\ \tcode{=}\ e\tcode{+!}$，自减运算符$e\tcode{--}$等价于$e\ \tcode{=}\ e\tcode{-!}$，但$e$只被求值一次。
 
 \pnum
 追加运算符$e\ \tcode{<\~}\ v$等价于$e\ \tcode{=}\ e\ \tcode{\~}\ v$，$v\ \tcode{\~>}\ e$等价于$e\ \tcode{=}\ v\ \tcode{\~}\ e$，但$e$只被求值一次。

@@ -1,6 +1,7 @@
 %!TEX root = x.tex
 
 \rSec0[class]{类}
+\indextext{类}
 
 \begin{bnf}{ClassDecl}
     ClassQual\bnfs \terminal{class} Identifier ClassBody
@@ -10,5 +11,116 @@
     \terminal{const}
 \end{bnf}
 
+\begin{bnf}{ClassBody}
+    \terminal{\{} ClassMember\bnfs \terminal{\}}
+\end{bnf}
+
+\begin{bnf}{ClassMember}
+    FieldDecl \br
+    PropertyDecl \br
+    FuncDecl \br
+    TypeDecl \br
+    ClassDecl \br
+    EnumDecl \br
+    ConceptDecl
+\end{bnf}
+
 \pnum
 \term{类}描述内部不透明的类型。
+
+\rSec1[class.member]{类字段}
+\indextext{类!字段}
+
+\begin{bnf}{FieldDecl}
+    FieldQual\bnfs BindKeyword Identifier TypeNotation Initializer\bnfq \terminal{;}
+    FieldQual\bnfs BindKeyword Identifier Initializer \terminal{;}
+\end{bnf}
+
+\begin{bnf}{TypeNotation}
+    \terminal{:} Type
+\end{bnf}
+
+\begin{bnf}{Initializer}
+    \terminal{=} Expression
+\end{bnf}
+
+\pnum
+类中的字段表示类的内部状态，其默认访问级别为\tcode{private}。使用\tcode{let}声明的表示不可变字段，使用\tcode{var}声明的表示可变字段。类字段可以显式指定类型，也可以通过初始值推导类型。
+
+\rSec1[class.property]{类属性}
+\indextext{类!属性}
+
+\begin{bnf}{PropertyDecl}
+    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq Initializer\bnfq PropertyBody \terminal{;}
+\end{bnf}
+
+\begin{bnf}{PropertyQual}
+    AccessQual
+\end{bnf}
+
+\begin{bnf}{PropertyBody}
+    \terminal{\{} PropertyMember\bnfp \terminal{\}}
+\end{bnf}
+
+\begin{bnf}{PropertyMember}
+    PropertyQual\bnfs PropertyKeyword PropertyBlockParam\bnfq Block \br
+    PropertyQual\bnfs PropertyKeyword PropertyExprParam\bnfq \terminal{=>} Expression \terminal{,}\bnfq \br
+    PropertyQual\bnfs PropertyKeyword
+\end{bnf}
+
+\begin{bnf}{PropertyKeyword}[\oneof]
+    \terminal{get set willSet didSet}
+\end{bnf}
+
+\begin{bnf}{PropertyBlockParam}
+    Identifier \br
+    Identifier \terminal{,} Identifier
+\end{bnf}
+
+\begin{bnf}{PropertyExprParam}
+    Identifier \br
+    \terminal{(} Identifier \terminal{,} Identifier \terminal{)}
+\end{bnf}
+
+\pnum
+类中还可以声明\term{属性}。属性是类对外暴露的接口，其默认访问级别为\tcode{public}。属性的定义至少需要包含一个访问器。
+
+\pnum
+属性的访问器可以以上下文关键字\tcode{get}、\tcode{set}、\tcode{willSet}或\tcode{didSet}开始。
+\tcode{get}访问器不接受任何参数。读取该属性的值将会调用它的\tcode{get}访问器。
+\tcode{set}访问器接受一个参数，其类型为该属性的类型。\tcode{willSet}和\tcode{didSet}访问器接受两个参数，依次为旧值和新值。
+在设置该属性的值时，将会依次调用\tcode{willSet}、\tcode{set}和\tcode{didSet}访问器。
+
+\pnum
+使用\tcode{let}声明的属性不能包含\tcode{set}、\tcode{willSet}和\tcode{didSet}访问器。
+
+\pnum
+如果属性$p$不包含\tcode{get}和\tcode{set}访问器，则视作该类具有一个同名的字段，且具有访问器$\tcode{get => this.}p$。如果该属性以\tcode{var}声明，则还视为该属性具有访问器$\tcode{set }v\tcode{ => this.}p\tcode{ = }v$，其中$v$是一个不与其他标识符冲突的标识符。
+
+
+\rSec1[method]{方法}
+\indextext{方法}
+
+\pnum
+类中的函数声明称作\term{方法}。方法隐含了一个\tcode{this}参数，其为调用该方法的对象。
+
+\enterexample
+\begin{codeblock}
+class A {
+    let x: int;
+    func set(x: int) {
+        std.io.print(this.x); // 无需显式this参数
+    }
+};
+
+func set(this: A, x: int) {
+    std.io.print(this.x); // 与上面相同
+}
+
+\end{codeblock}
+\exitexample
+
+\rSec2[method.lookup]{方法查找}
+\indextext{方法!查找}
+
+\pnum

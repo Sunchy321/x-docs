@@ -4,7 +4,7 @@
 \indextext{模式匹配}
 
 \begin{bnf}{Pattern}
-    PatternBody PatternAssterion\bnfs
+    PatternBody PatternAssertion\bnfs
 \end{bnf}
 
 \begin{bnf}{PatternBody}
@@ -16,7 +16,7 @@
     ObjectPattern
 \end{bnf}
 
-\begin{bnf}{PatternAssterion}
+\begin{bnf}{PatternAssertion}
     TypeAssertion \br
     IncludeAssertion \br
     CondAssertion
@@ -76,7 +76,7 @@
     \item 对任意项模式之后的模式，$\mathcal{p}_r$匹配$\mathcal{v}$\tcode{[\$-}$r$\tcode{]}，其中$r$是子模式从后向前数的索引（从0开始）。
 \end{enumerate}
 
-\rSec1[pattern.type]{元组模式}
+\rSec1[pattern.tuple]{元组模式}
 \indextext{模式匹配!元组}
 
 \begin{bnf}{TuplePattern}
@@ -111,12 +111,16 @@
 \indextext{模式匹配!绑定}
 
 \begin{bnf}{BindPattern}
-    \terminal{var} PatternBind\br
-    \terminal{let} PatternBind
+    BindKeyword PatternBind
+\end{bnf}
+
+\begin{bnf}{BindKeyword}
+    \terminal{var} \br
+    \terminal{let}
 \end{bnf}
 
 \begin{bnf}{PatternBind}
-    Identifier PatternAssterion \br
+    Identifier PatternAssertion \br
     ArrayPatternBind \br
     TuplePatternBind \br
     ObjectPatternBind

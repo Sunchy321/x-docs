@@ -11,10 +11,10 @@
     CompType
 \end{bnf}
 
-$$ \mathcal{V} = \{ \langle v, T \rangle \mid T \in \mathcal{T}, v \in T \} $$
+$$ \mathcal{V} = \{ \langle v, T, Q \rangle \mid T \in \mathcal{T}, v \in T, Q \subset \mathcal{Q} \} $$
 
 \pnum
-\term{类型}是一个集合。\term{值}是类型和这个类型的成员的元组。$T$称为值$v$的\term{类型}。
+\term{类型}是一个集合。\term{值}是类型、类型的成员和修饰符集合的元组。$T$称为值$v$的\term{类型}。
 
 \rSec2[type.funda]{基本类型}
 \indextext{类型!基本类型}
@@ -186,6 +186,9 @@ $$ \otimes: \mathcal{T} \times \mathcal{T} \rightarrow \mathcal{T} \cup \{ \ast 
 
 \rSec1[qualifier]{修饰符}
 \indextext{修饰符}
+
+\pnum
+值除了总是具有类型之外，还可能带有一个或数个修饰符。修饰符指示了值的其他属性。
 
 \rSec2[qual.mut]{\tcode{mut}}
 \indextext{修饰符!mut}

@@ -9,42 +9,89 @@
 \indextext{作用域}
 
 \pnum
-\term{作用域}是一段程序文本。当一个名称的完整声明结束后，将这个名称\term{插入}到最小的、它\term{具有}的作用域之中。这意味着，若无特别说明，在这之后到那个作用域结束之前，这个名称可以引用被声明的实体。
-
-\rSec2[scope.stmt]{语句作用域}
-\indextext{作用域!语句}
+\term{作用域}是一段程序文本。特定的语言功能可能只能在特定的作用域中生效。不同的作用域具有不同的类型，分别被不同的语言功能所引用。作用域可以互相包含。
 
 \pnum
-每一个语句都是作用域。变量、函数和类型具有语句作用域。
+\term{全局作用域}是整个程序文本代表的作用域，包含所有其他作用域。
 
-\rSec2[scope.module]{模块作用域}
-\indextext{作用域!模块}
+\rSec2[scope.decl]{声明作用域}
+\indextext{作用域!声明}
 
-\rSec2[scope.type]{类型作用域}
-\indextext{作用域!类型}
+\pnum
+声明作用域限制声明的范围。一个声明或绑定将会被插入到最近的声明作用域中，并且在该作用域内可以使用该名称引用被声明的实体。
+在离开该作用域之后，被声明的实体将不能被使用该方式引用。
 
-\rSec2[scope.enum]{枚举作用域}
-\indextext{作用域!枚举}
+\pnum
+所有的语句都具有声明作用域。全局作用域也是声明作用域。
+
+\rSec2[scope.func]{函数作用域}
+\indextext{作用域!函数}
+
+\pnum
+函数作用域限制\tcode{return}语句的使用。参见~\ref{stmt.control}。
+
+\pnum
+函数定义的块、lambda表达式的块或表达式、\tcode{do}表达式的块和函数调用表达式的lambda块具有函数作用域。
 
 \rSec2[scope.lambda]{Lambda 作用域}
 \indextext{作用域!lambda}
 
 \pnum
-只有 lambda 参数具有 lambda 作用域。Lambda 作用域是 lambda 表达式（\ref{expr.lambda}）的 \grammarterm{LambdaBody} 部分；或者函数调用运算符（\ref{expr.call}）的 \grammarterm{Block} 部分。
+Lambda作用域限制lambda参数的使用。参见~\ref{expr.lambda.param}。
 
 \pnum
-Lambda 参数在 lambda 作用域的任意位置都可以使用，但只有在 lambda 没有形参声明的时候才能使用。形如 \texttt{\$$n$} 的 lambda 参数指代该 lambda 的第 $n$ 个未命名形参；形如 \texttt{\$$id$} 的 lambda 参数指代该 lambda 的名称为 $id$ 的命名形参。
+lambda表达式的块或表达式以及函数调用表达式的lambda块具有lambda作用域。
 
 \rSec2[scope.sequence]{序列作用域}
 \indextext{作用域!序列}
 
 \pnum
-只有 \tcode{\$} 具有序列作用域。序列作用域是具有形式 \tcode{r[...]} 或 \tcode{r(...)} 或 \tcode{r.m(...)} 的 \tcode{...} 部分，其中 \tcode{r} 实现了 \tcode{core.Sequence}。
+序列作用域限制\tcode{\$}的使用，参见~\ref{expr.dollar}。序列作用域有一个关联的当前序列（下文记作$s$），无论该$s$是否实现\tcode{core.Sequence}。
 
 \pnum
-在序列作用域中，\tcode{\$} 在任意位置都可以使用并且等价于 \tcode{r.Size}。
+下标运算符$s\tcode{[}\ldots\tcode{]}$的两个方括号之间具有序列作用域。其当前序列为$s$。
 
-\rSec1[name.lookup]{名称查找}
+\pnum
+函数调用表达式$s\tcode{(}\ldots\tcode{)}$的括号之间具有序列作用域。如果$s$形如$o\tcode{.}f$，且$f$是一个方法，则其当前序列为$o$，否则当前序列为$s$。\enternote 此处只能进行一次拆分，即$a\tcode{.}b\tcode{.}c$的当前序列不可能为$a$。\exitnote
+
+\pnum
+如果函数调用表达式带有一个lambda块，则这整个块也具有序列作用域，其当前序列确定方法同上。
+
+\enterexample
+
+\begin{codeblock}
+let a = [1, 2, 3, 4, 5];
+let o = { a };
+func operator()(this: int[]) -> int[] { [] }
+func v(this: int[], index: int) -> int[] { [] }
+
+a[$ - 1] // 当前序列为a
+a($ - 1) // 当前序列为a
+o.a[$ - 1] // 成员访问，当前序列为o.a
+a.v($ - 1) // 方法调用，当前序列为a
+
+\end{codeblock}
+
+\exitexample
+
+\rSec1[name]{名称}
+\indextext{名称}
+
+\begin{bnf}{UnqualID}
+    Identifier \br
+    SymbolLiteral \br
+    \terminal{init} \br
+    \terminal{deinit} \br
+    \terminal{operator} Operator \br
+    \terminal{operator} StringLiteral \br
+    \terminal{operator} \terminal{[]} \br
+    \terminal{operator} \terminal{as}
+\end{bnf}
+
+\pnum
+\term{名称}用于引用程序实体。一个名称可能是一个标识符、\tcode{init}、\tcode{deinit}或一个运算符名称。
+
+\rSec2[name.lookup]{名称查找}
 \indextext{名称查找}
 
 \pnum

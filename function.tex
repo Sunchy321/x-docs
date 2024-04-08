@@ -4,20 +4,12 @@
 \indextext{函数}
 
 \begin{bnf}{FuncDecl}
-    FuncQual\bnfs \terminal{func} FuncName Parameter ReturnType\bnfq Block
+    FuncQual\bnfs \terminal{func} UnqualID Parameter ReturnType\bnfq Block
 \end{bnf}
 
 \begin{bnf}{FuncQual}
     \terminal{async} \br
     \terminal{const}
-\end{bnf}
-
-\begin{bnf}{FuncName}
-    Identifier \br
-    \terminal{init} \br
-    \terminal{deinit} \br
-    \terminal{operator} Operator \br
-    \terminal{operator} StringLiteral
 \end{bnf}
 
 \begin{bnf}{Parameter}
@@ -30,7 +22,7 @@
 \end{bnf}
 
 \begin{bnf}{ParamDecl}
-    ParamName TypeNotation\bnfq
+    ParamName \terminal{:} Type\bnfq
 \end{bnf}
 
 \begin{bnf}{ParamName}
@@ -39,5 +31,5 @@
 \end{bnf}
 
 \begin{bnf}{ReturnType}
-    \terminal{->} TypeNotation
+    \terminal{->} Type
 \end{bnf}

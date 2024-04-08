@@ -199,12 +199,14 @@
 % don't get special treatment.
 
 \lstdefinelanguage{X} {
-    morekeywords={void, never, int, uint, float, bool, string, self, mut, const },
-    morekeywords={if, while, for},
-    morekeywords={var, let},
+    morekeywords={void, never, int, uint, float, bool, string, self, mut, const},
+    morekeywords={if, then, while, for, return, break, continue},
     morekeywords={func, enum, class, type, trait, impl},
-    morekeywords={true, false}
-    morekeywords={operator}
+    morekeywords={do},
+    morekeywords={true, false, nil, this},
+    morekeywords={var, let},
+    morekeywords={operator},
+    morekeywords={partial},
     morecomment=[l]{//},
     morecomment=[s]{/*}{*/}
 }
