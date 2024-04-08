@@ -410,6 +410,7 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \begin{bnf}{PrefixExpr}
     SuffixExpr \br
     MathPrefixExpr \br
+    NotExpr \br
     NegationExpr
 \end{bnf}
 
@@ -422,22 +423,22 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \end{bnf}
 
 \pnum
-前缀运算符\tcode{+}和\ \tcode{-}\ 分别表示正号和负号。其中\tcode{+}的值为其操作数的值，而\tcode{-}的值为其相反数。操作数类型必须为算术类型。
+前缀运算符$\mathbin{\tcode{+}}$和$\mathbin{\tcode{-}}$分别表示正号和负号。其中$\mathbin{\tcode{+}}$的值为其操作数的值，而$\mathbin{\tcode{-}}$的值为其相反数。操作数类型必须为算术类型。
 
-\rSec2[expr.negation]{逻辑否运算符}
+\rSec2[expr.not]{逻辑否运算符}
 \indextext{运算符!逻辑否}
 
-\begin{bnf}{NegationExpr}
+\begin{bnf}{NotExpr}
     \terminal{!} PrefixExpr
 \end{bnf}
 
 \pnum
 逻辑否运算符\tcode{!}用于对布尔值取反。如果操作数为\tcode{true}，则结果为\tcode{false}；如果操作数为\tcode{false}，则结果为\tcode{true}。
 
-\rSec2[expr.bitwise]{位取反运算符}
+\rSec2[expr.neg]{位取反运算符}
 \indextext{运算符!位取反}
 
-\begin{bnf}{BitwiseNegationExpr}
+\begin{bnf}{NegationExpr}
     \terminal{'\~} PrefixExpr
 \end{bnf}
 
@@ -559,16 +560,16 @@ $a\tcode{??}b$首先对$a$求值，如果其结果不是\tcode{nil}，则表达�
     RangeExpr \terminal{<>} RangeExpr \br
     RangeExpr \terminal{cmp} RangeExpr \br
     LessChainExpr \br
-    GreaterChainExpr \br
+    GreaterChainExpr
 \end{bnf}
 
 \begin{bnf}{LessChainExpr}
     RangeExpr LessChainOperator RangeExpr \br
-    LessChainExpr LessChainOperator RangeExpr \br
+    LessChainExpr LessChainOperator RangeExpr
 \end{bnf}
 
 \begin{bnf}{LessChainOperator}[\oneof]
-    < == <=
+    \terminal{< == <=}
 \end{bnf}
 
 \begin{bnf}{GreaterChainExpr}
@@ -577,7 +578,7 @@ $a\tcode{??}b$首先对$a$求值，如果其结果不是\tcode{nil}，则表达�
 \end{bnf}
 
 \begin{bnf}{GreaterChainOperator}[\oneof]
-    > == >=
+    \terminal{> == >=}
 \end{bnf}
 
 \begin{align*}
@@ -597,9 +598,6 @@ $a\ \tcode{cmp}\ b$比较两个表达式，其结果类型为\tcode{core.Order}�
 
 \pnum
 \tcode{<}、\tcode{<=}和\tcode{==}可以连续使用。$a\ \tcode{<}\ b\ \tcode{<=}\ c$等价于$a\ \tcode{<}\ b\ \tcode{\&}\ b\ \tcode{<=}\ c$。\tcode{>}、\tcode{>=}和\tcode{==}也可以用类似方式混合。以其他方式在一个表达式中使用超过一个比较运算符是一个编译错误。
-
-\pnum
-$a\ \tcode{in}\ b$检测$a$是否在$b$中。$a\ \tcode{!in}\ b$检测$a$是否不在$b$中。$b$必须实现\tcode{core.Sequence}。
 
 \rSec2[expr.include]{包含运算符}
 \indextext{运算符!包含}
@@ -654,7 +652,7 @@ $a\ \tcode{in}\ b$检测$a$是否在$b$中。$a\ \tcode{!in}\ b$检测$a$是否�
 \tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是\tcode{mut}的，且右操作数必须能隐式转换到左操作数。
 
 \pnum
-复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\^{}=}和\tcode{'|=}分别表示加、减、乘、除、取余、左移、右移、按位与、按位异或和按位或赋值。
+复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\^{}=}、\tcode{'|=}和\tcode{??=}分别表示加、减、乘、除、取余、左移、右移、按位与、按位异或、按位或和空值合并赋值。
 对这些运算符而言，$a\ op\tcode{=}\ b$或$a\ op\tcode{_eq}\ b$等价于$a\ \tcode{=}\ a\ op\ b$，但$a$只被求值一次。
 
 \pnum

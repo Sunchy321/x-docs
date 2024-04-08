@@ -64,8 +64,8 @@
 
 \begin{bnf}{PropertyMember}
     PropertyQual\bnfs PropertyKeyword PropertyBlockParam\bnfq Block \br
-    PropertyQual\bnfs PropertyKeyword PropertyExprParam\bnfq \terminal{=>} Expression \terminal{,}\bnfq \br
-    PropertyQual\bnfs PropertyKeyword
+    PropertyQual\bnfs PropertyKeyword PropertyExprParam\bnfq \terminal{=>} Expression \terminal{;} \br
+    PropertyQual\bnfs PropertyKeyword \terminal{;}
 \end{bnf}
 
 \begin{bnf}{PropertyKeyword}[\oneof]
@@ -92,11 +92,15 @@
 在设置该属性的值时，将会依次调用\tcode{willSet}、\tcode{set}和\tcode{didSet}访问器。
 
 \pnum
-使用\tcode{let}声明的属性不能包含\tcode{set}、\tcode{willSet}和\tcode{didSet}访问器。
+如果属性$p$的声明中既不包含\tcode{get}也不包含\tcode{set}访问器，则视作该类具有字段$p'$，且具有访问器$\tcode{get}\mathrel{\tcode{=>}}\tcode{this.}p'$。如果该属性以\tcode{var}声明，则还视为该属性具有访问器$\tcode{set }v\tcode{ => this.}p'\tcode{ = }v$，其中$v$是一个不与其他标识符冲突的标识符。
+如果\tcode{get}或\tcode{set}访问器后直接跟分号，则视作以上述方式生成访问器，且另一个对应的访问器若存在则必须采用这种省略方式声明。
 
 \pnum
-如果属性$p$不包含\tcode{get}和\tcode{set}访问器，则视作该类具有一个同名的字段，且具有访问器$\tcode{get => this.}p$。如果该属性以\tcode{var}声明，则还视为该属性具有访问器$\tcode{set }v\tcode{ => this.}p\tcode{ = }v$，其中$v$是一个不与其他标识符冲突的标识符。
+使用\tcode{let}声明的属性不能包含\tcode{set}、\tcode{willSet}和\tcode{didSet}访问器。
+在考虑自动生成的访问器之后，如果一个属性缺少\tcode{get}访问器，或一个\tcode{var}属性缺少\tcode{set}访问器，则这是一个编译错误。
 
+\pnum
+属性可以具有类型提示或初始化器。如果属性未按前文所述具有对应的字段，则不能具有初始化器。如果属性省略类型提示，则其类型将从\tcode{get}访问器中推导。如果它的\tcode{get}访问器是自动生成的，这是一个编译错误。
 
 \rSec1[method]{方法}
 \indextext{方法}

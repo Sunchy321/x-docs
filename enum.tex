@@ -22,7 +22,7 @@
     \terminal{=} Expression \br
     \terminal{[} Type \terminal{]} \br
     TupleType \br
-    ObjectType \br
+    ObjectType
 \end{bnf}
 
 \pnum
@@ -43,8 +43,11 @@ enum E {
 上述代码定义了一个枚举类型\tcode{E}，它包含四个枚举符，可以以如下方式访问：\tcode{E.A}、\tcode{E.B(0)}、\tcode{E.C[1, 2, 3]}及\tcode{E.D { name: "Hello" }}。
 \exitexample
 
+\rSec1[enum.trad]{传统枚举类型}
+\indextext{枚举!传统}
+
 \pnum
-枚举类型可以指定基底类型$B$，也可以为其枚举符指定值，这类枚举类型称为\term{传统枚举类型}。如果一个传统枚举类型没有显式指定基底类型，则$B$为\tcode{int}。$B$必须实现\tcode{core.Equtable}。
+只包含单独枚举符的枚举类型称作\term{传统枚举类型}。传统枚举类型可以指定基底类型$B$，也可以为其枚举符指定值。如果一个传统枚举类型没有显式指定基底类型，则$B$为\tcode{int}。$B$必须实现\tcode{core.Equtable}。
 
 \pnum
 在传统枚举类型中，每个枚举符都有对应的值。其确定如下：
@@ -52,7 +55,7 @@ enum E {
 \begin{itemize}
     \item 如果该枚举符被指定值，则其值为被指定的表达式隐式转换到$B$的结果；
     \item 否则，如果该枚举符是第一个值，则其值为$B\tcode{.init()}$；
-    \item 否则，假设该枚举符的前一个值为$v$，则其值为$v\tcode{+?}$。
+    \item 否则，假设该枚举符的前一个值为$v$，则其值为$v\tcode{+!}$。
 \end{itemize}
 
 每个枚举符都可以显示转换为对应的基底类型。

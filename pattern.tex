@@ -23,7 +23,7 @@
 \end{bnf}
 
 \pnum
-模式匹配用于检验一个值是否符合特定的\term{模式}，以及在符合特定的模式时从中提取某些成分。值符合特定的模式称为这个值\term{匹配}这个模式。本节中，$\mathcal{v}$表示待匹配的值，$\mathcal{p}$表示待匹配的模式。
+模式匹配用于检验一个值是否符合特定的\term{模式}，以及在符合特定的模式时从中提取某些成分。本节中，$\mathcal{v}$表示值，$\mathcal{p}$表示模式。值符合特定的模式称为这个值\term{匹配}这个模式，记作$\mathcal{v}\mathrel{\Vert}\mathcal{p}$。
 
 \pnum
 模式$\mathcal{p}$由\term{模式主体}和\term{模式断言}构成。模式主体规定匹配的结构与操作，模式断言则对值的特征进行断言。一个主体可以带有任意数量的断言。
@@ -46,7 +46,7 @@
 \end{bnf}
 
 \pnum
-表达式模式中的表达式必须实现了 \tcode{core.Equtable}。$\mathcal{v}$匹配表达式模式$\mathcal{p}$当且仅当$\mathcal{v}\tcode{==}\mathcal{p}$。
+$\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathcal{e}$当且仅当$\mathcal{v}\mathrel{\tcode{==}}\mathcal{e}$。
 
 \rSec1[pattern.array]{数组模式}
 \indextext{模式匹配!数组}
@@ -57,7 +57,8 @@
 
 \begin{bnf}{AnyPattern}
     Pattern\br
-    \terminal{...}
+    \terminal{...} \br
+    BindKeyword \terminal{...} Identifier
 \end{bnf}
 
 \pnum
@@ -75,6 +76,9 @@
     \item 对任意项模式之前的模式（如果不存在任意项则对每个子模式），$\mathcal{p}_i$匹配$\mathcal{v}$\tcode{[}$i$\tcode{]}，其中$i$是子模式的索引（从0开始）。
     \item 对任意项模式之后的模式，$\mathcal{p}_r$匹配$\mathcal{v}$\tcode{[\$-}$r$\tcode{]}，其中$r$是子模式从后向前数的索引（从0开始）。
 \end{enumerate}
+
+\pnum
+如果任意项包含一个绑定，则该任意项匹配到的元素将被绑定到相应的标识符上。
 
 \rSec1[pattern.tuple]{元组模式}
 \indextext{模式匹配!元组}
@@ -136,7 +140,7 @@
 
 \begin{bnf}{AnyPatternBind}
     PatternBind \br
-    \terminal{...} \br
+    \terminal{...} Identifier\bnfq \br
     NullPattern \br
     ExprPattern
 \end{bnf}
@@ -150,14 +154,23 @@
 \end{bnf}
 
 \begin{bnf}{ObjectItemBind}
-    Identifier \terminal{:} PatternBind
+    Identifier \terminal{:} PatternBind \br
+    Identifier
 \end{bnf}
 
 \pnum
 绑定模式可以匹配任意值。匹配成功后，该标识符将作为一个变量插入到当前作用域中。如果绑定使用的是\tcode{var}，则该变量具有\tcode{mut}修饰。
 
 \pnum
-绑定模式可以使用简写：\tcode{let [a, b]}等价于\tcode{[let a, let b]}；\tcode{let [i, _]}等价于\tcode{[let i, _]}。
+绑定模式可以使用简写，表\ref{tab:binding-shorthand}列出了一些常见的简写形式。
+
+\begin{floattable}{绑定简写与其完整形式}{tab:binding-shorthand}{l|l}
+    \topline
+    \tcode{let [a, b]} & \tcode{[let a, let b]} \\
+    \tcode{let (v, _)} & \tcode{(let v, _)} \\
+    \tcode{let [x, ...y]} & \tcode{[let x, let... y]} \\
+    \tcode{let \{ x \}} & \tcode{\{ x: let x \}} \\
+\end{floattable}
 
 \rSec1[pattern.type]{类型断言}
 \indextext{模式匹配!类型断言}

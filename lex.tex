@@ -52,28 +52,29 @@
 \tcode{if}        &
 \tcode{init}      \\
 \tcode{int}       &
+\tcode{is}        &
 \tcode{let}       &
 \tcode{match}     &
-\tcode{mut}       &
-\tcode{never}     \\
+\tcode{mut}       \\
+\tcode{never}     &
 \tcode{nil}       &
 \tcode{return}    &
 \tcode{self}      &
-\tcode{shl}       &
-\tcode{shl_eq}    \\
+\tcode{shl}       \\
+\tcode{shl_eq}    &
 \tcode{shr}       &
 \tcode{shr_rq}    &
 \tcode{string}    &
-\tcode{then}      &
-\tcode{this}      \\
+\tcode{then}      \\
+\tcode{this}      &
 \tcode{throw}     &
 \tcode{true}      &
 \tcode{type}      &
-\tcode{typeof}    &
-\tcode{uint}      \\
+\tcode{typeof}    \\
+\tcode{uint}      &
 \tcode{var}       &
 \tcode{void}      &
-\tcode{while}     &&\\
+\tcode{while}     &\\
 \end{floattable}
 
 \pnum
@@ -238,7 +239,7 @@
     \terminal{@"} Rchar\bnfs\ \terminal{"} Suffix\bnfq \br
     \terminal{\$"} SIchar\bnfs\ \terminal{"} Suffix\bnfq \br
     \terminal{\$@"} RIchar\bnfs\ \terminal{"} Suffix\bnfq \br
-    Mdelim Mchar\bnfs Suffix\bnfq Mdelim
+    Mdelim Mchar\bnfs Mdelim Suffix\bnfq
 \end{bnf}
 
 \begin{bnf}{Schar}
@@ -361,12 +362,12 @@ $$ \tcode{false} \coloneqq \langle \mathrm{false}, \tcode{bool} \rangle $$
 整数、浮点数与字符串能带有内建或用户自定义的后缀。后缀由字母开始，后跟任意数量的字母或数字，字面量与后缀之间可以添加\tcode{_}分隔。用户自定义的后缀不能与内建后缀相同，否则这是一个编译错误。
 
 \pnum
-假设字面量$l$带有自定义后缀$s$。如果$l$是整数字面量，则它等价于以下第一个合法的表达式：
+假设字面量$l$带有自定义后缀$s$，则它等价于以下第一个合法的表达式：
 \begin{codeblock}
-    operator ""\var{s}($l$)
+    operator ""s(l)
 \end{codeblock}
 其中$i$是$l$移除后缀的形式；
 \begin{codeblock}
-    operator ""$s$($t$)
+    operator ""s(t)
 \end{codeblock}
 其中$t$是包含$i$所有字符的字符串字面量。
