@@ -89,7 +89,8 @@ $\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tco
     \terminal{(} TupleTypes\bnfs \terminal{)} \br
     \terminal{\{} ObjectTypes \terminal{\}} \br
     \terminal{(} TupleTypes\bnfs \terminal{)} \terminal{->} Type \br
-    UnionType
+    UnionType \br
+    FuncType
 \end{bnf}
 
 \begin{bnf}{TupleTypes}
@@ -119,7 +120,7 @@ $\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tco
 $$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil} \} $$
 
 \pnum
-$T\tcode{?}$为\term{可空类型}。
+$T\tcode{?}$为\term{可空类型}。如果$T$本身就是可空类型，则$T\tcode{?}$等价于$T$。否则，$T\tcode{?}$包含$T$的所有值和空值\tcode{nil}。
 
 $$ T\tcode{[]} \coloneqq \bigcup^\infty_{n=0} T^n $$
 
@@ -150,39 +151,103 @@ $$ T_1 \tcode{|} \ldots \tcode{|} T_n \coloneqq \bigcup^n_{i=1} \{ \langle v_i, 
 \pnum
 $T_1\tcode{|}\ldots\tcode{|}T_n$ 称作\term{联合类型}。其中各个$T_i$是无序的。相同的$T_i$将被视为一个。
 
+\rSec3[type.func]{函数类型}
+
+\begin{bnf}{FuncType}
+    Parameter ReturnType
+\end{bnf}
+
 \rSec2[type.named]{具名类型}
 
-\begin{bnf}{NamedType}
+\begin{bnf}{TypeName}
+    \terminal{(} Type \terminal{)} \br
     EntityID \br
     FundaType \br
     SpecialType
 \end{bnf}
 
+\pnum
+\term{类型名称}在特定的语法位置表示类型，以避免潜在的语法歧义。
+
+\rSec1[subtype]{子类型}
+\indextext{类型!子类型}
+
+\pnum
+类型$A$可能是类型$B$的\term{子类型}，记作$A \preceq B$。$A$可以在需要$B$的上下文中隐式转换到$B$。
+
+\begin{equation*}
+\begin{aligned}
+    T \preceq　\tcode{void},& T \in \mathcal{T} \\
+    \tcode{never} \preceq T,& T \in \mathcal{T}
+\end{aligned}
+\end{equation*}
+
+\pnum
+任何类型都是\tcode{void}的子类型。\tcode{never}是任何类型的子类型。
+
+\begin{equation*}
+\begin{aligned}
+    I_{l_1,h_1} &\preceq J_{l_2,h_2} \mathrel{\mathrm{if}} l_1 \geq l_2 \lor h_1 \leq h_2 ,
+    \tcode{float<}s_1\tcode{>} &\preceq \tcode{float<}s_2\tcode{>} \mathrel{\mathrm{if}} s_1 \leq s_2 \\
+    T_{l,h} &\preceq \tcode{float<}s\tcode{>} \\
+    I, J &\in \left\{ \tcode{int}, \tcode{uint}, \tcode{int<}w\tcode{>}, \tcode{uint<}w\tcode{>} \right\}
+\end{aligned}
+\end{equation*}
+
+\pnum
+范围更小的整数类型是范围更大的整数类型的子类型。长度更小的浮点类型是长度更大的浮点类型的子类型。
+
+\pnum
+整数类型是浮点类型的子类型。当整数被转换为浮点数时，其值将被转换为最接近的浮点数。\enternote 虽然整数转换到浮点数可能无法保持值不变，但出于习惯仍然保持这个隐式转换。 \exitnote \enternote 浮点类型不能转换到整数类型。请使用转换函数。 \exitnote
+
+\pnum
+\tcode{bool}没有语言内建的子类型约束。但是，其他类型的值可以在\tcode{if}表达式中当作调教使用，这通过重载\tcode{operator if}运算符实现。
+
+\begin{equation*}
+\begin{aligned}
+T &\preceq T\tcode{?} \\
+T\tcode{[]} &\preceq U\tcode{[]} \mathrel{\mathrm{if}} T \preceq U \\
+T\tcode{[}K\tcode{]} &\preceq U\tcode{[}L\tcode{]} \mathrel{\mathrm{if}} T \preceq U \mathrel{\mathrm{and}} K \preceq L \\
+\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{)} &\preceq \tcode{(}U_1\tcode{,} \ldots\tcode{,} U_n\tcode{)} \mathrel{\mathrm{if}} T_i \preceq U_i \mathrel{\mathrm{for}} 1 \leq i \leq n \\
+\end{aligned}
+\end{equation*}
+
+\pnum
+任意类型是其对应可空类型的子类型。如果$T_i$是$U_i$的子类型，则$T_0\tcode{[]}$、$T_0\tcode{[}T_1\tcode{]}$、$\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{)}$分别是$U_0\tcode{[]}$、$U_0\tcode{[}U_1\tcode{]}$、$\tcode{(}U_1\tcode{,} \ldots\tcode{,} U_n\tcode{)}$的子类型。\enternote 这意味着数组、字典和元组的元素类型是协变的。 \exitnote
+
+\pnum
+对两个对象类型$T$和$U$而言，如果$U$的每个成员都有对应的$T$的成员且类型是该成员的子类型，则$T$是$U$的子类型。
+
+\pnum
+对两个函数类型$T$和$U$而言，如果$U$的每个参数类型都是对应$T$的参数的子类型，且$T$的返回类型是$U$的返回类型的子类型，则$T$是$U$的子类型。\enternote 这意味着函数类型的参数类型是逆变的，返回类型是协变的。 \exitnote $T$可以拥有比$U$更多的顺序参数，或者$U$不包含的命名参数。
+
+\pnum
+类类型可以定义类型转换函数。每个这样的函数定义了一个子类型关系。
+
+\pnum
+对类型表达式而言，$T\mathbin{\tcode{\&}}U$是$T$和$U$的子类型；$T$和$U$是$T\mathbin{\tcode{|}}U$的子类型。
+
 \rSec1[type.common]{公共类型}
 \indextext{类型!公共类型}
 
 \pnum
-存在函数
+对两个类型$A$和$B$而言，存在一个唯一的类型$C$称为$A$和$B$的\term{公共类型}。$C$满足：
 
-$$ \otimes: \mathcal{T} \times \mathcal{T} \rightarrow \mathcal{T} \cup \{ \ast \} $$
+\begin{equation}
+\begin{aligned}
+    A &\preceq C \\
+    B &\preceq C \\
+    \forall D \in \mathcal{T}, A &\preceq D \land B \preceq D \Rightarrow C \preceq D
+\end{aligned}
+\end{equation}
 
-满足交换律。如果对于类型 $T_1$ 和 $T_2$，$T_1 \otimes T_2 \ne \ast$，称 $T_1 \otimes T_2$ 为 $T_1$ 和 $T_2$ 的\term{公共类型}。
+记作 $C = A \otimes B$。/公共类型满足交换律。
 
 \pnum
-函数 $\otimes$ 按照如下顺序确定：
+如果$A \preceq B$，则$A \otimes = B$。
 
-\begin{itemize}
-\item $T \otimes T \coloneqq T$
-\item $\tcode{never} \otimes T \coloneqq T$
-\item $\tcode{void} \otimes T \coloneqq \tcode{void}$
-\item $\tcode{int}_{l_1,h_1} \otimes \tcode{int}_{l_2,h_2} \coloneqq \tcode{int}_{\min\{l_1, l_2\},\max\{h_1, h_2\}}$
-\item $\tcode{int}_{l,h} \otimes \tcode{float<}s\tcode{>} \coloneqq \tcode{float<}s\tcode{>}$
-\item $\tcode{float<}s_1\tcode{>} \otimes \tcode{float<}s_2\tcode{>} \coloneqq \tcode{float<}\max\{s_1, s_2\}\tcode{>}$
-\item $T \otimes T\tcode{?} \coloneqq T\tcode{?}$
-\item $T \otimes T \tcode{|} T_1 \tcode{|} \ldots \tcode{|} T_{n-1} \coloneqq T \tcode{|} T_1 \tcode{|} \ldots \tcode{|} T_{n-1}$
-\item $T \otimes T_1 \tcode{|} T_2 \tcode{|} \ldots \tcode{|} T_n \coloneqq T \tcode{|} T_1 \tcode{|} \ldots \tcode{|} T_n$
-\item $T \otimes U \coloneqq T \tcode{|} U$
-\end{itemize}
+\pnum
+如果$A$和$B$之间没有子类型关系，则$A \otimes B = A \mathbin{\tcode{|}} B$。
 
 \rSec1[qualifier]{修饰符}
 \indextext{修饰符}
@@ -194,4 +259,4 @@ $$ \otimes: \mathcal{T} \times \mathcal{T} \rightarrow \mathcal{T} \cup \{ \ast 
 \indextext{修饰符!mut}
 
 \pnum
-\tcode{mut} 表示该值是可变的。
+\tcode{mut} 表示该值是可变的。具有\tcode{mut}的值才能成为赋值操作符的左操作数。参见~\ref{expr.assign}。

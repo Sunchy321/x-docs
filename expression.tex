@@ -52,9 +52,6 @@ $\mathrm{e \rhd \omega}$ 称作\term{在环境 $\omega$ 下对 $e$ 求值}。设
 $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。如果 $\omega = \omega^\prime$，称 $e$ 是\term{无副作用}的；如果 $e$ 是无副作用的且 $v$ 与 $\omega$ 无关，称 $e$ 是\term{纯}的。
 
 \pnum
-下文的数学定义式中，$\coloneqq$ 右边的 $e$ 表示对 $e$ 求值之后的 $v$；$\otimes e$ 表示求值后的环境；$\rhd e$ 表示求值的结果。如果表达式是无副作用的，将 $\omega$ 部分省略。
-
-\pnum
 对含有子表达式的表达式求值时，总是先对其子表达式按出现次序从左到右求值。
 
 \pnum
@@ -65,7 +62,8 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 
 \begin{bnf}{PrimaryExpr}
     \terminal{(} Expression \terminal{)} \br
-    LiteralExpression \br
+    LiteralExpr \br
+    InitLiteral \br
     Identifier \br
     \terminal{this} \br
     \terminal{\$} \br
@@ -82,7 +80,7 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \rSec2[expr.lit]{字面量表达式}
 \indextext{表达式!字面量}
 
-\begin{bnf}{LiteralExpression}
+\begin{bnf}{LiteralExpr}
     IntegerLiteral \br
     FloatingLiteral \br
     StringLiteral \br
@@ -167,6 +165,79 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \pnum
 字典字面量$\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{|\}}$表示一个显式写出其各元素的字典值。其类型为$T\tcode{[}K\tcode{]}$，其中$T$为各$v_i$的类型，$K$为各$k_i$的公共类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素对显式插入在该位置。$e$必须是字典类型。如果字典字面量不包含任何类型，则$T$和$K$是待推导的类型。
 
+\rSec2[expr.lit.init]{初始化字面量}
+\indextext{表达式!字面量!初始化}
+
+\begin{bnf}{TypeLiteral}
+    TypeParenLiteral \br
+    TypeArrayLiteral \br
+    TypeObjectLiteral \br
+    TypeDictLiteral
+\end{bnf}
+
+\begin{bnf}{TypeParenLiteral}
+    TypeName \terminal{(} Arguments\bnfq \terminal{)} Block\bnfs \br
+    TypeName Block
+\end{bnf}
+
+\begin{bnf}{TypeArrayLiteral}
+    TypeName \terminal{[} ExprList\bnfq \terminal{]}
+\end{bnf}
+
+\begin{bnf}{TypeObjectLiteral}
+    TypeName \terminal{\{} ObjectItems\bnfq \terminal{\}}
+\end{bnf}
+
+\begin{bnf}{TypeDictLiteral}
+    TypeName \terminal{\{|} DictItems\bnfq \terminal{|\}}
+\end{bnf}
+
+\pnum
+可以使用与字面量类似的语法来创建指定类型的值。被创建的类型必须是一个类型名称。
+
+\enterexample
+\begin{codeblock}
+
+let a = int[] [1, 2, 3]; // 错误，不能用\tcode{[]}初始化\tcode{int}
+
+type IntArray = int[];
+
+let a = IntArray[1, 2, 3]; // 可以
+
+let a = (int[])[1, 2, 3]; // 可以
+
+\end{codeblock}
+\exitexample
+
+\pnum
+$T\tcode{(}a_1\tcode{,}\ldots\tcode{,}a_n\tcode{)}$以参数给定的参数创建一个类型为$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有lambda块。如果这个对象的初始化器只接受这一个参数，也可以省略括号。
+
+\pnum
+$T\tcode{[}v_1\tcode{,}\ldots\tcode{,}v_n\tcode{]}$以对应的数组字面量为参数创建一个类型为$T$的对象。
+
+\pnum
+$T\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{|\}}$以对应的字典字面量创建一个类型为$T$的对象。
+
+\pnum
+$T\tcode{\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\}}$以对象方式创建一个类型为$T$的对象。
+
+\pnum
+如果$T$是对象类型，则每个$kv$对都会用来初始化对应的成员。如果$v$不能转换到成员的类型，则这是一个编译错误。如果有成员未被显式指定初始值，且其不是可空类型，则这是一个编译错误；如果是可空类型，则其初始值为\tcode{nil}。
+
+\pnum
+如果$T$是类类型，则选择以下方式中第一个成功的：
+
+\begin{itemize}
+    \item 以具名参数初始化，等价于$T\tcode{(}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{)}$；
+    \item 以单个对象字面量的方式初始化，等价于$T\tcode{(\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\})}$；
+    \item 首先默认初始化$T()$，然后依次执行$T\tcode{.}k_1\tcode{=}v_1$到$T\tcode{.}k_n\tcode{=}v_n$。
+\end{itemize}
+
+\pnum
+$T\tcode{\{\}}$总是被解释为以对象字面量创建值。\enternote 如果你需要创建一个具有空lambda块的值，请使用$T\tcode{(do \{\})}$。\exitnote
+
+
+
 \rSec2[expr.this]{\tcode{this}}
 \indextext{表达式!this}
 
@@ -218,7 +289,11 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \indextext{表达式!Lambda}
 
 \begin{bnf}{LambdaExpr}
-    FuncQual\bnfs LambdaParameter ReturnType\bnfs \terminal{=>} LambdaBody
+    LambdaQual\bnfs LambdaParameter ReturnType\bnfs \terminal{=>} LambdaBody
+\end{bnf}
+
+\begin{bnf}{LambdaQual}
+    \terminal{async}
 \end{bnf}
 
 \begin{bnf}{LambdaParameter}
@@ -247,18 +322,21 @@ $\tcode{\$}$后跟数字$i$指代第$i$个参数。$\tcode{\$}$后跟标识符$n
 \indextext{表达式!do}
 
 \begin{bnf}{DoExpr}
-    \terminal{do} Block \br
-    \terminal{do} \terminal{!} Block
+    LambdaQual\bnfs \terminal{do} Block \br
+    LambdaQual\bnfs \terminal{do} \terminal{!} Block
 \end{bnf}
 
 \pnum
-\tcode{do}后跟一个块创建一个没有显式指定参数的lambda表达式。\tcode{do!}后跟一个块创建一个无参的lambda表达式并立即调用它，将其值作为整个表达式的值。
+\tcode{do}后跟一个块创建一个没有显式指定参数的lambda表达式。
+
+\pnum
+\tcode{do!}后跟一个块创建一个无参的lambda表达式并立即调用它，将其值作为整个表达式的值。
 
 \enterexample
 \begin{codeblock}
 let arr = [1, 2, 3];
 
-let first1 = arr.first { $0 > 2 }; // 获取第一个满足条件的元素
+let first1 = arr.first(do { $0 > 2 }); // 获取第一个满足条件的元素
 
 let firstFinder = do {
     for let v : $0 {
@@ -361,7 +439,7 @@ $o\tcode{.(}e\tcode{)}$首先对$e$求值。如果得到一个\tcode{symbol}类�
 \end{bnf}
 
 \pnum
-\tcode{await}运算符用于等待一个异步表达式的结果。$e\tcode{.await}$挂起当前计算，直到$e$的值可用。如果$e$的类型是$\tcode{core.Future<}T\tcode{>}$，则$e\tcode{.await}$的类型是$T$。
+\tcode{await}运算符用于等待一个异步表达式的结果。$e\tcode{.await}$挂起当前计算，直到$e$的值可用。如果$e$的类型是$\tcode{core.Future<}T\tcode{>}$，则$e\tcode{.await}$的类型是$T$。只能在具有\tcode{async}修饰的函数作用域中使用\tcode{await}运算符。
 
 \rSec2[expr.null]{空值检测运算符}
 \indextext{运算符!空值检测}
@@ -649,7 +727,7 @@ $a\ \tcode{in}\ b$检测$a$是否在$b$中。$a\ \tcode{!in}\ b$检测$a$是否�
 赋值表达式的结果类型是\tcode{void}。
 
 \pnum
-\tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是\tcode{mut}的，且右操作数必须能隐式转换到左操作数。
+\tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是\tcode{mut}的，且右操作数必须能转换到左操作数。
 
 \pnum
 复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\^{}=}、\tcode{'|=}和\tcode{??=}分别表示加、减、乘、除、取余、左移、右移、按位与、按位异或、按位或和空值合并赋值。
@@ -669,8 +747,6 @@ $a\ \tcode{in}\ b$检测$a$是否在$b$中。$a\ \tcode{!in}\ b$检测$a$是否�
     AssignExpr \terminal{;} Expression\br
     Binding \terminal{;} Expression
 \end{bnf}
-
-$$ x \mathbin{\tcode{;}} y \rhd \omega \coloneqq y \rhd \otimes \mathrm{discard}(x)$$
 
 \pnum
 分号表达式中，分号左侧可以为一个表达式或绑定。如果分号左侧为绑定，则该绑定会被插入到当前作用域中。如果左侧为表达式，则该表达式将被求值且结果会被丢弃。在那之后，将对右侧表达式进行求值并将其值作为整个表达式的值。

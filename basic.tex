@@ -31,6 +31,9 @@
 函数作用域限制\tcode{return}语句的使用。参见~\ref{stmt.control}。
 
 \pnum
+函数作用域也限制\tcode{await}运算符的使用。参见~\ref{expr.await}。
+
+\pnum
 函数定义的块、lambda表达式的块或表达式、\tcode{do}表达式的块和函数调用表达式的lambda块具有函数作用域。
 
 \rSec2[scope.lambda]{Lambda 作用域}
@@ -41,6 +44,9 @@ Lambda作用域限制lambda参数的使用。参见~\ref{expr.lambda.param}。
 
 \pnum
 lambda表达式的块或表达式以及函数调用表达式的lambda块具有lambda作用域。
+
+\pnum
+属性的访问器也具有lambda作用域。参见\ref{class.property}。
 
 \rSec2[scope.sequence]{序列作用域}
 \indextext{作用域!序列}
@@ -86,7 +92,8 @@ a.v($ - 1) // 方法调用，当前序列为a
     \terminal{operator} StringLiteral \br
     \terminal{operator} \terminal{(} \terminal{)} \br
     \terminal{operator} \terminal{[} \terminal{]} \br
-    \terminal{operator} \terminal{as}
+    \terminal{operator} \terminal{as} \br
+    \terminal{operator} \terminal{if} \br
 \end{bnf}
 
 \pnum

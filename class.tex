@@ -28,7 +28,7 @@
 \pnum
 \term{类}描述内部不透明的类型。
 
-\rSec1[class.member]{类字段}
+\rSec1[class.member]{字段}
 \indextext{类!字段}
 
 \begin{bnf}{FieldDecl}
@@ -47,7 +47,7 @@
 \pnum
 类中的字段表示类的内部状态，其默认访问级别为\tcode{private}。使用\tcode{let}声明的表示不可变字段，使用\tcode{var}声明的表示可变字段。类字段可以显式指定类型，也可以通过初始值推导类型。
 
-\rSec1[class.property]{类属性}
+\rSec1[class.property]{属性}
 \indextext{类!属性}
 
 \begin{bnf}{PropertyDecl}
@@ -83,16 +83,19 @@
 \end{bnf}
 
 \pnum
-类中还可以声明\term{属性}。属性是类对外暴露的接口，其默认访问级别为\tcode{public}。属性的定义至少需要包含一个访问器。
+类中还可以声明\term{属性}。属性是类对外暴露的接口，其默认访问级别为\tcode{public}。属性的定义至少需要包含一个访问器。访问器的块或表达式具有lambda作用域。
 
 \pnum
 属性的访问器可以以上下文关键字\tcode{get}、\tcode{set}、\tcode{willSet}或\tcode{didSet}开始。
-\tcode{get}访问器不接受任何参数。读取该属性的值将会调用它的\tcode{get}访问器。
-\tcode{set}访问器接受一个参数，其类型为该属性的类型。\tcode{willSet}和\tcode{didSet}访问器接受两个参数，依次为旧值和新值。
-在设置该属性的值时，将会依次调用\tcode{willSet}、\tcode{set}和\tcode{didSet}访问器。
+\tcode{get}访问器不接受任何参数。
+\tcode{set}访问器接受一个参数，其类型为该属性的类型。
+\tcode{willSet}和\tcode{didSet}访问器可以接受一个或两个参数，其类型为属性的类型。
 
 \pnum
-如果属性$p$的声明中既不包含\tcode{get}也不包含\tcode{set}访问器，则视作该类具有字段$p'$，且具有访问器$\tcode{get}\mathrel{\tcode{=>}}\tcode{this.}p'$。如果该属性以\tcode{var}声明，则还视为该属性具有访问器$\tcode{set }v\tcode{ => this.}p'\tcode{ = }v$，其中$v$是一个不与其他标识符冲突的标识符。
+如果\tcode{set}访问器不显式写出参数，则视为其具有lambda参数\tcode{\$value}。如果\tcode{willSet}或\tcode{didSet}不显式写出参数，则视为其具有lambda参数\tcode{\$oldValue}和\tcode{\$newValue}。
+
+\pnum
+如果属性$p$的声明中既不包含\tcode{get}也不包含\tcode{set}访问器，则视作该类具有字段$p'$，且具有访问器$\tcode{get}\mathrel{\tcode{=>}}\tcode{this.}p'$。如果该属性以\tcode{var}声明，则还视为该属性具有访问器$\tcode{set => this.}p'\tcode{ = \$value}$。
 如果\tcode{get}或\tcode{set}访问器后直接跟分号，则视作以上述方式生成访问器，且另一个对应的访问器若存在则必须采用这种省略方式声明。
 
 \pnum
@@ -101,6 +104,26 @@
 
 \pnum
 属性可以具有类型提示或初始化器。如果属性未按前文所述具有对应的字段，则不能具有初始化器。如果属性省略类型提示，则其类型将从\tcode{get}访问器中推导。如果它的\tcode{get}访问器是自动生成的，这是一个编译错误。
+
+\pnum
+当读取属性$p$时，会调用\tcode{get}访问器并将其返回值作为$p$的新值。
+
+\pnum
+当给属性$p$赋值时，首先将该值转换到属性的类型，令结果为$v$：
+
+\begin{itemize}
+    \item 如果属性具有\tcode{willSet}访问器：
+    \begin{itemize}
+        \item 如果它接受一个参数，将以$v$调用；
+        \item 如果它接受两个参数，将以$p$（旧值）和$v$调用。
+    \end{itemize}
+    \item 以$v$调用属性的\tcode{set}访问器。
+    \item 如果属性具有\tcode{didSet}访问器：
+    \begin{itemize}
+        \item 如果它接受一个参数，将以$p$（旧值）调用；
+        \item 如果它接受两个参数，将以$p$和$v$调用。
+    \end{itemize}
+\end{itemize}
 
 \rSec1[method]{方法}
 \indextext{方法}
