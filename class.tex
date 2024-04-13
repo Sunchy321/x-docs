@@ -45,7 +45,7 @@
 \end{bnf}
 
 \pnum
-类中的字段表示类的内部状态，其默认访问级别为\tcode{private}。使用\tcode{let}声明的表示不可变字段，使用\tcode{var}声明的表示可变字段。类字段可以显式指定类型，也可以通过初始值推导类型。
+类中的字段表示类的内部状态，其默认访问级别为\tcode{private}。具有\tcode{mut}修饰的是可变字段。类字段可以显式指定类型，也可以通过初始值推导类型。
 
 \rSec1[class.property]{属性}
 \indextext{类!属性}
@@ -95,12 +95,13 @@
 如果\tcode{set}访问器不显式写出参数，则视为其具有lambda参数\tcode{\$value}。如果\tcode{willSet}或\tcode{didSet}不显式写出参数，则视为其具有lambda参数\tcode{\$oldValue}和\tcode{\$newValue}。
 
 \pnum
-如果属性$p$的声明中既不包含\tcode{get}也不包含\tcode{set}访问器，则视作该类具有字段$p'$，且具有访问器$\tcode{get}\mathrel{\tcode{=>}}\tcode{this.}p'$。如果该属性以\tcode{var}声明，则还视为该属性具有访问器$\tcode{set => this.}p'\tcode{ = \$value}$。
+如果属性$p$的声明中既不包含\tcode{get}也不包含\tcode{set}访问器，则视作该类具有字段$p'$，且具有访问器$\tcode{get}\mathrel{\tcode{=>}}\tcode{this.}p'$。
+如果该属性有\tcode{mut}修饰，则还视为该属性具有访问器$\tcode{set => this.}p'\tcode{ = \$value}$。
 如果\tcode{get}或\tcode{set}访问器后直接跟分号，则视作以上述方式生成访问器，且另一个对应的访问器若存在则必须采用这种省略方式声明。
 
 \pnum
-使用\tcode{let}声明的属性不能包含\tcode{set}、\tcode{willSet}和\tcode{didSet}访问器。
-在考虑自动生成的访问器之后，如果一个属性缺少\tcode{get}访问器，或一个\tcode{var}属性缺少\tcode{set}访问器，则这是一个编译错误。
+未使用\tcode{mut}声明的属性不能包含\tcode{set}、\tcode{willSet}和\tcode{didSet}访问器。
+在考虑自动生成的访问器之后，如果一个属性缺少\tcode{get}访问器，或一个\tcode{mut}属性缺少\tcode{set}访问器，则这是一个编译错误。
 
 \pnum
 属性可以具有类型提示或初始化器。如果属性未按前文所述具有对应的字段，则不能具有初始化器。如果属性省略类型提示，则其类型将从\tcode{get}访问器中推导。如果它的\tcode{get}访问器是自动生成的，这是一个编译错误。

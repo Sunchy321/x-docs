@@ -65,16 +65,14 @@
 \tcode{shr}       &
 \tcode{shr_rq}    &
 \tcode{string}    &
-\tcode{then}      \\
-\tcode{this}      &
+\tcode{this}      \\
 \tcode{throw}     &
 \tcode{true}      &
 \tcode{type}      &
-\tcode{typeof}    \\
-\tcode{uint}      &
-\tcode{var}       &
+\tcode{typeof}    &
+\tcode{uint}      \\
 \tcode{void}      &
-\tcode{while}     &\\
+\tcode{while}     &&&\\
 \end{floattable}
 
 \pnum
@@ -84,27 +82,37 @@
 \topline
 \tcode{didSet}  &
 \tcode{get}     &
-\tcode{set}     &
+\tcode{infix}   &
+\tcode{prefix}  &
+\tcode{set}     \\
+\tcode{suffix}  &
 \tcode{then}    &
-\tcode{willSet} \\
+\tcode{willSet} &&\\
 \end{floattable}
 
-\rSec1[lex.op]{运算符}
+\rSec1[lex.punc]{标点符号}
+\indextext{标点符号}
 
-\begin{bnf}{Operator}[\oneof]
-    CustomOperator \terminal{, ; : ( ) [ ] \{ \} \{| |\} }
+\begin{bnf}{Punctuator}
+    PunctuatorPart\bnfp
 \end{bnf}
 
-\begin{bnf}{CustomOperator}
-    CustomOperatorPart\bnfp
-\end{bnf}
-
-\begin{bnf}{CustomOperatorPart}[\oneof]
-    \terminal{\~ ! \# \% \^ \& * - | + = / ? < > . '}
+\begin{bnf}{PunctuatorPart}[\oneof]
+    \terminal{\~ ! @ \# \$ \% \^{} \& * ( ) - + = [ ] \{ \} | ; : ' < > , . ? /}
 \end{bnf}
 
 \pnum
-\tcode{.}，\tcode{...} 和 \tcode{=} 被保留不能重载为运算符。
+\term{标点符号}由一个或数个符号组成，其中的一部分称为\term{运算符}，参见~\ref{op}。
+
+\pnum
+除了多字符标点符号外，标点符号都由单个字符组成。表~\ref{tab:multichar-punc}~列出了内建的多字符标点，但不包含运算符。解析标点符号时，应尽可能长地匹配多字符标点符号。用户也可以自定义多字符运算符。
+
+\begin{floattable}{多字符标点符号}{tab:multichar-punc}{lllll}
+\topline
+\tcode{\{|} &
+\tcode{|\}} &
+\tcode{...} &&\\
+\end{floattable}
 
 \rSec1[lex.literal]{字面量}
 
@@ -237,14 +245,13 @@
 \begin{bnf}{StringLiteral}
     \terminal{"} Schar\bnfs\ \terminal{"} Suffix\bnfq \br
     \terminal{@"} Rchar\bnfs\ \terminal{"} Suffix\bnfq \br
-    \terminal{\$"} SIchar\bnfs\ \terminal{"} Suffix\bnfq \br
-    \terminal{\$@"} RIchar\bnfs\ \terminal{"} Suffix\bnfq \br
     Mdelim Mchar\bnfs Mdelim Suffix\bnfq
 \end{bnf}
 
 \begin{bnf}{Schar}
     \textnormal{除了\terminal{\textbackslash}和\terminal{"}以外的非换行可打印字符} \br
-    EscapeSeq
+    EscapeSeq \br
+    TextInterpolation
 \end{bnf}
 
 \begin{bnf}{EscapeSeq}
@@ -258,7 +265,8 @@
 
 \begin{bnf}{Rchar}
     \textnormal{除了\terminal{"}以外的非换行可打印字符} \br
-    \terminal{""}
+    \terminal{""} \br
+    TextInterpolation
 \end{bnf}
 
 \begin{bnf}{SIchar}

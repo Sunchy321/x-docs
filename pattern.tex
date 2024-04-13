@@ -13,7 +13,8 @@
     BindPattern \br
     ArrayPattern \br
     TuplePattern \br
-    ObjectPattern
+    ObjectPattern \br
+    AltPattern
 \end{bnf}
 
 \begin{bnf}{PatternAssertion}
@@ -42,7 +43,7 @@
 \indextext{模式匹配!表达式}
 
 \begin{bnf}{ExprPattern}
-    Expression
+    RangeExpr
 \end{bnf}
 
 \pnum
@@ -119,8 +120,9 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \end{bnf}
 
 \begin{bnf}{BindKeyword}
-    \terminal{var} \br
-    \terminal{let}
+    \terminal{let} \br
+    \terminal{let} \terminal{mut} \br
+    \terminal{const}
 \end{bnf}
 
 \begin{bnf}{PatternBind}
@@ -159,10 +161,13 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \end{bnf}
 
 \pnum
-绑定模式可以匹配任意值。匹配成功后，该标识符将作为一个变量插入到当前作用域中。如果绑定使用的是\tcode{var}，则该变量具有\tcode{mut}修饰。
+绑定模式可以匹配任意值。匹配成功后，该标识符将作为一个变量插入到当前作用域中。
 
 \pnum
-绑定模式可以使用简写，表\ref{tab:binding-shorthand}列出了一些常见的简写形式。
+如果绑定使用关键字\tcode{const}，则这是一个常量绑定。参见~\ref{qual.const}。
+
+\pnum
+绑定模式可以使用简写，表~\ref{tab:binding-shorthand}~列出了一些常见的简写形式。
 
 \begin{floattable}{绑定简写与其完整形式}{tab:binding-shorthand}{l|l}
     \topline
@@ -171,6 +176,19 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
     \tcode{let [x, ...y]} & \tcode{[let x, let... y]} \\
     \tcode{let \{ x \}} & \tcode{\{ x: let x \}} \\
 \end{floattable}
+
+\rSec2[pattern.alt]{选择模式}
+
+\begin{bnf}{AltPattern}
+    Pattern \terminal{|} Pattern \br
+    AltPattern \terminal{|} Pattern
+\end{bnf}
+
+\pnum
+选择模式同时匹配多个模式。如果其中有模式匹配成功，则整个模式匹配成功。匹配将从左到右进行。
+
+\pnum
+选择模式中使用的模式不能包含绑定模式。
 
 \rSec1[pattern.type]{类型断言}
 \indextext{模式匹配!类型断言}

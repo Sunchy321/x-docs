@@ -6,9 +6,15 @@
 \indextext{类型}
 
 \begin{bnf}{Type}
-    FundaType \br
-    SpecialType \br
-    CompType
+FundaType \br
+SpecialType \br
+CompType \br
+Type TypeQualifier
+\end{bnf}
+
+\begin{bnf}{TypeQualifier}
+\terminal{mut} \br
+\terminal{const}
 \end{bnf}
 
 $$ \mathcal{V} = \{ \langle v, T, Q \rangle \mid T \in \mathcal{T}, v \in T, Q \subset \mathcal{Q} \} $$
@@ -108,8 +114,7 @@ $\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tco
 \end{bnf}
 
 \begin{bnf}{ObjectTypeQualifier}
-    \terminal{let} \br
-    \terminal{var}
+    \terminal{mut}
 \end{bnf}
 
 \begin{bnf}{UnionType}
@@ -175,6 +180,9 @@ $T_1\tcode{|}\ldots\tcode{|}T_n$ 称作\term{联合类型}。其中各个$T_i$�
 \pnum
 类型$A$可能是类型$B$的\term{子类型}，记作$A \preceq B$。$A$可以在需要$B$的上下文中隐式转换到$B$。
 
+\pnum
+子类型关系具有自反性和传递性，即对任意类型$A$、$B$和$C$有$A \preceq A$和$A \preceq B \land B \preceq C \implies A \preceq C$成立。
+
 \begin{equation*}
 \begin{aligned}
     T \preceq　\tcode{void},& T \in \mathcal{T} \\
@@ -187,9 +195,9 @@ $T_1\tcode{|}\ldots\tcode{|}T_n$ 称作\term{联合类型}。其中各个$T_i$�
 
 \begin{equation*}
 \begin{aligned}
-    I_{l_1,h_1} &\preceq J_{l_2,h_2} \mathrel{\mathrm{if}} l_1 \geq l_2 \lor h_1 \leq h_2 ,
+I_{l_1,h_1} &\preceq J_{l_2,h_2} \mathrel{\mathrm{if}} l_1 \geq l_2 \lor h_1 \leq h_2 \\
     \tcode{float<}s_1\tcode{>} &\preceq \tcode{float<}s_2\tcode{>} \mathrel{\mathrm{if}} s_1 \leq s_2 \\
-    T_{l,h} &\preceq \tcode{float<}s\tcode{>} \\
+I_{l,h} &\preceq \tcode{float<}s\tcode{>} \\
     I, J &\in \left\{ \tcode{int}, \tcode{uint}, \tcode{int<}w\tcode{>}, \tcode{uint<}w\tcode{>} \right\}
 \end{aligned}
 \end{equation*}
@@ -241,10 +249,10 @@ T\tcode{[}K\tcode{]} &\preceq U\tcode{[}L\tcode{]} \mathrel{\mathrm{if}} T \prec
 \end{aligned}
 \end{equation}
 
-记作 $C = A \otimes B$。/公共类型满足交换律。
+记作 $C = A \otimes B$。公共类型满足交换律。
 
 \pnum
-如果$A \preceq B$，则$A \otimes = B$。
+如果$A \preceq B$，则$A \otimes B = B$。
 
 \pnum
 如果$A$和$B$之间没有子类型关系，则$A \otimes B = A \mathbin{\tcode{|}} B$。
@@ -255,8 +263,19 @@ T\tcode{[}K\tcode{]} &\preceq U\tcode{[}L\tcode{]} \mathrel{\mathrm{if}} T \prec
 \pnum
 值除了总是具有类型之外，还可能带有一个或数个修饰符。修饰符指示了值的其他属性。
 
+\pnum
+类型可以带有修饰符，指定该值需有特定的修饰符约束。
+
 \rSec2[qual.mut]{\tcode{mut}}
 \indextext{修饰符!mut}
 
 \pnum
-\tcode{mut} 表示该值是可变的。具有\tcode{mut}的值才能成为赋值操作符的左操作数。参见~\ref{expr.assign}。
+\tcode{mut}表示该值是可变的。具有\tcode{mut}的值才能成为赋值操作符的左操作数。参见~\ref{expr.assign}。
+
+\rSec2[qual.const]{\tcode{const}}
+
+\pnum
+\tcode{const}表示该值是一个常量值，于编译期间确定且不可变。部分语言功能只允许常量值。
+
+\pnum
+\tcode{const}绑定创建一个常量并插入当前作用域。该绑定的初始值必须是常量表达式。

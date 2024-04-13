@@ -1,0 +1,20 @@
+%!TEX root = x.tex
+
+\rSec0[core.misc]{杂项}
+
+\rSec1[core.order]{序}
+
+\begin{codeblock}
+enum Order {
+    less,
+    equal,
+    greater,
+    unordered
+}
+\end{codeblock}
+
+\pnum
+\tcode{core.Order}定义了序关系。它是内建\tcode{cmp}运算符的返回值。
+
+\pnum
+\tcode{.less}代表左操作数小于右操作数。\tcode{.equal}代表左操作数等于右操作数。\tcode{.greater}代表左操作数大于右操作数。\tcode{.unordered}代表左操作数和右操作数之间没有序关系。

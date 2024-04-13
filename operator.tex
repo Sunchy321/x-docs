@@ -1,0 +1,331 @@
+%!TEX root = x.tex
+
+\rSec0[op]{运算符}
+\indextext{运算符}
+
+\rSec1[op.name]{运算符名称}
+
+\begin{bnf}{OperatorID}
+    \terminal{operator} OperatorType\bnfq OperatorName \br
+    \terminal{operator} StringLiteral \br
+    \terminal{operator} \terminal{\$} \br
+    \terminal{operator} \terminal{if} \br
+    \terminal{operator} \terminal{as} Type
+\end{bnf}
+
+\begin{bnf}{OperatorName}
+    Operator \br
+    Identifier \br
+    OperatorKeyword \br
+    \terminal{(} \terminal{)} \br
+    \terminal{[} \terminal{]}
+\end{bnf}
+
+\begin{bnf}{OperatorKeyword}[\oneof]
+    \terminal{shl shr cmp in}
+\end{bnf}
+
+\begin{bnf}{OperatorType}[\oneof]
+    \terminal{infix prefix suffix}
+\end{bnf}
+
+\begin{bnf}{Operator}
+    CustomOperator \br
+    \terminal{;}
+\end{bnf}
+
+\begin{bnf}{CustomOperator}
+    OperatorSymbol\bnfp
+\end{bnf}
+
+\begin{bnf}{OperatorSymbol}[\oneof]
+    \terminal{\~ ! \# \% \^{} \& * - | + = / ? < > . '}
+\end{bnf}
+
+
+\pnum
+运算符名称指代对应的运算符函数的名称，用来重载运算符。运算符名称由关键字\tcode{operator}后跟运算符组成。\tcode{operator}后面可以跟\tcode{infix}、\tcode{prefix}或\tcode{suffix}以消歧义。
+
+\pnum
+\tcode{operator}后跟的运算符可以是内建运算符或自定义运算符。表~\ref{tab:op}~列出了全部内建运算符，其中上半部分为可以重载的运算符，下半部分为不能重载的运算符。
+
+\begin{floattable}{内建运算符}{tab:op}{lllll}
+\topline
+\tcode{+!} &
+\tcode{-!} &
+前缀\tcode{+} &
+前缀\tcode{-} &
+前缀\tcode{!} \\
+\tcode{'\~} &
+\tcode{*} &
+\tcode{/} &
+\tcode{\%} &
+二元\tcode{+} \\
+二元\tcode{-} &
+\tcode{shl} &
+\tcode{shr} &
+\tcode{'\&} &
+\tcode{'\^{}} \\
+\tcode{'|} &
+\tcode{..} &
+\tcode{..=} &
+\tcode{\~} &
+\tcode{==} \\
+\tcode{!=} &
+\tcode{<} &
+\tcode{<=} &
+\tcode{>} &
+\tcode{>=} \\
+\tcode{!<} &
+\tcode{!>} &
+\tcode{<>} &
+\tcode{cmp} &
+\tcode{in} \\
+\tcode{\&} &
+\tcode{|} &&&\\
+\hhline{|=====|}
+\tcode{.} &
+\tcode{await} &
+\tcode{?} &
+后缀\tcode{!} &
+\tcode{??} \\
+\tcode{!in} &
+\tcode{is} &
+\tcode{!is} &
+\tcode{=} &
+\tcode{+=} \\
+\tcode{-=} &
+\tcode{*=} &
+\tcode{/=} &
+\tcode{\%=} &
+\tcode{shl_eq} \\
+\tcode{shr_eq} &
+\tcode{'\&=} &
+\tcode{'\^{}=} &
+\tcode{'|=} &
+\tcode{??=} \\
+\tcode{++} &
+\tcode{--} &
+\tcode{\~>} &
+\tcode{<\~} &
+\tcode{;} \\
+\end{floattable}
+
+\pnum
+\tcode{operator}后面还能跟有一些特殊符号组合，表示特殊含义。
+
+\pnum
+\tcode{opeartor()}重载函数调用（\ref{expr.call}）。\tcode{operator[]}重载下标运算符（\ref{expr.sub}）。\tcode{opeartor\$}重载\tcode{\$}（\ref{expr.dollar}）。\tcode{opeartor if}允许其它值被用于条件中。$\tcode{opeartor as}\ T$创建自定义转换。
+
+\pnum
+\tcode{operator}后跟一个字符串字面量用于自定义后缀。这个字符串字面量必须是一个空字符串，且不包含任何前缀。
+
+\rSec1[op.user]{自定义运算符}
+\indextext{运算符!自定义}
+
+\begin{bnf}{OpeartorDeclaration}
+    \terminal{operator} CustomOperator OperatorSpecifier \terminal{;} \br
+    \terminal{operator} Identifier OperatorSpecifier \terminal{;}
+\end{bnf}
+
+\begin{bnf}{OperatorSpecifier}
+    \terminal{prefix} \br
+    \terminal{suffix} \br
+    \terminal{infix} \br
+    \terminal{infix} \terminal{:} OperatorName \br
+    \terminal{infix} \terminal{:} \terminal{(} OperatorPrecedence \terminal{,} OperatorPrecedence \terminal{)}
+\end{bnf}
+
+\begin{bnf}{OperatorPrecedence}
+    OperatorName \br
+    \terminal{_}
+\end{bnf}
+
+\pnum
+用户可以声明自己的运算符。自定义运算符的名称由关键字\tcode{operator}后跟一个标识符或标点符号组成。
+
+\pnum
+自定义的运算符不能与内建的运算符相同，也不能是\tcode{...}。如果自定义的运算符是一个标识符，则它不能在任何作用域中与另一个标识符相同，否则这是一个编译错误。自定义的运算符也不能是\tcode{prefix}、\tcode{suffix}或\tcode{infix}。
+
+\pnum
+自定义的运算符可以是前缀、后缀或者中缀的，分别使用\tcode{prefix}、\tcode{suffix}和\tcode{infix}指定。
+后缀与前缀运算符不能指定优先级。后缀运算符的优先级总是高于前缀运算符，并高于所有类型的中缀运算符。
+中缀运算符可以指定其优先级。表~\ref{tab:op-precedence}~展示了可选择的中缀运算符优先级。
+
+\begin{floattable}{中缀运算符优先级}{tab:op-precedence}{lll}
+\topline
+\tcode{*} & \tcode{/} & \tcode{\%} \\
+\tcode{+} & \tcode{-} &\\
+\tcode{shl} & \tcode{shr} &\\
+\tcode{'\&} & \tcode{'\^{}} & \tcode{'|} \\
+\tcode{..} & \tcode{..=} &\\
+\tcode{\~} &&\\
+\tcode{??} &&\\
+\tcode{==} 等 &&\\
+\tcode{\&} & \tcode{|} &\\
+\tcode{=}等 &&\\
+\end{floattable}
+
+\pnum
+中缀运算符可以指定自己的优先级与某个内建的运算符组相同，或指定两个相邻的运算符组，创建一个自定义的优先级。不能在\tcode{==}到\tcode{=}之间创建新的优先级。
+此外，还可以使用\tcode{(_, *)}或\tcode{(=, _)}指定比表中运算符更低或更高的优先级。
+\enternote 自定义的优先级无法指定结合性。然而，可以通过自定义运算符的重载函数自行处理优先级。参见\ref{op.over.infix}。\exitnote
+中缀运算符也可以不指定优先级。这类运算符视为比\tcode{==}具有更高的优先级。
+除了未指定优先级的中缀运算符，运算符的优先级关系是线性的。
+
+\pnum
+如果中缀运算符的优先级组处于\tcode{==}组，则其不能与任何内建运算符混用，且其返回值必须为布尔类型。
+如果中缀运算符处于\tcode{\&}组，则其不能与任何内建运算符混用，且其参数和返回值必须为布尔类型。
+如果中缀运算符处于\tcode{=}组，则其不能与任何内建运算符混用，且其返回值必须是\tcode{void}。
+自定义的与\tcode{??}或\tcode{\&}优先级相同的运算符不具有短路求值特性。。
+如果两个自定义运算符具有相同等级的优先级，且不是内建的优先级，则在一个表达式中将其混用是一个编译错误。
+如果一个自定义运算符未指定优先级，则它与任何优先级高于\tcode{==}的中缀运算符混用是一个编译错误。
+
+\enterexample
+\begin{codeblock}
+operator >> infix : +;
+operator << infix : +;
+operator !! infix : (*, +);
+operator ## infix : (*, +);
+
+a >> b + c; // OK，等价于\tcode{(a >> b) + c}
+a >> b << c; // OK，等价于\tcode{(a >> b) << c}
+a !! b * c; // OK，等价于\tcode{a !! (b * c)}
+a !! b ## c; // 错误，不能在同一个表达式中混用具有新优先级的运算符
+
+operator ** infix;
+operator && infix;
+
+a ** b * c; // 错误，未指定优先级的运算符不能与\tcode{*}混用
+a = a ** b; // 可以，允许赋值运算符
+a ** b && c; // 错误，相互之间也不能混用
+\end{codeblock}
+\exitexample
+
+\pnum
+一个运算符可以同时定义为前缀、后缀和中缀，但不能定义同一个类别的相同运算符多于一次。如果自定义运算符产生了语法歧义，则这是一个编译错误。
+
+\enterexample
+\begin{codeblock}
+operator ** suffix;
+operator ** infix;
+operator && prefix;
+operator && infix;
+
+a ** && b; // 错误，无法确定谁为中缀运算符
+(a**) && b; // 可以
+a ** (&&b); // 可以
+\end{codeblock}
+\exitexample
+
+\pnum
+解析表达式的流程如下：
+
+\begin{itemize}
+    \item 构造基本表达式和运算符。
+    \item 如果有运算符\tcode{.}、\tcode{as}或\tcode{is}，将它及后面的必需成分一起替换成一个后缀运算符。\enternote \tcode{is}运算符之后的模式将会尽可能长地构造。请在需要的情况下加上括号。\exitnote
+    \item 对每一组连续且多于一个的基本表达式，如果除了第一个以外都是元组字面量、数组字面量或块，将它们替换为后缀运算符。否则，这是一个编译错误。
+    \item 确定每个运算符是前缀、后缀还是中缀的。
+    \item 对每组连续的表达式-运算符-表达式组，如果存在唯一一个运算符满足：
+    \begin{itemize}
+        \item 它可以作为中缀运算符；
+        \item 它前面的所有运算符都可以作为后缀运算符；
+        \item 它后面的所有运算符都可以作为前缀运算符。
+    \end{itemize}
+    那么这个运算符是中缀运算符，之前的所有运算符是后缀运算符，之后的所有运算符是前缀运算符。如果存在多于一个或不存在这样的运算符，这是一个编译错误。
+    \item 第一个子表达式之前的所有运算符都是前缀运算符。最后一个子表达式之后的所有运算符都是后缀运算符。如果有运算符不是这个类别，这是一个编译错误。
+    \item 将基本表达式与其后的后缀运算符替换成一个后缀表达式。
+    \item 将后缀表达式与其前的前缀运算符替换成一个前缀表达式。
+    \item 此时，表达式将成为子表达式与中缀运算符交替的链，且总以子表达式开头和结尾。
+    \item 如果表达式中同时包含未指定优先级的运算符和另一个优先级高于\tcode{==}的运算符，这是一个编译错误。
+    \item 运算符按照优先级组依次选择其操作数，并结合成为子表达式。如果此时存在非法的运算符混用，这是一个编译错误。
+    \item 如果此时仍然剩余多于一个子表达式，这是一个编译错误。否则，表达式解析完成。
+\end{itemize}
+
+\rSec1[op.over]{运算符重载}
+\indextext{运算符!重载}
+
+\pnum
+运算符可以被重载，以为其他类似提供类似于内建类型的行为。当声明一个重载运算符函数时，视同内建的运算符具有一个对应的重载函数签名来进行重载检测。
+
+\enterexample
+\begin{codeblock}
+func operator+(lhs: int?, rhs: int?) { lhs? + rhs? } // 可以
+func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符冲突
+\end{codeblock}
+\exitexample
+
+\rSec2[op.over.call]{函数调用运算符}
+\indextext{运算符!重载!函数调用}
+
+\pnum
+函数调用运算符可以接受任意数量的参数并返回任意值。重载了这个运算符的类型可以转换到对应的函数类型。
+
+\pnum
+函数调用运算符只能作为类方法被重载。
+
+\rSec2[op.over.sub]{下标运算符}
+\indextext{运算符!重载!下标}
+
+\rSec2[op.over.prefix]{前缀运算符}
+\indextext{运算符!重载!前缀}
+
+\rSec2[op.over.suffix]{后缀运算符}
+\indextext{运算符!重载!后缀}
+
+\rSec2[op.over.infix]{中缀运算符}
+\indextext{运算符!重载!中缀}
+
+\pnum
+对中缀运算符\tcode{@}而言，$e_1\mathbin{\tcode{@}}e_2\mathbin{\tcode{@}}\ldots\mathbin{\tcode{@}}e_n$将会调用
+$\tcode{opeartor infix@(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或\\$\tcode{opeartor infix@([}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{])}$，取先匹配的那一个。如果没有找到匹配的重载函数，且该运算符所处的优先级组未定义其结合性，则这是一个编译错误。否则，将会按照其结合性拆分为多次以两个参数调用的形式。若仍然无法找到匹配的重载函数，则这是一个编译错误。
+
+\rSec2[op.over.assign]{赋值运算符}
+
+\pnum
+赋值运算符，及与其相同优先级的运算符的重载函数必须返回\tcode{void}。
+
+\rSec2[op.over.dollar]{\tcode{\$}运算符}
+\indextext{运算符!重载!\$}
+
+\pnum
+\tcode{\$}表达式将被转换为对当前序列$s$调用$s\tcode{.operator\$()}$。它只能接受一个\tcode{this}参数。
+
+\rSec2[op.over.if]{条件运算符}
+\indextext{运算符!重载!条件}
+
+\pnum
+\tcode{operator if}允许类型在条件中被使用。重载了\tcode{operator if}的类型和\tcode{bool}称为\term{布尔类型}。它只能接受一个\tcode{this}参数，且其返回值类型必须为布尔类型。
+
+\pnum
+当布尔类型的表达式$e$被用于条件中时，会不断调用$e.\tcode{operator if()}$，直到返回值为\tcode{bool}为止。然后这个值将被用于条件判断。
+
+\rSec2[op.over.gen]{自动生成的运算符重载}
+\indextext{运算符!重载!自动生成}
+
+\pnum
+部分运算符重载会在其他运算符重载之后自动生成。
+
+\pnum
+如果类型$T$重载了\tcode{operator cmp}，则会自动生成其他的比较运算符：
+
+\begin{codeblock}
+func operator==(lhs: T, rhs: T) { (lhs cmp rhs) is .equal }
+func operator!=(lhs: T, rhs: T) { (lhs cmp rhs) !is .equal }
+func operator<(lhs: T, rhs: T) { (lhs cmp rhs) is .less }
+func operator!<(lhs: T, rhs: T) { (lhs cmp rhs) !is .less }
+func operator<=(lhs: T, rhs: T) { (lhs cmp rhs) is .less | .equal }
+func operator>(lhs: T, rhs: T) { (lhs cmp rhs) is .greater }
+func operator!>(lhs: T, rhs: T) { (lhs cmp rhs) !is .greater }
+func operator>=(lhs: T, rhs: T) { (lhs cmp rhs) is .greater | .equal }
+func operator<>(lhs: T, rhs: T) { (lhs cmp rhs) is .less | .greater }
+\end{codeblock}
+
+\pnum
+如果类型$T$重载了\tcode{operator==}，则会自动生成\tcode{operator!=}：
+
+\begin{codeblock}
+func operator!=(lhs: T, rhs: T) { !(lhs == rhs) }
+\end{codeblock}
+
+\tcode{operator<}与\tcode{opeartor!<}、\tcode{operator>}与\tcode{operator!>}也有类似的自动生成规则。\enternote 虽然\tcode{!in}不能被重载，但是它也有类似的语义。\exitnote

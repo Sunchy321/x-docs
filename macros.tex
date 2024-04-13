@@ -199,14 +199,15 @@
 % don't get special treatment.
 
 \lstdefinelanguage{X} {
-    morekeywords={void, never, int, uint, float, bool, string, self, mut, const},
+    morekeywords={void, never, int, uint, float, bool, string, self, mut, const, some},
     morekeywords={if, then, while, for, return, break, continue},
     morekeywords={func, enum, class, type, trait, impl},
-    morekeywords={do},
+    morekeywords={async, partial},
+    morekeywords={do, await, shl, shr, shl_eq, shr_eq, in, is, cmp},
     morekeywords={true, false, nil, this},
-    morekeywords={var, let},
+    morekeywords={let},
     morekeywords={operator},
-    morekeywords={partial},
+    morekeywords={get, set, willSet, didSet, infix, prefix, suffix},
     morecomment=[l]{//},
     morecomment=[s]{/*}{*/}
 }
