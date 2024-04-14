@@ -10,6 +10,7 @@
     \terminal{operator} StringLiteral \br
     \terminal{operator} \terminal{\$} \br
     \terminal{operator} \terminal{if} \br
+    \terminal{operator} \terminal{is} Type \br
     \terminal{operator} \terminal{as} Type
 \end{bnf}
 
@@ -115,7 +116,7 @@
 \tcode{operator}后面还能跟有一些特殊符号组合，表示特殊含义。
 
 \pnum
-\tcode{opeartor()}重载函数调用（\ref{expr.call}）。\tcode{operator[]}重载下标运算符（\ref{expr.sub}）。\tcode{opeartor\$}重载\tcode{\$}（\ref{expr.dollar}）。\tcode{opeartor if}允许其它值被用于条件中。$\tcode{opeartor as}\ T$创建自定义转换。
+\tcode{opeartor()}重载函数调用（\ref{expr.call}）。\tcode{operator[]}重载下标运算符（\ref{expr.sub}）。\tcode{opeartor\$}重载\tcode{\$}（\ref{expr.dollar}）。\tcode{opeartor if}允许其它值被用于条件中。$\tcode{operatro is} T$创建自定义隐式转换。$\tcode{opeartor as}\ T$创建自定义显式转换。
 
 \pnum
 \tcode{operator}后跟一个字符串字面量用于自定义后缀。这个字符串字面量必须是一个空字符串，且不包含任何前缀。
@@ -222,7 +223,7 @@ a ** (&&b); // 可以
 解析表达式的流程如下：
 
 \begin{itemize}
-    \item 构造基本表达式和运算符。
+    \item 构造基本表达式和运算符。运算符将尽可能长地构造，请在必要的时候使用空格分隔。
     \item 如果有运算符\tcode{.}、\tcode{as}或\tcode{is}，将它及后面的必需成分一起替换成一个后缀运算符。\enternote \tcode{is}运算符之后的模式将会尽可能长地构造。请在需要的情况下加上括号。\exitnote
     \item 对每一组连续且多于一个的基本表达式，如果除了第一个以外都是元组字面量、数组字面量或块，将它们替换为后缀运算符。否则，这是一个编译错误。
     \item 确定每个运算符是前缀、后缀还是中缀的。
@@ -259,7 +260,7 @@ func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符�
 \indextext{运算符!重载!函数调用}
 
 \pnum
-函数调用运算符可以接受任意数量的参数并返回任意值。重载了这个运算符的类型可以转换到对应的函数类型。
+函数调用运算符可以接受任意数量的参数并返回任意值。重载了这个运算符的类型可以隐式转换到对应的函数类型。
 
 \pnum
 函数调用运算符只能作为类方法被重载。

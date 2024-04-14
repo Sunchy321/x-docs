@@ -34,7 +34,8 @@ $$ \mathcal{V} = \{ \langle v, T, Q \rangle \mid T \in \mathcal{T}, v \in T, Q \
     \terminal{int} \terminal{<} Expression \terminal{>} \br
     \terminal{uint} \terminal{<} Expression \terminal{>} \br
     \terminal{float} \br
-    \terminal{float} \terminal{<} Expression \terminal{>}
+    \terminal{float} \terminal{<} Expression \terminal{>} \br
+    SymbolType
 \end{bnf}
 
 $$\tcode{void} \coloneqq \{ \mathrm{void} \}$$
@@ -74,6 +75,20 @@ $\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tco
 
 \pnum
 整数类型、定长整数类型和浮点类型称为\term{算术类型}。
+
+\rSec3[type.symbol]{符号类型}
+\indextext{类型!符号}
+
+\begin{bnf}{SymbolType}
+    SymbolLiteral
+\end{bnf}
+
+$$ \tcode{'}s \coloneqq \left\{ \langle \tcode{'}s, \tcode{'}s \rangle \right\} $$
+
+$$ \tcode{symbol} \coloneqq \bigcup_{\tcode{'}s} \left\{  \tcode{'}s \right\} $$
+
+\pnum
+符号字面量的类型与其值相同。\tcode{symbol}是符号字面量的公共类型。
 
 \rSec2[type.special]{特殊类型}
 \indextext{类型!特殊类型}
@@ -159,7 +174,8 @@ $T_1\tcode{|}\ldots\tcode{|}T_n$ 称作\term{联合类型}。其中各个$T_i$�
 \rSec3[type.func]{函数类型}
 
 \begin{bnf}{FuncType}
-    Parameter ReturnType
+    Parameter ReturnType \br
+    Type ReturnType
 \end{bnf}
 
 \rSec2[type.named]{具名类型}
@@ -206,7 +222,12 @@ I_{l,h} &\preceq \tcode{float<}s\tcode{>} \\
 范围更小的整数类型是范围更大的整数类型的子类型。长度更小的浮点类型是长度更大的浮点类型的子类型。
 
 \pnum
-整数类型是浮点类型的子类型。当整数被转换为浮点数时，其值将被转换为最接近的浮点数。\enternote 虽然整数转换到浮点数可能无法保持值不变，但出于习惯仍然保持这个隐式转换。 \exitnote \enternote 浮点类型不能转换到整数类型。请使用转换函数。 \exitnote
+整数类型是浮点类型的子类型。当整数被隐式转换为浮点数时，其值将被转换为最接近的浮点数。\enternote 虽然整数转换到浮点数可能无法保持值不变，但出于习惯仍然保持这个隐式转换。 \exitnote \enternote 浮点类型不能隐式转换到整数类型，但可以显式转换。 \exitnote
+
+$$ \tcode{'}s \preceq \tcode{symbol} $$
+
+\pnum
+所有符号字面量类型都是\tcode{symbol}的子类型。
 
 \pnum
 \tcode{bool}没有语言内建的子类型约束。但是，其他类型的值可以在\tcode{if}表达式中当作调教使用，这通过重载\tcode{operator if}运算符实现。

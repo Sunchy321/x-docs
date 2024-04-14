@@ -77,7 +77,7 @@ trait Iterator<T> {
 %     }
 % }
 
-func map<T, U, S : Sequence>(this: S<T>, f: func(T) -> U) -> S<U> {
+func map<T, U, S : Sequence>(this: S<T>, f: T -> U) -> S<U> {
     return map(this, f);
 }
 \end{itemdecl}

@@ -58,6 +58,7 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
     IntegerLiteral \br
     FloatingLiteral \br
     StringLiteral \br
+    SymbolLiteral \br
     BooleanLiteral \br
     \terminal{nil} \br
     ArrayLiteral \br
@@ -196,7 +197,7 @@ $T\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,}
 $T\tcode{\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\}}$以对象方式创建一个类型为$T$的对象。
 
 \pnum
-如果$T$是对象类型，则每个$kv$对都会用来初始化对应的成员。如果$v$不能转换到成员的类型，则这是一个编译错误。如果有成员未被显式指定初始值，且其不是可空类型，则这是一个编译错误；如果是可空类型，则其初始值为\tcode{nil}。
+如果$T$是对象类型，则每个$kv$对都会用来初始化对应的成员。如果$v$不能隐式转换到成员的类型，则这是一个编译错误。如果有成员未被显式指定初始值，且其不是可空类型，则这是一个编译错误；如果是可空类型，则其初始值为\tcode{nil}。
 
 \pnum
 如果$T$是类类型，则选择以下方式中第一个成功的：
@@ -714,7 +715,7 @@ $a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!i
 赋值表达式的结果类型是\tcode{void}。
 
 \pnum
-\tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是\tcode{mut}的，且右操作数必须能转换到左操作数。
+\tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是\tcode{mut}的，且右操作数必须能隐式转换到左操作数。
 
 \pnum
 复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\^{}=}、\tcode{'|=}和\tcode{??=}分别表示加、减、乘、除、取余、左移、右移、按位与、按位异或、按位或和空值合并赋值。

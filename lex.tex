@@ -65,14 +65,15 @@
 \tcode{shr}       &
 \tcode{shr_rq}    &
 \tcode{string}    &
-\tcode{this}      \\
+\tcode{symbol}    \\
+\tcode{this}      &
 \tcode{throw}     &
 \tcode{true}      &
 \tcode{type}      &
-\tcode{typeof}    &
-\tcode{uint}      \\
+\tcode{typeof}    \\
+\tcode{uint}      &
 \tcode{void}      &
-\tcode{while}     &&&\\
+\tcode{while}     &&\\
 \end{floattable}
 
 \pnum
@@ -243,8 +244,8 @@
 \rSec2[literal.string]{字符串字面量}
 
 \begin{bnf}{StringLiteral}
-    \terminal{"} Schar\bnfs\ \terminal{"} Suffix\bnfq \br
-    \terminal{@"} Rchar\bnfs\ \terminal{"} Suffix\bnfq \br
+    \terminal{"} Schar\bnfs \terminal{"} Suffix\bnfq \br
+    \terminal{@}\bnfp \terminal{"} Rchar\bnfs \terminal{"} \terminal{@}\bnfp Suffix\bnfq \br
     Mdelim Mchar\bnfs Mdelim Suffix\bnfq
 \end{bnf}
 
@@ -259,30 +260,21 @@
     \terminal{\textbackslash{}u\{} HexadecimalDigit\bnfp \terminal{\}}
 \end{bnf}
 
+\begin{bnf}{TextInterpolation}
+    \terminal{\textbackslash{}(} Expression \terminal{)}
+\end{bnf}
+
 \begin{bnf}{SimpleEscape}[\oneof]
-    \terminal{' " ? \textbackslash a b f n r t v}
+    \terminal{0 ' " ? \textbackslash a b f n r t v}
 \end{bnf}
 
 \begin{bnf}{Rchar}
-    \textnormal{除了\terminal{"}以外的非换行可打印字符} \br
-    \terminal{""} \br
-    TextInterpolation
+    \textnormal{非换行可打印字符} \br
+    RawTextInterpolation
 \end{bnf}
 
-\begin{bnf}{SIchar}
-    \textnormal{除了\terminal{\textbackslash}、\terminal{"}、\terminal{\{}和\terminal{\}}以外的非换行可打印字符} \br
-    EscapeSeq \br
-    \terminal{\{} Expression \terminal{\}} \br
-    \terminal{\{\{} \br
-    \terminal{\}\}}
-\end{bnf}
-
-\begin{bnf}{RIchar}
-    \textnormal{除了\terminal{"}、\terminal{\{}和\terminal{\}}以外的非换行可打印字符} \br
-    \terminal{""} \br
-    \terminal{\{} Expression \terminal{\}} \br
-    \terminal{\{\{} \br
-    \terminal{\}\}}
+\begin{bnf}{RawTextInterpolation}
+    \terminal{\textbackslash} \terminal{@}\bnfp \terminal{(}  Expression \terminal{)}
 \end{bnf}
 
 \begin{bnf}{Mdelim}
@@ -290,14 +282,17 @@
 \end{bnf}
 
 \begin{bnf}{Mchar}
-    \textnormal{任意可打印字符}
+    \textnormal{除了\terminal{\textbackslash}以外的的任意可打印字符} \br
+    EscapeSeq \br
+    \terminal{\textbackslash} \textnormal{换行} \br
+    TextInterpolation
 \end{bnf}
 
 \pnum
-字符串字面量表示UTF-8字符串，其类型为\tcode{string}。它有三种种类：普通字符串字面量、原始字符串字面量、多行字符串字面量。\term{普通字符串字面量}使用反斜杠开始的转义序列表示其他字符。\term{原始字符串字面量}中所有可打印字符将会表示这个字符本身，除了\tcode{""}表示单个双引号的转义序列之外。这两类字符串字面量不允许包含换行符。
+字符串字面量表示UTF-8字符串，其类型为\tcode{string}。它有两种类型：普通字符串字面量和多行字符串字面量。
 
 \pnum
-上述两类字符串字面量可以前加\tcode{\$}表示插值字符串。插值字符串中的$\tcode{\{}e\tcode{\}}$序列会被解释为一个字符串插值，其中$e$为表达式。该表达式将被求值后转换为字符串插入当前位置。插值字符串中除了原有的转义序列外，还有\tcode{\{\{}和\tcode{\}\}}作为单个大括号的转义序列。
+普通字符串字面量被单个双引号包围。其中可以使用反斜杠开始的转义序列表示其他字符。普通字符串字面量也可以前后加上等量的\tcode{@}，此时它被称为\term{原始字符串字面量}。原始字符串字面量中的反斜杠不会被解释为转义序列，而是字符本身。
 
 \pnum
 \term{多行字符串字面量}表示横跨多行的字符串。它以任意数量但不少于三个的\tcode{"}开始，并以等量的\tcode{"}结束。每一行包含换行符都属于该字符串字面量，但是除了以下字符：
@@ -306,23 +301,23 @@
     \item 开头引号序列之后紧邻的换行会被删除。
     \item 如果结尾引号序列所在行之前全都是空白字符，则这些字符连同上一行的换行会被删除。
     \item 如果每一行的空白字符都以结尾引号序列之前的空白字符为前缀，则这些字符都会被删除。
+    \item 如果一行末尾有反斜杠，则这个反斜杠和其后的换行符会被删除。
 \end{itemize}
 
 如果结尾行包含空白字符且之前的某一行的空白字符不以这些空白字符为前缀，则这是一个编译错误。
 
 \enterexample
-
 如下字面量为合法的多行字符串字面量：
-
 \begin{codeblock}
 """
 abc
 """
 \end{codeblock}
-
 其等价于\tcode{"abc"}。
-
 \exitexample
+
+\pnum
+字符串字面量可以包含字符串插值，其形式为$\tcode{\textbackslash(}e\tcode{)}$，其中$e$为表达式。字符串插值会被求值后转换为字符串插入当前位置。对原始字符串字面量而言，反斜杠和括号之间需要插入等量的\tcode{@}，否则仍然会被解释为字面符号。
 
 \rSec2[literal.symbol]{符号字面量}
 
@@ -332,7 +327,7 @@ abc
 \end{bnf}
 
 \pnum
-符号字面量用于标识成员名称，其类型为\tcode{symbol}，值为其标识符或内部ID的值。其内部ID不能为另一个符号字面量。
+符号字面量用于标识成员名称，其类型和其值为其标识符或内部ID的值。其内部ID不能为另一个符号字面量。
 
 \rSec2[literal.boolean]{布尔字面量}
 
