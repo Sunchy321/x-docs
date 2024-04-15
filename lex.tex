@@ -32,7 +32,7 @@
 \rSec1[lex.keyword]{关键字}
 
 \pnum
-表~\ref{tab:keyword}~中的标识符被保留做关键字。关键字不能作为标识符使用。
+表~\ref{tab:keyword}~中的标识符被保留做关键字。关键字不能作为标识符使用。以两个下划线\tcode{__}开头，后跟任意数量的小写字母与下划线的标识符也可能被保留作关键字。
 
 \begin{floattable}{关键字}{tab:keyword}{lllll}
 \topline
@@ -40,40 +40,52 @@
 \tcode{async}     &
 \tcode{await}     &
 \tcode{bool}      &
-\tcode{cmp}       \\
+\tcode{break}     \\
+\tcode{class}     &
+\tcode{cmp}       &
 \tcode{const}     &
-\tcode{deinit}    &
+\tcode{continue}  &
+\tcode{deinit}    \\
 \tcode{do}        &
 \tcode{else}      &
-\tcode{enum}      \\
-\tcode{false}     &
+\tcode{enum}      &
+\tcode{extern}    &
+\tcode{false}     \\
 \tcode{float}     &
 \tcode{for}       &
+\tcode{func}      &
 \tcode{if}        &
-\tcode{init}      \\
+\tcode{impl}      \\
+\tcode{import}    &
+\tcode{in}        &
+\tcode{init}      &
 \tcode{int}       &
-\tcode{is}        &
+\tcode{is}        \\
 \tcode{let}       &
 \tcode{match}     &
-\tcode{mut}       \\
+\tcode{mut}       &
 \tcode{never}     &
-\tcode{nil}       &
+\tcode{nil}       \\
+\tcode{operator}  &
+\tcode{public}    &
+\tcode{private}   &
 \tcode{return}    &
-\tcode{self}      &
-\tcode{shl}       \\
+\tcode{self}      \\
+\tcode{shl}       &
 \tcode{shl_eq}    &
 \tcode{shr}       &
-\tcode{shr_rq}    &
+\tcode{shr_eq}    &
+\tcode{static}    \\
 \tcode{string}    &
-\tcode{symbol}    \\
+\tcode{symbol}    &
 \tcode{this}      &
 \tcode{throw}     &
-\tcode{true}      &
+\tcode{true}      \\
 \tcode{type}      &
-\tcode{typeof}    \\
+\tcode{typeof}    &
 \tcode{uint}      &
 \tcode{void}      &
-\tcode{while}     &&\\
+\tcode{while}     \\
 \end{floattable}
 
 \pnum
@@ -147,8 +159,7 @@
 \end{bnf}
 
 \begin{bnf}{BinaryLiteral}
-    \terminal{0b} BinaryDigit \bnflp\terminal{_}\bnfq BinaryDigit\bnfrp\bnfs \br
-    \terminal{0B} BinaryDigit \bnflp\terminal{_}\bnfq BinaryDigit\bnfrp\bnfs
+    \terminal{0b} BinaryDigit \bnflp\terminal{_}\bnfq BinaryDigit\bnfrp\bnfs
 \end{bnf}
 
 \begin{bnf}{BinaryDigit}
@@ -157,11 +168,7 @@
 \end{bnf}
 
 \begin{bnf}{HexadecimalLiteral}
-    HexadecimalPrefix HexadecimalDigits
-\end{bnf}
-
-\begin{bnf}{HexadecimalPrefix}[\oneof]
-    \terminal{0x 0X}
+    \terminal{0x} HexadecimalDigits
 \end{bnf}
 
 \begin{bnf}{HexadecimalDigits}

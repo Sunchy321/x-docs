@@ -124,8 +124,24 @@ if x.filter{ true }
 \end{bnf}
 
 \pnum
-\term{\tcode{for}语句}进行明确的范围循环。形如$\tcode{for}\ p\ \tcode{:}\ e\ B$的\tcode{for}语句需满足：$e$实现了\tcode{core.Sequence}且
+\term{\tcode{for}语句}进行明确的范围循环。形如$\mathrel{\tcode{for}} p\mathrel{\tcode{:}} e\ B$的\tcode{for}语句需满足：$e$实现了\tcode{core.Sequence}且
 $\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译错误。$p$中注入的变量在整个\tcode{for}语句的范围内生效。整个语句的类型为\tcode{void}。
+
+\pnum
+\tcode{for}语句将被展开为如下形式：
+
+\begin{codeblock}
+{
+    let mut \{$i$} = \{$e$}.iterator;
+
+    while let \{$v$} = \{$i$}.next(); \{$v$} != nil {
+        \{$p$} = \{$v$};
+        \{$B$}
+    }
+}
+\end{codeblock}
+
+其中$i$和$v$是内部使用的匿名变量名称。参见~\ref{core.seq}。
 
 \rSec1[stmt.control]{控制语句}
 \indextext{语句!控制}

@@ -11,18 +11,15 @@
 \indexlibrary{\idxcode{Sequence}}
 \begin{itemdecl}
 trait Sequence<T> {
-    type Value;
+    type Item = T;
     type Iterator : core.Iterator<T>;
 
     let size: uint;
+    let iterator: Iterator;
 
-    func iterator() -> Iterator;
-}
+    func map(f: T -> U) -> self<U>;
 
-impl<T> Sequence<T> {
-    type Value = T;
-
-    func operator$() { this.size }
+    func operator\{\dollar}() { this.size }
 }
 \end{itemdecl}
 
@@ -30,18 +27,26 @@ impl<T> Sequence<T> {
 \tcode{Sequence}表示序列。
 
 \pnum
-\tcode{Sequence<T>.Value}是序列的元素类型，其始终为\tcode{T}。
+\tcode{Item}是序列的元素类型，其始终为\tcode{T}。
 
 \pnum
-\tcode{Sequence<T>.size}是序列的大小。序列重载了\tcode{operator\$}，返回\tcode{size}。
+\tcode{Iterator}是序列的迭代器类型，其必须实现了\tcode{core.Iterator<T>}。
 
 \pnum
-\tcode{Sequence<T>.Iterator}是序列的迭代器类型，其必须实现了\tcode{core.Iterator<T>}。
+\tcode{size}是序列的大小。序列重载了\tcode{operator\$}，返回\tcode{size}。
+
+\pnum
+\tcode{iterator}是序列的迭代器。
+
+\pnum
+\tcode{map}将序列中的每个元素应用函数\tcode{f}，返回一个新的序列。
 
 \indexlibrary{\idxcode{Iterator}}
 \begin{itemdecl}
 trait Iterator<T> {
-    func next() -> T?;
+    type Item = T;
+
+    func next(this: mut) -> T?;
 }
 \end{itemdecl}
 
@@ -49,35 +54,6 @@ trait Iterator<T> {
 \tcode{Iterator}表示迭代器。
 
 \pnum
-\tcode{Iterator<T>.next}返回迭代器的下一个元素，如果迭代器已经到达末尾，则返回\tcode{nil}。
+\tcode{next}返回迭代器的下一个元素，如果迭代器已经到达末尾，则返回\tcode{nil}。
 
 \rSec1[core.seq.helper]{辅助函数}
-
-\indexlibrary{\idxcode{map}}
-\begin{itemdecl}
-% func map<S : Sequence<T>, T, U>(seq: S, f: func(T) -> U) -> impl Sequence<U> {
-%     impl Sequence<U> {
-%         type Value = U;
-%         type Iterator = impl Iterator<U>;
-
-%         let size = seq.size;
-
-%         func iterator() -> Iterator {
-%             let it = seq.iterator();
-%             return impl Iterator<U> {
-%                 func next() -> U? {
-%                     let x = it.next();
-%                     if x == nil {
-%                         return nil;
-%                     }
-%                     return f(x!);
-%                 }
-%             };
-%         }
-%     }
-% }
-
-func map<T, U, S : Sequence>(this: S<T>, f: T -> U) -> S<U> {
-    return map(this, f);
-}
-\end{itemdecl}

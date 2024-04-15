@@ -22,7 +22,7 @@
     TypeDecl \br
     ClassDecl \br
     EnumDecl \br
-    ConceptDecl
+    TraitDecl
 \end{bnf}
 
 \pnum
@@ -51,7 +51,8 @@
 \indextext{类!属性}
 
 \begin{bnf}{PropertyDecl}
-    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq Initializer\bnfq PropertyBody \terminal{;}
+    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq Initializer\bnfq PropertyBody \terminal{;} \br
+    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq \terminal{=>} Expression \terminal{;} \br
 \end{bnf}
 
 \begin{bnf}{PropertyQual}
@@ -98,6 +99,7 @@
 如果属性$p$的声明中既不包含\tcode{get}也不包含\tcode{set}访问器，则视作该类具有字段$p'$，且具有访问器$\tcode{get}\mathrel{\tcode{=>}}\tcode{this.}p'$。
 如果该属性有\tcode{mut}修饰，则还视为该属性具有访问器$\tcode{set => this.}p'\tcode{ = \$value}$。
 如果\tcode{get}或\tcode{set}访问器后直接跟分号，则视作以上述方式生成访问器，且另一个对应的访问器若存在则必须采用这种省略方式声明。
+如果属性以直接后跟$\mathrel{\tcode{=>}}e$的方式声明，则视作该属性具有访问器$\tcode{get} \mathrel{\tcode{=>}} e$。
 
 \pnum
 未使用\tcode{mut}声明的属性不能包含\tcode{set}、\tcode{willSet}和\tcode{didSet}访问器。

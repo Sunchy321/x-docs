@@ -1,0 +1,28 @@
+%!TEX root = x.tex
+
+\rSec0[trait]{概念}
+
+\begin{bnf}{TraitDecl}
+    TraitQual\bnfs \terminal{trait} Identifier TraitBody
+\end{bnf}
+
+\begin{bnf}{TraitQual}
+    \terminal{const}
+\end{bnf}
+
+\begin{bnf}{TraitBody}
+    \terminal{\{} TraitMember\bnfs \terminal{\}}
+\end{bnf}
+
+\begin{bnf}{TraitMember}
+    ClassMember \br
+    TypeConstraint
+\end{bnf}
+
+\begin{bnf}{TypeConstraint}
+    \terminal{type} Identifier \terminal{;} \br
+    \terminal{type} Identifier \terminal{:} Type \terminal{;}
+\end{bnf}
+
+\pnum
+\term{概念}对类型进行约束，也可以为满足条件的类型提供额外的功能。

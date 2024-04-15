@@ -138,6 +138,7 @@
 \renewcommand{\~}{\textasciitilde}
 \let\OldTextAsciiTilde\textasciitilde
 \renewcommand{\textasciitilde}{\protect\raisebox{-0.17ex}{\larger\OldTextAsciiTilde}}
+\newcommand{\dollar}{\tcode{\$}}
 
 %%--------------------------------------------------
 %% Notes and examples
@@ -206,10 +207,10 @@
     morekeywords={do, await, shl, shr, shl_eq, shr_eq, in, is, cmp},
     morekeywords={true, false, nil, this},
     morekeywords={let},
-    morekeywords={operator},
     morekeywords={get, set, willSet, didSet, infix, prefix, suffix},
+    morekeywords={operator, init, deinit},
     morecomment=[l]{//},
-    morecomment=[s]{/*}{*/}
+morecomment=[n]{/*}{*/},
 }
 
 \lstset{
@@ -222,17 +223,19 @@
     commentstyle=\itshape\rmfamily,
     columns=flexible,
     keepspaces=true,
-    texcl=true
+    texcl=true,
 }
 
 % Our usual abbreviation for 'listings'.  Comments are in
 % italics.  Arbitrary TeX commands can be used if they're
 % surrounded by @ signs.
 \newcommand{\CodeBlockSetup}{%
-    \lstset{escapechar=@, aboveskip=\parskip, belowskip=0pt,
-            % midpenalty=500, endpenalty=-50,
-            % emptylinepenalty=-250, semicolonpenalty=0,
-            upquote=true}%
+\lstset{
+    aboveskip=\parskip,
+    belowskip=0pt,
+    upquote=true,
+    escapeinside={\\\{}{\}},
+}%
     \renewcommand{\tcode}[1]{\textup{\CodeStylex{##1}}}
     \renewcommand{\term}[1]{\textit{##1}}%
     \renewcommand{\grammarterm}[1]{\gterm{##1}}%
@@ -258,12 +261,13 @@
 %% Library item descriptions
 \lstnewenvironment{itemdecl}
 {
- \lstset{escapechar=@!,
- xleftmargin=0em,
- aboveskip=2ex,
- belowskip=0ex	% leave this alone: it keeps these things out of the
-				% footnote area
- }
+\lstset{
+xleftmargin=0em,
+aboveskip=2ex,
+belowskip=0ex,  % leave this alone: it keeps these things out of the
+% footnote area
+escapeinside={\\\{}{\}}, % fix the wrong colorizing by vscode
+}
 }
 {
 }
