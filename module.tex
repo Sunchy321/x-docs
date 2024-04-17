@@ -1,0 +1,85 @@
+%!TEX root = x.tex
+
+\rSec0[module]{模块}
+\indextext{模块}
+
+\rSec1[import]{导入指令}
+\indextext{导入指令}
+
+\begin{bnf}{ImportDirective}
+    \terminal{import} ImportPath \terminal{;} \br
+    \terminal{import} ImportPath \terminal{:} ImportItems \terminal{;}
+\end{bnf}
+
+\begin{bnf}{ImportPath}
+    ExternalImportPath \br
+    InternalImportPath \br
+    RelativeImportPath
+\end{bnf}
+
+\begin{bnf}{ExternalImportPath}
+    ImportPathPart \br
+    ExternalImportPath \terminal{.} ImportPathPart
+\end{bnf}
+
+\begin{bnf}{InternalImportPath}
+    \terminal{root} \terminal{.} ImportPathPart \br
+    InternalImportPath \terminal{.} ImportPathPart
+\end{bnf}
+
+\begin{bnf}{RelativeImportPath}
+    \terminal{.} ImportPathPart \br
+    RelativeImportPath \terminal{.} ImportPathPart
+\end{bnf}
+
+\begin{bnf}{ImportPathPart}
+    Identifier \br
+    StringLiteral \br
+    \terminal{super}
+\end{bnf}
+
+\begin{bnf}{ImportItem}
+    \terminal{*} \br
+    \terminal{operator} \br
+    Identifier \br
+    Identifier \terminal{as} Identifier
+\end{bnf}
+
+\pnum
+\term{导入指令}用于将其他模块的内容引入到当前模块中。
+
+\pnum
+被导入的模块可以通过三种方式指定：外部路径、内部路径或相对路径。
+
+\pnum
+外部路径以模块名开始，用于导入外部模块。
+
+\pnum
+内部路径以\tcode{root.}开始，从当前模块根目录开始寻找模块。
+
+\pnum
+相对路径以\tcode{.}开始，从当前模块文件开始寻找模块。
+
+\pnum
+模块的路径各部分可以使用一个标识符或者字符串标识。上下文关键字\tcode{root}指代当前模块的根目录，但只能用于开头；上下文关键字\tcode{super}指代当前目录的父目录。模块路径组成可以与\tcode{root}或\tcode{super}相同，但此时必须使用字符串表示。
+
+\enterexample
+\begin{codeblock}
+import root.foo.bar; // 导入\tcode{/foo/bar}模块
+import .baz; // 导入当前目录下的\tcode{baz}模块
+import .super.qux; // 导入父目录下的\tcode{qux}模块
+
+import 'some-hypen'; 导入外部模块\tcode{some-hypen}
+import 'super'; 导入外部模块\tcode{base}
+\end{codeblock}
+\exitexample
+
+\pnum
+\tcode{*}导入指定模块的所有内容，但是不包括运算符定义。
+
+\rSec1[access]{访问控制}
+\indextext{访问控制}
+
+\begin{bnf}{AccessQual}[\oneof]
+    \terminal{public internal private}
+\end{bnf}

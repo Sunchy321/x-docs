@@ -64,7 +64,8 @@ if x.filter{ true }
 
 \begin{bnf}{IfStatement}
     \terminal{if} Condition Block \br
-    \terminal{if} Condition Block \terminal{else} Block
+    \terminal{if} Condition Block \terminal{else} Block \br
+    \terminal{if} Condition Block \terminal{else} IfStatement
 \end{bnf}
 
 \begin{bnf}{Condition}

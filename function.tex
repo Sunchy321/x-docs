@@ -4,7 +4,8 @@
 \indextext{函数}
 
 \begin{bnf}{FuncDecl}
-    FuncQual\bnfs \terminal{func} UnqualID Parameter ReturnType\bnfq Block
+    FuncQual\bnfs \terminal{func} UnqualID Parameter ReturnType\bnfq Block \br
+    FuncQual\bnfs \terminal{func} UnqualID Parameter \terminal{=>} Expression \terminal{;}
 \end{bnf}
 
 \begin{bnf}{FuncQual}

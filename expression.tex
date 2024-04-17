@@ -242,7 +242,8 @@ $T\tcode{\{\}}$总是被解释为以对象字面量创建值。\enternote 如果
 \begin{bnf}{IfExpr}
     IfStatement \br
     \terminal{if} Condition \terminal{then} Expression \br
-    \terminal{if} Condition \terminal{then} Expression \terminal{else} Expression
+    \terminal{if} Condition \terminal{then} Expression \terminal{else} Expression \br
+    \terminal{if} Condition \terminal{then} Expression \terminal{else} IfStatement
 \end{bnf}
 
 \pnum
@@ -252,7 +253,7 @@ $T\tcode{\{\}}$总是被解释为以对象字面量创建值。\enternote 如果
 块表达式的值是其末尾表达式的值。如果该表达式被省略，其类型为\tcode{void}。
 
 \pnum
-\tcode{if}表达式的类型是其两个分支表达式的公共类型。如果\tcode{else}分支被省略，则视为\tcode{void}。其值为最终执行的那个分支的值。只有一个分支会被求值。
+\tcode{if}表达式的类型是其两个分支表达式的公共类型。如果\tcode{else}分支被省略，则视为\tcode{void}。其值为最终执行的那个分支的值。只有一个分支会被求值。可以使用\tcode{then}来用表达式代替块。
 
 \pnum
 \tcode{match}表达式的类型为其所有分支的公共类型，值为最终匹配成功的分支的值。只有一个分支会被求值。
