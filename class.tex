@@ -52,7 +52,7 @@
 
 \begin{bnf}{PropertyDecl}
     PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq Initializer\bnfq PropertyBody \terminal{;} \br
-    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq \terminal{=>} Expression \terminal{;} \br
+    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq \terminal{=>} Expression \terminal{;}
 \end{bnf}
 
 \begin{bnf}{PropertyQual}
@@ -125,6 +125,7 @@
     \begin{itemize}
         \item 如果它接受一个参数，将以$p$（旧值）调用；
         \item 如果它接受两个参数，将以$p$和$v$调用。
+        \item 如果函数体内没有使用新值，则不会调用\tcode{get}访问器并使用第一种形式调用。
     \end{itemize}
 \end{itemize}
 

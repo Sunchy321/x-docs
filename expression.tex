@@ -39,6 +39,7 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
     LiteralExpr \br
     TypeLiteral \br
     Identifier \br
+    DeductedEnumerator \br
     \terminal{this} \br
     \terminal{\$} \br
     StmtExpr \br
@@ -210,6 +211,19 @@ $T\tcode{\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\}}$以
 
 \pnum
 $T\tcode{\{\}}$总是被解释为以对象字面量创建值。\enternote 如果你需要创建一个具有空lambda块的值，请使用$T\tcode{(do \{\})}$。\exitnote
+
+\rSec2[expr.enum]{匿名静态成员表达式}
+
+\begin{bnf}{DeductedEnumerator}
+    \terminal{.} Identifier \br
+    \terminal{.} Identifier \terminal{(} Arguments\bnfq \terminal{)} Block\bnfs \br
+    \terminal{.} Identifier Block \br
+    \terminal{.} Identifier \terminal{[} ExprList\bnfq \terminal{]} \br
+    \terminal{.} Identifier \terminal{\{} ObjectItems\bnfq \terminal{\}}
+\end{bnf}
+
+\pnum
+静态成员和枚举符可以在适当的上下文中省略类型名称而使用自动推导。参见~\ref{deduct.static}。
 
 \rSec2[expr.this]{\tcode{this}}
 \indextext{表达式!this}
