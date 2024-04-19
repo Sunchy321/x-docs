@@ -12,7 +12,8 @@
     TypeDecl \br
     ClassDecl \br
     EnumDecl \br
-    TraitDecl
+    TraitDecl \br
+    QualifierDirective
 \end{bnf}
 
 \rSec1[decl.type]{类型声明}
@@ -30,3 +31,28 @@
     ObjectType \br
     \terminal{=} Type
 \end{bnf}
+
+\rSec1[qual.dir]{限定符指令}
+\indextext{限定符指令}
+
+\begin{bnf}{QualifierDirective}
+    DirectiveQualifiers \terminal{::}
+\end{bnf}
+
+\begin{bnf}{DirectiveQualifiers}
+    DirectiveQualifier\bnfp
+\end{bnf}
+
+\begin{bnf}{DirectiveQualifier}
+    AccessQualifier
+\end{bnf}
+
+\pnum
+可以使用限定符后跟\tcode{::}的方式为多个声明指定限定符。直到下一个限定符指令或该声明作用域结束为止，所有出现的声明都会受所指定的修饰符修饰。忽略无效的限定符。
+
+\enterexample
+\begin{codeblock}
+public:: // 后面所有声明都是\tcode{public}的
+type A = int;
+const let size = 0;
+\end{codeblock}
