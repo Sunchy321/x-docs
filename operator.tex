@@ -40,7 +40,7 @@
 \end{bnf}
 
 \begin{bnf}{OperatorSymbol}[\oneof]
-    \terminal{\~ ! \# \% \^{} \& * - | + = / ? < > . '}
+    \terminal{\~ ! \% \^{} \& * - | + = / ? < > . '}
 \end{bnf}
 
 
@@ -282,34 +282,10 @@ func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符�
 对中缀运算符\tcode{@}而言，$e_1\mathbin{\tcode{@}}e_2\mathbin{\tcode{@}}\ldots\mathbin{\tcode{@}}e_n$将会调用
 $\tcode{opeartor infix@(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或\\$\tcode{opeartor infix@([}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{])}$，取先匹配的那一个。如果没有找到匹配的重载函数，且该运算符所处的优先级组未定义其结合性，则这是一个编译错误。否则，将会按照其结合性拆分为多次以两个参数调用的形式。若仍然无法找到匹配的重载函数，则这是一个编译错误。
 
-\rSec2[op.over.assign]{赋值运算符}
+\rSec2[op.over.cmp]{比较运算符}
 
 \pnum
-赋值运算符，及与其相同优先级的运算符的重载函数必须返回\tcode{void}。
-
-\rSec2[op.over.dollar]{\tcode{\$}运算符}
-\indextext{运算符!重载!\$}
-
-\pnum
-\tcode{\$}表达式将被转换为对当前序列$s$调用$s\tcode{.operator\$()}$。它只能接受一个\tcode{this}参数。
-
-\rSec2[op.over.if]{条件运算符}
-\indextext{运算符!重载!条件}
-
-\pnum
-\tcode{operator if}允许类型在条件中被使用。重载了\tcode{operator if}的类型和\tcode{bool}称为\term{布尔类型}。它只能接受一个\tcode{this}参数，且其返回值类型必须为布尔类型。
-
-\pnum
-当布尔类型的表达式$e$被用于条件中时，会不断调用$e.\tcode{operator if()}$，直到返回值为\tcode{bool}为止。然后这个值将被用于条件判断。
-
-\rSec2[op.over.gen]{自动生成的运算符重载}
-\indextext{运算符!重载!自动生成}
-
-\pnum
-部分运算符重载会在其他运算符重载之后自动生成。
-
-\pnum
-如果类型$T$重载了\tcode{operator cmp}，则会自动生成其他的比较运算符：
+比较运算符的重载解析与一般的中缀运算符相同。\tcode{cmp}的返回类型必须为\tcode{core.Order}或\tcode{core.Order?}。
 
 \begin{codeblock}
 func operator==(lhs: T, rhs: T) { (lhs cmp rhs) is .equal }
@@ -331,3 +307,23 @@ func operator!=(lhs: T, rhs: T) { !(lhs == rhs) }
 \end{codeblock}
 
 \tcode{operator<}与\tcode{opeartor!<}、\tcode{operator>}与\tcode{operator!>}也有类似的自动生成规则。\enternote 虽然\tcode{!in}不能被重载，但是它也有类似的语义。\exitnote
+
+\rSec2[op.over.assign]{赋值运算符}
+
+\pnum
+赋值运算符，及与其相同优先级的运算符的重载函数必须返回\tcode{void}。
+
+\rSec2[op.over.dollar]{\tcode{\$}运算符}
+\indextext{运算符!重载!\$}
+
+\pnum
+\tcode{\$}表达式将被转换为对当前序列$s$调用$s\tcode{.operator\$()}$。它只能接受一个\tcode{this}参数。
+
+\rSec2[op.over.if]{条件运算符}
+\indextext{运算符!重载!条件}
+
+\pnum
+\tcode{operator if}允许类型在条件中被使用。重载了\tcode{operator if}、\tcode{operator perfix!}、\tcode{opeartor\&}和\tcode{opeartor|}的类型和\tcode{bool}称为\term{布尔类型}。它只能接受一个\tcode{this}参数，且其返回值类型必须为布尔类型。
+
+\pnum
+当布尔类型的表达式$e$被用于条件中时，会不断调用$e.\tcode{operator if()}$，直到返回值为\tcode{bool}为止。然后这个值将被用于条件判断。

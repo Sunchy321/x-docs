@@ -137,15 +137,17 @@
 
 \enterexample
 \begin{codeblock}
+func f(x: int) { }
+
 class A {
     let x: int;
     func set(x: int) {
-        std.io.print(this.x); // 无需显式this参数
+        f(this.x); // 无需显式this参数
     }
 };
 
 func set(this: A, x: int) {
-    std.io.print(this.x); // 与上面相同
+    f(this.x); // 与上面相同
 }
 
 \end{codeblock}

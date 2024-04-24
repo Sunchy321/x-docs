@@ -9,6 +9,8 @@
     FundaType \br
     SpecialType \br
     CompType \br
+    SomeType \br
+    AnyType \br
     Type TypeQualifier
 \end{bnf}
 
@@ -106,6 +108,7 @@ $$ \tcode{core.Symbol} \coloneqq \bigcup_{\tcode{'}s} \left\{  \tcode{'}s \right
 \begin{bnf}{CompType}
     Type \terminal{?} \br
     Type \terminal{[} \terminal{]} \br
+    Type \terminal{[} \terminal{dyn} Expression \terminal{]} \br
     Type \terminal{[} Type \terminal{]} \br
     \terminal{(} TupleTypes\bnfs \terminal{)} \br
     \terminal{\{} ObjectTypes \terminal{\}} \br
@@ -142,10 +145,10 @@ $$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil
 \pnum
 $T\tcode{?}$为\term{可空类型}。如果$T$本身就是可空类型，则$T\tcode{?}$等价于$T$。否则，$T\tcode{?}$包含$T$的所有值和空值\tcode{nil}。
 
-$$ T\tcode{[]} \coloneqq \bigcup^\infty_{n=0} T^n $$
+$$ T\tcode{[dyn }N\tcode{]} \coloneqq T^N $$
 
 \pnum
-$T\tcode{[]}$为\term{数组类型}。
+$T\tcode{[dyn }N\tcode{]}$为\term{数组类型}，代表$N$个$T$的值的序列。$T\tcode{[]}$为$T\tcode{[dyn _]}$的别名。
 
 $$ T\tcode{[}K\tcode{]} \coloneqq T^K $$
 
@@ -230,7 +233,7 @@ $$ \tcode{'}s \preceq \tcode{core.Symbol} $$
 所有符号字面量类型都是\tcode{core.Symbol}的子类型。
 
 \pnum
-\tcode{bool}没有语言内建的子类型约束。但是，其他类型的值可以在\tcode{if}表达式中当作调教使用，这通过重载\tcode{operator if}运算符实现。
+\tcode{bool}没有语言内建的子类型约束。但是，其他类型的值可以在\tcode{if}表达式中当作条件使用，这通过重载\tcode{operator if}运算符实现。
 
 \begin{equation*}
 \begin{aligned}
@@ -277,6 +280,68 @@ T\tcode{[}K\tcode{]} &\preceq U\tcode{[}L\tcode{]} \mathrel{\mathrm{if}} T \prec
 
 \pnum
 如果$A$和$B$之间没有子类型关系，则$A \otimes B = A \mathbin{\tcode{|}} B$。
+
+\rSec1[type.some]{\tcode{some}类型}
+\indextext{类型!\tcode{some}}
+
+\begin{bnf}{SomeType}
+    \terminal{some} Type \br
+    \terminal{some} \terminal{_}
+\end{bnf}
+
+\pnum
+$\tcode{some}\ T$标识一个静态待推导类型，但保证该类型为$T$的子类型。
+\tcode{some _}代表一个基础类型待推导的\tcode{some}类型。
+
+\enterexample
+\begin{codeblock}
+
+trait T { }
+type A { }
+type B { }
+
+impl A : T { }
+impl B : T { }
+
+let x: some T = A { }; // \tcode{x}的类型是\tcode{A}
+let mut y: some T = B { }; // \tcode{y}的类型是\tcode{B}
+
+y = x; // 错误，\tcode{B}不能赋给\tcode{A}
+
+\end{codeblock}
+\exitexample
+
+\rSec1[type.any]{\tcode{any}类型}
+\indextext{类型!\tcode{any}}
+
+\begin{bnf}{AnyType}
+    \terminal{any} Type \br
+    \terminal{any} \terminal{_} \br
+    \terminal{any}
+\end{bnf}
+
+\pnum
+$\tcode{any}\ T$对$T$的子类型进行包装，保证在运行时可以接受任何为$T$的子类型的值。
+\tcode{any _}代表一个基础类型待推导的\tcode{any}类型。
+$\tcode{any}$表示对任意类型的包装。
+
+\enterexample
+\begin{codeblock}
+
+trait T { }
+type A { }
+type B { }
+
+impl A : T { }
+impl B : T { }
+
+let x: any T = A { }; // \tcode{x}的类型是\tcode{any T}
+let mut y: any T = B { }; // \tcode{y}的类型是\tcode{any T}
+
+y = x; // 正确，\tcode{any T}之间可以互相赋值
+
+\end{codeblock}
+\exitexample
 
 \rSec1[qualifier]{修饰符}
 \indextext{修饰符}

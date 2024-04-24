@@ -3,5 +3,95 @@
 \rSec0[generic]{泛型}
 \indextext{泛型}
 
+\begin{bnf}{GenericSpecification}
+    \terminal{<} GenericParameters \terminal{>}
+\end{bnf}
+
+\begin{bnf}{GenericParameters}
+    GenericParameter \br
+    GenericParameters \terminal{,} GenericParameter
+\end{bnf}
+
+\begin{bnf}{GenericParameter}
+    \terminal{dyn}\bnfq Identifier \terminal{...}\bnfq GenericConstraint\bnfq GenericIfConstraint\bnfq
+\end{bnf}
+
+\begin{bnf}{GenericConstraint}
+    \terminal{:} \terminal{type} \br
+    \terminal{:} Type \br
+    GenericTraitConstraint
+\end{bnf}
+
+\begin{bnf}{GenericTraitConstraint}
+    \terminal{is} Type
+\end{bnf}
+
+\begin{bnf}{GenericIfConstraint}
+    \terminal{if} Expression
+\end{bnf}
+
+\begin{bnf}{GenericArguments}
+    GenericArgument \br
+    GenericArguments \terminal{,} GenericArgument
+\end{bnf}
+
+\begin{bnf}{GenericArgument}
+    Type \br
+    \terminal{dyn}\bnfq Expression \br
+    \terminal{dyn} \terminal{_}
+\end{bnf}
+
 \pnum
 \X 中的实体可以带有编译器的类型或非类型参数进行泛化。
+
+\rSec1[kind]{高阶类型}
+\indextext{高阶类型}
+
+\rSec1[generic.dynamic]{动态泛型}
+\indextext{泛型!动态}
+
+\pnum
+非类型的泛型参数可以使用关键字\tcode{dyn}修饰。以这种方式修饰的参数在运行时可变，但可以对其使用静态分析。其对应的泛型实参也必须使用\tcode{dyn}修饰。
+
+\enterexample
+\begin{codeblock}
+
+type<dyn I: int> T = { };
+
+let a: T<dyn 0> = { };
+let b: T<dyn 1> = a; // 错误，\tcode{a}和\tcode{b}的类型不匹配
+
+func externFunc() -> int;
+
+let n: int = externFunc();
+
+let c: T<dyn n> = a; // 正确：\tcode{n}是运行时值，编译时值\tcode{0}与其兼容
+
+\end{codeblock}
+\exitexample
+
+\pnum
+动态参数可以特定方式进行约束。
+
+\enterexample
+\begin{codeblock}
+
+type<dyn I: int> T = { };
+
+func<dyn I: int> f(a: T<dyn I>, b: T<dyn I>) => a;
+
+func externFunc() -> T<dyn _>; // 未知的动态类型
+
+let a = externFunc();
+let b = externFunc();
+
+f(a, b); // 错误，无法保证\tcode{a}和\tcode{b}的动态类型参数相同
+
+func<dyn I: int> extract(a: T<dyn I>) => I;
+
+if extract(a) == extract(b) {
+    f(a, b); // 正确，能发现\tcode{a}和\tcode{b}的动态类型参数相同
+}
+
+\end{codeblock}
+\exitexample
