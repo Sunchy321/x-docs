@@ -135,21 +135,21 @@
 \pnum
 类中的函数声明称作\term{方法}。方法隐含了一个\tcode{this}参数，其为调用该方法的对象。
 
+\pnum
+如果类内方法显式指定了\tcode{this}参数，则它的类型必须是这个类。在这种情况下，可以省略\tcode{this}的类型，而仅包含修饰符。如果省略\tcode{this}参数，则\tcode{this}不包含任何修饰符。
+
 \enterexample
 \begin{codeblock}
-func f(x: int) { }
-
 class A {
-    let x: int;
-    func set(x: int) {
-        f(this.x); // 无需显式this参数
-    }
-};
-
-func set(this: A, x: int) {
-    f(this.x); // 与上面相同
+    f() { } // \#1
+    f(this: A) { } // 与\#1等价
+    f(this: int) { } // 错误，类方法不能指定另外的\tcode{this}类型
+    f(this: A mut) { } // \#2，可以修改\tcode{A}的成员
+    f(this: mut) { } // 与\#2等价
 }
 
+f(this: A) { } // 可以，与\#1等价
+f(this: int) { } // 可以，类外方法能任意指定\tcode{this}类型
 \end{codeblock}
 \exitexample
 
@@ -157,3 +157,25 @@ func set(this: A, x: int) {
 \indextext{方法!查找}
 
 \pnum
+
+\rSec1[class.init]{构造器}
+\indextext{类!构造器}
+
+\pnum
+构造器是函数名称为关键字\tcode{init}的方法。构造器可以接受任意类型的参数并且不返回值。
+
+\pnum
+在构造器内部可以修改\tcode{this}成员的值，即使\tcode{this}并未显式被标记为\tcode{mut}。
+不能在成员被赋值之前使用它们的值，或者调用使用它们值的方法。这是一个编译错误。
+
+\pnum
+泛型类的构造器可以显式指定返回类型，这称为\tcode{参与推导的构造器}。这类构造器可以单独指定泛型参数。
+
+\rSec1[class.deinit]{析构器}
+\indextext{类!析构器}
+
+\pnum
+析构器是函数名称为关键字\tcode{deinit}的方法。析构器不接受任何非\tcode{this}参数且不返回值。不能在类外部定义析构器。析构器不能抛出异常。
+
+\pnum
+当一个类对象被销毁时，将会调用析构器。

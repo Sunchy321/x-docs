@@ -187,12 +187,12 @@
 operator >> infix : +;
 operator << infix : +;
 operator !! infix : (*, +);
-operator ## infix : (*, +);
+operator ~~ infix : (*, +);
 
 a >> b + c; // OK，等价于\tcode{(a >> b) + c}
 a >> b << c; // OK，等价于\tcode{(a >> b) << c}
 a !! b * c; // OK，等价于\tcode{a !! (b * c)}
-a !! b ## c; // 错误，不能在同一个表达式中混用具有新优先级的运算符
+a !! b ~~ c; // 错误，不能在同一个表达式中混用具有新优先级的运算符
 
 operator ** infix;
 operator && infix;

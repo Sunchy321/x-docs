@@ -23,7 +23,7 @@
 \end{bnf}
 
 \begin{bnf}{GenericTraitConstraint}
-    \terminal{is} Type
+    \terminal{impl} Type
 \end{bnf}
 
 \begin{bnf}{GenericIfConstraint}
@@ -46,6 +46,23 @@
 
 \rSec1[kind]{高阶类型}
 \indextext{高阶类型}
+
+\rSec1[generic.some]{\tcode{some}泛型}
+\indextext{泛型!\idxcode{some}}
+
+\pnum
+如果\tcode{some}被用于一个函数的参数类型中，则其相当于一个匿名的泛型参数。
+
+\enterexample
+\begin{codeblock}
+
+func f(a: some A) { }
+
+// 等价于
+func<T impl A> f(a: T) { }
+
+\end{codeblock}
+\exitexample
 
 \rSec1[generic.dynamic]{动态泛型}
 \indextext{泛型!动态}

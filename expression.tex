@@ -577,7 +577,9 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \end{bnf}
 
 \pnum
-运算符\tcode{..}用于生成左闭右开区间。运算符\tcode{..=}用于形成闭区间。参数类型$T$必须是整数类型。表达式的类型是$\tcode{core.Range<}T\tcode{>}$。参见~\ref{core.range}。
+运算符\tcode{..}生成左闭右开区间，结果类型是\tcode{core.Range}。
+运算符\tcode{..=}生成左闭右闭区间，结果类型是\tcode{core.\allowbreak{}ClosedRange}。
+参数类型必须是整数类型。参见~\ref{core.range}。
 
 \rSec1[expr.connect]{连接运算符}
 
