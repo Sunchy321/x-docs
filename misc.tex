@@ -102,3 +102,43 @@ class ClosedRangeIterator<T>;
 
 \pnum
 \tcode{core.ClosedRangeIterator}是\tcode{ClosedRange}的迭代器类型。
+
+\rSec1[core.error]{错误处理}
+
+\rSec2[core.panic]{\tcode{panic}}
+
+\indexlibrary{\idxcode{panic}}
+\begin{itemdecl}
+func panic(message = "") -> never;
+\end{itemdecl}
+
+\pnum
+\tcode{panic}在程序遇到无法处理的错误时终止程序的执行。它会向标准错误流打印错误信息\tcode{message}，并析构当前线程的所有对象，然后终止程序的执行。
+
+\pnum
+如果\tcode{panic}在执行过程中再次调用了\tcode{panic}，则会直接终止程序的执行而略过任何对象的析构。
+
+\rSec2[core.result]{\tcode{Result}}
+
+\indexlibrary{\idxcode{Result}}
+\begin{itemdecl}
+enum Result<T, E is Error = any Error> {
+    Ok(T),
+    Error(E)
+}
+\end{itemdecl}
+
+\rSec3[core.result.impl]{实现}
+
+\indexlibrary{\idxcode{Result}!\idxcode{impl}}
+\begin{itemdecl}
+impl<T, E> Result<T, E> { /* ... */ }
+\end{itemdecl}
+
+\indexlibrary{\idxcode{Result}!\idxcode{unwrap}}
+\begin{itemdecl}
+let unwrap: T { get throw; }
+\end{itemdecl}
+
+\pnum
+\tcode{unwrap}返回\tcode{Result}的值。如果\tcode{Result}是\tcode{Error}，则会抛出那个异常。

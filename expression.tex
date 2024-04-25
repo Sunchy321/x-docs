@@ -357,7 +357,8 @@ let first3 = do! {
     MemberAccessExpr \br
     AwaitExpr \br
     NullCheckExpr \br
-    PrevNextExpr
+    PrevNextExpr \br
+    CatchExpr
 \end{bnf}
 
 \rSec2[expr.sub]{下标运算符}
@@ -472,6 +473,24 @@ $e\tcode{!}$与$e\tcode{?}$类似，但它在$e$为\tcode{nil}的时候抛出\tc
 
 \pnum
 $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类型是算数类型，$e\tcode{+!}$等价于$e+1$，$e\tcode{-!}$等价于$e-1$。
+
+\rSec2[expr.catch]{\tcode{catch}表达式}
+\indextext{表达式!\idxcode{catch}}
+
+\begin{bnf}{CatchExpr}
+    SuffixExpr \terminal{.} \terminal{catch} \br
+    SuffixExpr \terminal{.} \terminal{?} \terminal{catch}  \br
+    SuffixExpr \terminal{.} \terminal{!} \terminal{catch}
+\end{bnf}
+
+\pnum
+\tcode{.catch}捕获表达式的异常，被捕获的表达式$e$必须是能抛出异常的表达式。结果的类型为$\tcode{core.Result<}T\tcode{>}$，其中$T$为$e$的类型。参见~\ref{core.result}。
+
+\pnum
+\tcode{.?catch}的类型是$T\tcode{?}$，如果被捕获表达式抛出异常，则结果为\tcode{nil}，否则结果为被捕获的表达式。
+
+\pnum
+\tcode{.!catch}的类型是$T$，如果被捕获表达式抛出异常，则调用\tcode{core.panic}。参见~\ref{core.panic}。
 
 \rSec1[expr.prefix]{前缀运算符}
 \indextext{运算符!前缀}
