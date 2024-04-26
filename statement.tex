@@ -51,10 +51,7 @@ if x.filter{ true }
 块是由大括号包裹的一系列声明和表达式的序列。块定义了一个块作用域。块的求值按照顺序进行，整个语句的值是最后一个项目的值。所有不是最后一项的表达式项的值被丢弃；这些表达式必须以\tcode{;}结尾。如果最后一个项目是一个声明，这个块的类型为\tcode{void}。
 
 \pnum
-\tcode{catch}块可以捕获内部抛出的异常。抛出的异常将逐个进行模式匹配，直到找到一个匹配的\tcode{catch}块，并执行对应的代码。如果模式被省略，则视同具有\tcode{_}。
-
-\pnum
-在块本体或某个\tcode{catch}块执行结束后，将执行\tcode{finally}块。
+\tcode{catch}块可以捕获内部抛出的异常。在块本体或某个\tcode{catch}块执行结束后，将执行\tcode{finally}块。参见~\ref{except.catch}。
 
 \pnum
 块的类型是以下项的公共类型：块的最后一个表达式的类型、所有\tcode{return}语句的表达式的类型、\tcode{finally}块的最后一个表达式类型。如果块或\tcode{finally}块为空或者最后一项为声明，则对应的类型为\tcode{void}。如果省略了\tcode{finally}，则对应的类型为\tcode{void}。

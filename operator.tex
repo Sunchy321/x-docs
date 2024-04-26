@@ -52,64 +52,19 @@
 
 \begin{floattable}{内建运算符}{tab:op}{lllll}
 \topline
-\tcode{+!} &
-\tcode{-!} &
-前缀\tcode{+} &
-前缀\tcode{-} &
-前缀\tcode{!} \\
-\tcode{'\~} &
-\tcode{*} &
-\tcode{/} &
-\tcode{\%} &
-二元\tcode{+} \\
-二元\tcode{-} &
-\tcode{shl} &
-\tcode{shr} &
-\tcode{'\&} &
-\tcode{'\^{}} \\
-\tcode{'|} &
-\tcode{..} &
-\tcode{..=} &
-\tcode{\~} &
-\tcode{==} \\
-\tcode{!=} &
-\tcode{<} &
-\tcode{<=} &
-\tcode{>} &
-\tcode{>=} \\
-\tcode{!<} &
-\tcode{!>} &
-\tcode{<>} &
-\tcode{cmp} &
-\tcode{in} \\
-\tcode{\&} &
-\tcode{|} &&&\\
+\tcode{+!} & \tcode{-!} & 前缀\tcode{+} & 前缀\tcode{-} & 前缀\tcode{!} \\
+\tcode{'\~} & \tcode{?} & \tcode{*} & \tcode{/} & \tcode{\%} \\
+二元\tcode{+} & 二元\tcode{-} & \tcode{shl} & \tcode{shr} & \tcode{'\&} \\
+\tcode{'\^{}} & \tcode{'|} & \tcode{..} & \tcode{..=} & \tcode{\~} \\
+\tcode{==} & \tcode{!=} & \tcode{<} & \tcode{<=} & \tcode{>} \\
+\tcode{>=} & \tcode{!<} & \tcode{!>} & \tcode{<>} & \tcode{cmp} \\
+\tcode{in} & \tcode{\&} & \tcode{|} &&\\
 \hhline{|=====|}
-\tcode{.} &
-\tcode{await} &
-\tcode{?} &
-后缀\tcode{!} &
-\tcode{??} \\
-\tcode{!in} &
-\tcode{is} &
-\tcode{!is} &
-\tcode{=} &
-\tcode{+=} \\
-\tcode{-=} &
-\tcode{*=} &
-\tcode{/=} &
-\tcode{\%=} &
-\tcode{shl_eq} \\
-\tcode{shr_eq} &
-\tcode{'\&=} &
-\tcode{'\^{}=} &
-\tcode{'|=} &
-\tcode{??=} \\
-\tcode{++} &
-\tcode{--} &
-\tcode{\~>} &
-\tcode{<\~} &
-\tcode{;} \\
+\tcode{.} & \tcode{await} & 后缀\tcode{!} & \tcode{??} & \tcode{!in} \\
+\tcode{is} & \tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} \\
+\tcode{*=} & \tcode{/=} & \tcode{\%=} & \tcode{shl_eq} & \tcode{shr_eq} \\
+\tcode{'\&=} & \tcode{'\^{}=} & \tcode{'|=} & \tcode{??=} & \tcode{++} \\
+\tcode{--} & \tcode{\~>} & \tcode{<\~} & \tcode{;} & \\
 \end{floattable}
 
 \pnum
@@ -274,6 +229,15 @@ func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符�
 
 \rSec2[op.over.suffix]{后缀运算符}
 \indextext{运算符!重载!后缀}
+
+\rSec2[op.over.null]{\tcode{?}运算符}
+\indextext{运算符!重载!\idxcode{?}}
+
+\pnum
+\tcode{?}运算符的重载解析与一般的后缀运算符相同，但返回值类型必须是可空类型或者重载了\tcode{?}运算符的类型。
+
+\pnum
+对于重载了的可空运算符调用$e\tcode{?}$或$e\tcode{!}$而言，将首先连续调用\tcode{operator suffix?}直到得到一个可空类型，然后对其进行内建的可空运算符求值。
 
 \rSec2[op.over.infix]{中缀运算符}
 \indextext{运算符!重载!中缀}

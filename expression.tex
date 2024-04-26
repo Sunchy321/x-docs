@@ -478,19 +478,11 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \indextext{表达式!\idxcode{catch}}
 
 \begin{bnf}{CatchExpr}
-    SuffixExpr \terminal{.} \terminal{catch} \br
-    SuffixExpr \terminal{.} \terminal{?} \terminal{catch}  \br
-    SuffixExpr \terminal{.} \terminal{!} \terminal{catch}
+    SuffixExpr \terminal{.} \terminal{catch}
 \end{bnf}
 
 \pnum
 \tcode{.catch}捕获表达式的异常，被捕获的表达式$e$必须是能抛出异常的表达式。结果的类型为$\tcode{core.Result<}T\tcode{>}$，其中$T$为$e$的类型。参见~\ref{core.result}。
-
-\pnum
-\tcode{.?catch}的类型是$T\tcode{?}$，如果被捕获表达式抛出异常，则结果为\tcode{nil}，否则结果为被捕获的表达式。
-
-\pnum
-\tcode{.!catch}的类型是$T$，如果被捕获表达式抛出异常，则调用\tcode{core.panic}。参见~\ref{core.panic}。
 
 \rSec1[expr.prefix]{前缀运算符}
 \indextext{运算符!前缀}
@@ -499,7 +491,8 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
     SuffixExpr \br
     MathPrefixExpr \br
     NotExpr \br
-    NegationExpr
+    NegationExpr \br
+    TryExpr
 \end{bnf}
 
 \rSec2[expr.prefix-math]{数学前缀运算符}
@@ -532,6 +525,16 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 
 \pnum
 位取反运算符\tcode{'\~}进行按位取反。操作数的类型必须是定长整数类型。
+
+\rSec2[expr.try]{\tcode{try}运算符}
+\indextext{运算符!\idxcode{try}}
+
+\begin{bnf}{TryExpr}
+    \terminal{try} SuffixExpr
+\end{bnf}
+
+\pnum
+\tcode{try}表达式用于显式使用一个可能会抛出异常的表达式。如果其操作数不能抛出异常，这是一个编译错误。
 
 \rSec1[expr.mul]{乘法运算符}
 \indextext{运算符!乘法}

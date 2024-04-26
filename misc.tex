@@ -137,8 +137,16 @@ impl<T, E> Result<T, E> { /* ... */ }
 
 \indexlibrary{\idxcode{Result}!\idxcode{unwrap}}
 \begin{itemdecl}
-let unwrap: T { get throw; }
+let unwrap: T { get throw(E); }
 \end{itemdecl}
 
 \pnum
 \tcode{unwrap}返回\tcode{Result}的值。如果\tcode{Result}是\tcode{Error}，则会抛出那个异常。
+
+\indexlibrary{\idxcode{Result}!\idxcode{operator suffix?}}
+\begin{itemdecl}
+func operator suffix?(r: Result<T, E>) -> T?;
+\end{itemdecl}
+
+\pnum
+\tcode{operator suffix?}将\tcode{Result}转换为可空类型。如果\tcode{Result}是\tcode{Error}，则返回\tcode{nil}。
