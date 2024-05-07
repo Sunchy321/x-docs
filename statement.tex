@@ -4,7 +4,7 @@
 \indextext{语句}
 
 \begin{bnf}{Statement}
-    Block \br
+    BlockStmt \br
     BindingStatement \br
     IfStatement \br
     MatchStatement \br
@@ -15,6 +15,9 @@
     ReturnStatement \br
     ThrowStatement
 \end{bnf}
+
+\pnum
+语句是一类特殊的表达式。
 
 \pnum
 语句是块的构成部分。如果语句包含子块，则这个块将优先作为语句的构成部分而不是其中的表达式的一部分。\enterexample
@@ -31,6 +34,10 @@ if x.filter{ true }
 
 \begin{bnf}{Block}
     \terminal{\{} BlockItem\bnfs\ \terminal{\}} CatchBlock\bnfs FinallyBlock\bnfq
+\end{bnf}
+
+\begin{bnf}{BlockStmt}
+    Block CatchBlock\bnfs FinallyBlock\bnfq
 \end{bnf}
 
 \begin{bnf}{BlockItem}
@@ -125,25 +132,38 @@ if x.filter{ true }
 \indextext{语句!while}
 
 \begin{bnf}{WhileStatement}
-    \terminal{while} Expression\bnfq Block
+    \terminal{while} SymbolLiteral\bnfq Condition\bnfq Block \br
+    \terminal{while} SymbolLiteral\bnfq Condition\bnfq Block \terminal{else} Block
 \end{bnf}
 
 \pnum
-\term{\tcode{while}语句}处理循环，其中的表达式必须实现\tcode{core.Boolean}。整个语句的类型为\tcode{void}。
+\term{\tcode{while}语句}处理循环。\tcode{while}语句每次循环都会对控制表达式进行求值。如果求值为真，则继续循环，否则终止循环。如果表达式被省略，则等价于表达式为\tcode{true}。
 
 \pnum
-\tcode{while}语句每次循环都会对控制表达式进行求值。如果求值为真，则继续循环，否则终止循环。如果表达式被省略，则等价于表达式为\tcode{true}。
+如果\tcode{while}语句包含一个\tcode{else}块，则在循环结束时执行该块，并将该块的值作为整个语句的值。
+
+\pnum
+\tcode{while}语句的类型为语句主体块包含的所有终止该循环的\tcode{break}语句值的类型以及\tcode{else}块的类型的公共类型。
+如果语句不含\tcode{else}块，则视为其类型为\tcode{void}或\tcode{never}（当循环条件被省略时）。
 
 \rSec1[stmt.for]{\tcode{for}语句}
 \indextext{语句!for}
 
 \begin{bnf}{ForStatement}
-    \terminal{for} Pattern \terminal{:} Expression Block
+    \terminal{for} SymbolLiteral\bnfq Pattern \terminal{:} Expression Block \br
+    \terminal{for} SymbolLiteral\bnfq Pattern \terminal{:} Expression Block \terminal{else} Block
 \end{bnf}
 
 \pnum
 \term{\tcode{for}语句}进行明确的范围循环。形如$\mathrel{\tcode{for}} p\mathrel{\tcode{:}} e\ B$的\tcode{for}语句需满足：$e$实现了\tcode{core.Sequence}且
-$\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译错误。$p$中注入的变量在整个\tcode{for}语句的范围内生效。整个语句的类型为\tcode{void}。
+$\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译错误。$p$中注入的变量在整个\tcode{for}语句的范围内生效。
+
+\pnum
+如果\tcode{for}语句包含一个\tcode{else}块，则在循环结束时执行该块，并将该块的值作为整个语句的值。
+
+\pnum
+\tcode{for}语句的类型为语句主体块包含的所有终止该循环的\tcode{break}语句值的类型以及\tcode{else}块的类型的公共类型。
+如果语句不含\tcode{else}块，则视为其类型为\tcode{void}。
 
 \pnum
 \tcode{for}语句将被展开为如下形式：
@@ -155,7 +175,7 @@ $\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译
     while let \{$v$} = \{$i$}.next(); \{$v$} != nil {
         \{$p$} = \{$v$};
         \{$B$}
-    }
+    } /* else E */
 }
 \end{codeblock}
 
@@ -165,11 +185,11 @@ $\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译
 \indextext{语句!控制}
 
 \begin{bnf}{BreakStatement}
-    \terminal{break} \terminal{;}
+    \terminal{break} SymbolLiteral\bnfq Expression\bnfq \terminal{;}
 \end{bnf}
 
 \begin{bnf}{ContinueStatement}
-    \terminal{continue} \terminal{;}
+    \terminal{continue} SymbolLiteral\bnfq \terminal{;}
 \end{bnf}
 
 \begin{bnf}{ReturnStatement}
@@ -185,9 +205,13 @@ $\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译
 
 \pnum
 \tcode{break}语句只能在\tcode{while}或\tcode{for}语句中使用。它终止最内层的循环语句，将控制流移动到该语句之后。
+\tcode{break}语句可以带有一个表达式，此时该表达式将作为整个循环语句的值被返回。
+如果它带有一个符号字面量，则它会终止具有对应符号字面量的循环语句。如果没有对应的符号字面量，则这是一个编译错误。
+\enternote 如果希望将符号字面量作为返回表达式，则需要使用括号将其包裹起来。 \exitnote
 
 \pnum
 \tcode{continue}语句只能在\tcode{while}或\tcode{for}语句中使用。它终止最内侧循环语句的本次循环。将控制流移动到该语句的下一次循环开始。
+如果它带有一个符号字面量，则它会终止具有对应符号字面量的循环语句。如果没有对应的符号字面量，则这是一个编译错误。
 
 \pnum
 \tcode{return}语句只能在函数作用域（\ref{scope.func}）中使用。它中止当前函数的执行，并将后跟的表达式作为整个函数的返回值。如果表达式被省略，则等价于\tcode{()}。
