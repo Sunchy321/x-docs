@@ -43,7 +43,6 @@
     \terminal{\~ ! \% \^{} \& * - | + = / ? < > . '}
 \end{bnf}
 
-
 \pnum
 运算符名称指代对应的运算符函数的名称，用来重载运算符。运算符名称由关键字\tcode{operator}后跟运算符组成。\tcode{operator}后面可以跟\tcode{infix}、\tcode{prefix}或\tcode{suffix}以消歧义。
 
@@ -101,7 +100,7 @@
 用户可以声明自己的运算符。自定义运算符的名称由关键字\tcode{operator}后跟一个标识符或标点符号组成。
 
 \pnum
-自定义的运算符不能与内建的运算符相同，也不能是\tcode{//}、\tcode{/*}、\tcode{->}、\tcode{=>}或\tcode{...}。如果自定义的运算符是一个标识符，则它不能在任何作用域中与另一个标识符相同，否则这是一个编译错误。自定义的运算符也不能是\tcode{prefix}、\tcode{suffix}或\tcode{infix}。
+自定义的运算符不能与内建的运算符或字符字面量相同，也不能是\tcode{'}、\tcode{''}、\tcode{//}、\tcode{/*}、\tcode{->}、\tcode{=>}或\tcode{...}。如果自定义的运算符是一个标识符，则它不能在任何作用域中与另一个标识符相同，否则这是一个编译错误。自定义的运算符也不能是\tcode{prefix}、\tcode{suffix}或\tcode{infix}。
 
 \pnum
 自定义的运算符可以是前缀、后缀或者中缀的，分别使用\tcode{prefix}、\tcode{suffix}和\tcode{infix}指定。
@@ -249,7 +248,7 @@ $\tcode{opeartor infix@(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或
 \rSec2[op.over.cmp]{比较运算符}
 
 \pnum
-比较运算符的重载解析与一般的中缀运算符相同。\tcode{cmp}的返回类型必须为\tcode{core.Order}或\tcode{core.Order?}。
+比较运算符的重载解析与一般的中缀运算符相同。\tcode{cmp}的返回类型必须为\tcode{Order}或\tcode{Order?}。
 
 \begin{codeblock}
 func operator==(lhs: T, rhs: T) { (lhs cmp rhs) is .equal }
@@ -291,3 +290,36 @@ func operator!=(lhs: T, rhs: T) { !(lhs == rhs) }
 
 \pnum
 当布尔类型的表达式$e$被用于条件中时，会不断调用$e.\tcode{operator if()}$，直到返回值为\tcode{bool}为止。然后这个值将被用于条件判断。
+
+\rSec1[op.suffix]{自定义后缀函数}
+
+\pnum
+自定义后缀函数由\tcode{operator}后跟一个字符串字面量构成。
+这个字符串字面量必须为空字符串、且不能是原始字符串字面量。
+它不会进行求值，且其后缀就是该后缀函数所使用的后缀。
+
+\pnum
+自定义后缀的规则与标识符相同，但会自动去除前导的\tcode{_}。如果前导的下划线多于一个，这是一个编译错误。
+自定义后缀不能与内建后缀相同。
+
+\enterexample
+\begin{codeblock}
+operator ""s; // 后缀为\tcode{s}
+operator ""_s; // 同上
+operator ""__s; // 错误，多于一个下划线
+
+0x0123ABC; // 没有后缀
+0x0123_ABC; // 后缀为\tcode{ABC}，下划线用作区分
+\end{codeblock}
+\exitexample
+
+\pnum
+假设字面量$l$带有自定义后缀$s$，则它等价于以下第一个合法的表达式：
+\begin{codeblock}
+    operator ""\{$s$}(\{$i$})
+\end{codeblock}
+其中$i$是$l$移除后缀的形式；
+\begin{codeblock}
+    operator ""\{$s$}(\{$t$})
+\end{codeblock}
+其中$t$是包含$i$所有字符的字符串字面量。

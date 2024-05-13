@@ -13,7 +13,7 @@ type Symbol = __intrinsic;
 \end{itemdecl}
 
 \pnum
-\tcode{core.Symbol}是所有符号字面量的公共类型。它只能通过内建的符号字面量来获得值。
+\tcode{Symbol}是所有符号字面量的公共类型。它只能通过内建的符号字面量来获得值。
 
 \rSec1[core.order]{序}
 
@@ -27,7 +27,7 @@ enum Order {
 \end{itemdecl}
 
 \pnum
-\tcode{core.Order}定义了序关系。它是内建\tcode{cmp}运算符的返回值。自定义类型可以通过实现\tcode{cmp}运算符来支持序关系，参见~\ref{op.over.cmp}。
+\tcode{Order}定义了序关系。它是内建\tcode{cmp}运算符的返回值。自定义类型可以通过实现\tcode{cmp}运算符来支持序关系，参见~\ref{op.over.cmp}。
 
 \pnum
 \tcode{.less}代表左操作数小于右操作数。\tcode{.equal}代表左操作数等于右操作数。\tcode{.greater}代表左操作数大于右操作数。
@@ -48,10 +48,10 @@ class ClosedRange<T, dyn S: T, dyn E: T>;
 \end{itemdecl}
 
 \pnum
-\tcode{core.Range}表示左闭右开区间。它是内建\tcode{..}的结果类型。
+\tcode{Range}表示左闭右开区间。它是内建\tcode{..}的结果类型。
 
 \pnum
-\tcode{core.ClosedRange}表示闭区间。它是内建\tcode{..=}的结果类型。
+\tcode{ClosedRange}表示闭区间。它是内建\tcode{..=}的结果类型。
 
 \rSec2[core.range.init]{构造器}
 
@@ -83,7 +83,7 @@ impl<T, dyn S, dyn E> ClosedRange<T, dyn S, dyn E> : Sequence<T, dyn (E - S)+!> 
 \end{itemdecl}
 
 \pnum
-\tcode{Range}和\tcode{ClosedRange}是序列，其迭代器类型是\tcode{core.RangeIterator}。
+\tcode{Range}和\tcode{ClosedRange}是序列，其迭代器类型是\tcode{RangeIterator}。
 
 \rSec2[core.range.iter]{迭代器}
 
@@ -98,10 +98,10 @@ class ClosedRangeIterator<T>;
 \end{itemdecl}
 
 \pnum
-\tcode{core.RangeIterator}是\tcode{Range}的迭代器类型。
+\tcode{RangeIterator}是\tcode{Range}的迭代器类型。
 
 \pnum
-\tcode{core.ClosedRangeIterator}是\tcode{ClosedRange}的迭代器类型。
+\tcode{ClosedRangeIterator}是\tcode{ClosedRange}的迭代器类型。
 
 \rSec1[core.error]{错误处理}
 

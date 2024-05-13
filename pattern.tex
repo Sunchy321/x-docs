@@ -13,7 +13,7 @@
     BindPattern \br
     ArrayPattern \br
     TuplePattern \br
-    ObjectPattern \br
+    StructPattern \br
     AltPattern
 \end{bnf}
 
@@ -63,7 +63,7 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \end{bnf}
 
 \pnum
-数组模式匹配序列中的元素。其中\tcode{...}项（称作\term{任意项模式}）只能出现至多一次，否则这是一个编译错误。$\mathcal{v}$必须实现\tcode{core.Sequence}，否则这是一个编译错误。
+数组模式匹配序列中的元素。其中\tcode{...}项（称作\term{任意项模式}）只能出现至多一次，否则这是一个编译错误。$\mathcal{v}$必须实现\tcode{Sequence}，否则这是一个编译错误。
 
 \begin{enumerate}
     \item 如果模式不包含任意项，且$\mathcal{v}$\tcode{.size}与模式中项的数量不相等，则匹配失败。
@@ -91,26 +91,26 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \pnum
 与数组模式类似，\term{元组模式}匹配元组。
 
-\rSec1[pattern.object]{对象模式}
-\indextext{模式匹配!对象}
+\rSec1[pattern.struct]{结构模式}
+\indextext{模式匹配!结构}
 
-\begin{bnf}{ObjectPattern}
-    \terminal{\{} ObjectPatternBody \terminal{\}}
+\begin{bnf}{StructPattern}
+    \terminal{\{} StructPatternBody \terminal{\}}
 \end{bnf}
 
-\begin{bnf}{ObjectPatternBody}
-    ObjectItem \bnflp\terminal{,} ObjectItem\bnfrp\bnfs
+\begin{bnf}{StructPatternBody}
+    StructItem \bnflp\terminal{,} StructItem\bnfrp\bnfs
 \end{bnf}
 
-\begin{bnf}{ObjectItem}
+\begin{bnf}{StructItem}
     Identifier \terminal{:} Pattern
 \end{bnf}
 
 \pnum
-\term{对象模式}对对象进行匹配。如果对于每个对$(k, \mathcal{p}_k)$而言，$\mathcal{v}$\tcode{.}$k$匹配$\mathcal{p}_k$都成立，则整个模式匹配成功。
+\term{结构模式}对结构进行匹配。如果对于每个对$(k, \mathcal{p}_k)$而言，$\mathcal{v}$\tcode{.}$k$匹配$\mathcal{p}_k$都成立，则整个模式匹配成功。
 
 \pnum
-与数组和元组匹配不同，对象匹配是开放的，即$\mathcal{v}$可以包含未在模式中列出的项。
+与数组和元组匹配不同，结构匹配是开放的，即$\mathcal{v}$可以包含未在模式中列出的项。
 
 \rSec1[pattern.bind]{绑定模式}
 \indextext{模式匹配!绑定}
@@ -129,7 +129,7 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
     Identifier PatternAssertion \br
     ArrayPatternBind \br
     TuplePatternBind \br
-    ObjectPatternBind
+    StructPatternBind
 \end{bnf}
 
 \begin{bnf}{ArrayPatternBind}
@@ -147,15 +147,15 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
     ExprPattern
 \end{bnf}
 
-\begin{bnf}{ObjectPatternBind}
-    \terminal{\{} ObjectPatternBodyBind \terminal{\}}
+\begin{bnf}{StructPatternBind}
+    \terminal{\{} StructPatternBodyBind \terminal{\}}
 \end{bnf}
 
-\begin{bnf}{ObjectPatternBodyBind}
-    ObjectItemBind \bnflp\terminal{,} ObjectItemBind\bnfrp\bnfs
+\begin{bnf}{StructPatternBodyBind}
+    StructItemBind \bnflp\terminal{,} StructItemBind\bnfrp\bnfs
 \end{bnf}
 
-\begin{bnf}{ObjectItemBind}
+\begin{bnf}{StructItemBind}
     Identifier \terminal{:} PatternBind \br
     Identifier
 \end{bnf}

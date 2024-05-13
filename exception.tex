@@ -10,7 +10,7 @@
 \X 将程序中出现的问题分为三类：错误、异常与致命错误。错误是功能的预期结果的一部分，可能在使用该功能时频繁出现，例如\tcode{int.parse}解析了一个并非整数的字符串值；异常是功能预期结果之外的结果，通常较少出现，例如打开文件时文件不存在；致命错误是程序无法继续执行的错误，例如内存耗尽。
 
 \pnum
-如果函数可能会产生错误，则它应该返回可空类型或\tcode{core.Result}（参见\tcode{core.result}）。
+如果函数可能会产生错误，则它应该返回可空类型或\tcode{Result}（参见\tcode{core.result}）。
 
 \pnum
 如果函数可能会产生异常，则它应该使用异常处理机制，使用\tcode{throw}抛出异常并强制调用者处理异常。
@@ -43,14 +43,14 @@
 一个\tcode{catch}块是跟在一个块后面的异常处理器。如果一个被抛出的异常经过带有\tcode{catch}块的块，则该异常将会依次对每个\tcode{catch}块进行模式匹配。如果某个模式匹配成功，则控制流转移到该\tcode{catch}块内部。如果没有\tcode{catch}块匹配，则异常将继续向外传播。
 
 \pnum
-如果一个异常传播到了最顶层函数的最外层，将会调用\tcode{core.panic}。
+如果一个异常传播到了最顶层函数的最外层，将会调用\tcode{core::terminate}。
 
 \pnum
-\tcode{catch}表达式捕获异常并将其包装到\tcode{core.Result}中。表达式的类型为\tcode{Result<T, E>}，其中\tcode{T}为表达式的类型，\tcode{E}为异常的类型。如果表达式$e$抛出异常$e^\dagger$，则其值为$\tcode{.Error(}e^\dagger\tcode{)}$，否则其值为$\tcode{.OK(}e\tcode{)}$。
+\tcode{catch}表达式捕获异常并将其包装到\tcode{Result}中。表达式的类型为\tcode{Result<T, E>}，其中\tcode{T}为表达式的类型，\tcode{E}为异常的类型。如果表达式$e$抛出异常$e^\dagger$，则其值为$\tcode{.Error(}e^\dagger\tcode{)}$，否则其值为$\tcode{.OK(}e\tcode{)}$。
 
 \rSec1[except.func.throw]{函数\tcode{throw}修饰符}
 
-\begin{bnf}{ThrowQualifier}
+\begin{bnf}{ThrowQual}
     \terminal{throw} \terminal{(} TypeList\bnfs \terminal{)} \br
     \terminal{throw}
 \end{bnf}

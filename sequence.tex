@@ -12,7 +12,7 @@
 \begin{itemdecl}
 trait Sequence<T> {
     type Item = T;
-    type Iterator : core.Iterator<T>;
+    type Iterator : core::Iterator<T>;
 
     let size: uint;
     let iterator: Iterator;
@@ -30,7 +30,7 @@ trait Sequence<T> {
 \tcode{Item}是序列的元素类型，其始终为\tcode{T}。
 
 \pnum
-\tcode{Iterator}是序列的迭代器类型，其必须实现了\tcode{core.Iterator<T>}。
+\tcode{Iterator}是序列的迭代器类型，其必须实现了\tcode{Iterator<T>}。
 
 \pnum
 \tcode{size}是序列的大小。序列重载了\tcode{operator\$}，返回\tcode{size}。

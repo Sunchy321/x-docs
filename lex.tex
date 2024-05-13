@@ -32,23 +32,21 @@
 \rSec1[lex.keyword]{关键字}
 
 \pnum
-表~\ref{tab:keyword}~中的标识符被保留做关键字。关键字不能作为标识符使用。以两个下划线\tcode{__}开头，后跟任意数量的小写字母与下划线的标识符也可能被保留作关键字。
-
 \begin{floattable}{关键字}{tab:keyword}{lllll}
 \topline
-\tcode{_}         & \tcode{any}       & \tcode{async}     & \tcode{await}     & \tcode{auto}      \\
-\tcode{bool}      & \tcode{break}     & \tcode{catch}     & \tcode{class}     & \tcode{cmp}       \\
-\tcode{const}     & \tcode{continue}  & \tcode{deinit}    & \tcode{defer}     & \tcode{do}        \\
-\tcode{dyn}       & \tcode{else}      & \tcode{enum}      & \tcode{extern}    & \tcode{false}     \\
-\tcode{finally}   & \tcode{float}     & \tcode{for}       & \tcode{func}      & \tcode{if}        \\
-\tcode{impl}      & \tcode{import}    & \tcode{in}        & \tcode{init}      & \tcode{infer}     \\
-\tcode{int}       & \tcode{internal}  & \tcode{is}        & \tcode{lazy}      & \tcode{let}       \\
-\tcode{macro}     & \tcode{match}     & \tcode{mut}       & \tcode{never}     & \tcode{nil}       \\
-\tcode{operator}  & \tcode{partial}   & \tcode{private}   & \tcode{public}    & \tcode{return}    \\
-\tcode{self}      & \tcode{shl}       & \tcode{shl_eq}    & \tcode{shr}       & \tcode{shr_eq}    \\
-\tcode{some}      & \tcode{static}    & \tcode{string}    & \tcode{this}      & \tcode{throw}     \\
-\tcode{true}      & \tcode{try}       & \tcode{type}      & \tcode{typeof}    & \tcode{uint}      \\
-\tcode{void}      & \tcode{while}     &                   &                   &                   \\
+\tcode{_}         & \tcode{any}       & \tcode{as}        & \tcode{async}     & \tcode{await}     \\
+\tcode{auto}      & \tcode{bool}      & \tcode{break}     & \tcode{catch}     & \tcode{char}      \\
+\tcode{class}     & \tcode{cmp}       & \tcode{const}     & \tcode{continue}  & \tcode{deinit}    \\
+\tcode{defer}     & \tcode{do}        & \tcode{dyn}       & \tcode{else}      & \tcode{enum}      \\
+\tcode{extern}    & \tcode{false}     & \tcode{finally}   & \tcode{float}     & \tcode{for}       \\
+\tcode{func}      & \tcode{if}        & \tcode{impl}      & \tcode{import}    & \tcode{in}        \\
+\tcode{init}      & \tcode{infer}     & \tcode{int}       & \tcode{internal}  & \tcode{is}        \\
+\tcode{lazy}      & \tcode{let}       & \tcode{macro}     & \tcode{match}     & \tcode{mut}       \\
+\tcode{never}     & \tcode{nil}       & \tcode{operator}  & \tcode{partial}   & \tcode{private}   \\
+\tcode{public}    & \tcode{return}    & \tcode{self}      & \tcode{shl}       & \tcode{shl_eq}    \\
+\tcode{shr}       & \tcode{shr_eq}    & \tcode{some}      & \tcode{static}    & \tcode{string}    \\
+\tcode{this}      & \tcode{throw}     & \tcode{true}      & \tcode{try}       & \tcode{type}      \\
+\tcode{typeof}    & \tcode{uint}      & \tcode{void}      & \tcode{while}     &                   \\
 \end{floattable}
 
 \pnum
@@ -76,14 +74,15 @@
 \pnum
 除了多字符标点符号外，标点符号都由单个字符组成。表~\ref{tab:multichar-punc}~列出了内建的多字符标点，但不包含运算符。解析标点符号时，应尽可能长地匹配多字符标点符号。用户也可以自定义多字符运算符。
 
-\begin{floattable}{多字符标点符号}{tab:multichar-punc}{llllll}
+\begin{floattable}{多字符标点符号}{tab:multichar-punc}{lllll}
 \topline
+\tcode{'(}  &
 \tcode{\{|} &
 \tcode{|\}} &
 \tcode{->}  &
-\tcode{=>}  &
+\tcode{=>}  \\
 \tcode{::}  &
-\tcode{...} \\
+\tcode{...} &&&\\
 \end{floattable}
 
 \rSec1[lex.literal]{字面量}
@@ -92,6 +91,7 @@
     IntegerLiteral \br
     FloatingLiteral \br
     StringLiteral \br
+    CharacterLiteral \br
     SymbolLiteral \br
     BooleanLiteral
 \end{bnf}
@@ -110,7 +110,7 @@
 
 \begin{bnf}{Digits}
     Digit \br
-    Digits \terminal{_}\bnfq Digit
+    Digits \terminal{'}\bnfq Digit
 \end{bnf}
 
 \begin{bnf}{Digit}[\oneof]
@@ -118,7 +118,7 @@
 \end{bnf}
 
 \begin{bnf}{BinaryLiteral}
-    \terminal{0b} BinaryDigit \bnflp\terminal{_}\bnfq BinaryDigit\bnfrp\bnfs
+    \terminal{0b} BinaryDigit \bnflp\terminal{'}\bnfq BinaryDigit\bnfrp\bnfs
 \end{bnf}
 
 \begin{bnf}{BinaryDigit}
@@ -132,7 +132,7 @@
 
 \begin{bnf}{HexadecimalDigits}
     HexadecimalDigit \br
-    HexadecimalDigits \terminal{_}\bnfs HexadecimalDigit
+    HexadecimalDigits \terminal{'}\bnfs HexadecimalDigit
 \end{bnf}
 
 \begin{bnf}{HexadecimalDigit}[\oneof]
@@ -142,7 +142,7 @@
 \end{bnf}
 
 \pnum
-整数字面量由一系列数字构成。其中的下划线用作分隔并且不影响字面量的值。字面量的前缀用于指示它的进制。\term{十进制字面量}由若干十进制数字构成；\term{十六进制字面量}由前缀\tcode{0x}后跟若干十六进制数字构成；\term{二进制字面量}前缀\tcode{0b}后跟若干二进制数字构成。\X 不支持八进制字面量。
+整数字面量由一系列数字构成。可以使用单引号作分隔并且不影响字面量的值。字面量的前缀用于指示它的进制。\term{十进制字面量}由若干十进制数字构成；\term{十六进制字面量}由前缀\tcode{0x}后跟若干十六进制数字构成；\term{二进制字面量}前缀\tcode{0b}后跟若干二进制数字构成。\X 不支持八进制字面量。
 
 \pnum
 整数字面量的值为其数字序列表示的值，依不同前缀分别为十进制、十六进制或二进制。最左侧的数字为最高位。字面量的类型参见表格~\ref{tab:integer-suffix}，其中$i$为其字面值：
@@ -211,8 +211,7 @@
 
 \begin{bnf}{StringLiteral}
     \terminal{"} Schar\bnfs \terminal{"} Suffix\bnfq \br
-    \terminal{@}\bnfp \terminal{"} Rchar\bnfs \terminal{"} \terminal{@}\bnfp Suffix\bnfq \br
-    Mdelim Mchar\bnfs Mdelim Suffix\bnfq
+    \terminal{@}\bnfp \terminal{"} Rchar\bnfs \terminal{"} \terminal{@}\bnfp Suffix\bnfq
 \end{bnf}
 
 \begin{bnf}{Schar}
@@ -231,7 +230,7 @@
 \end{bnf}
 
 \begin{bnf}{SimpleEscape}[\oneof]
-    \terminal{0 ' " ? \textbackslash a b f n r t v}
+    \terminal{0 ' " \textbackslash{} a b f n r t v}
 \end{bnf}
 
 \begin{bnf}{Rchar}
@@ -243,53 +242,81 @@
     \terminal{\textbackslash} \terminal{@}\bnfp \terminal{(}  Expression \terminal{)}
 \end{bnf}
 
-\begin{bnf}{Mdelim}
-    \terminal{"""} \terminal{"}\bnfs
-\end{bnf}
-
-\begin{bnf}{Mchar}
-    \textnormal{除了\terminal{\textbackslash}以外的的任意可打印字符} \br
-    EscapeSeq \br
-    \terminal{\textbackslash} \textnormal{换行} \br
-    TextInterpolation
-\end{bnf}
+\pnum
+字符串字面量表示UTF-8字符串，其类型为\tcode{string}。
+普通字符串字面量被单个双引号包围。其中可以使用反斜杠开始的转义序列表示其他字符。
+普通字符串字面量也可以前后加上等量的\tcode{@}，此时它被称为\term{原始字符串字面量}。原始字符串字面量中的反斜杠不会被解释为转义序列，而是字符本身。
 
 \pnum
-字符串字面量表示UTF-8字符串，其类型为\tcode{string}。它有两种类型：普通字符串字面量和多行字符串字面量。
-
-\pnum
-普通字符串字面量被单个双引号包围。其中可以使用反斜杠开始的转义序列表示其他字符。普通字符串字面量也可以前后加上等量的\tcode{@}，此时它被称为\term{原始字符串字面量}。原始字符串字面量中的反斜杠不会被解释为转义序列，而是字符本身。
-
-\pnum
-\term{多行字符串字面量}表示横跨多行的字符串。它以任意数量但不少于三个的\tcode{"}开始，并以等量的\tcode{"}结束。每一行包含换行符都属于该字符串字面量，但是除了以下字符：
+字符串字面量可以横跨多行，其中每一行包含换行符都属于该字符串字面量，但是除了以下字符：
 
 \begin{itemize}
     \item 开头引号序列之后紧邻的换行会被删除。
-    \item 如果结尾引号序列所在行之前全都是空白字符，则这些字符连同上一行的换行会被删除。
-    \item 如果每一行的空白字符都以结尾引号序列之前的空白字符为前缀，则这些字符都会被删除。
+    \item 除了开始行之外的行的公共空白字符前缀会被删除。
+    \item 如果结尾行除了公共前缀之外没有其它字符，则上一行的换行会被删除。
     \item 如果一行末尾有反斜杠，则这个反斜杠和其后的换行符会被删除。
 \end{itemize}
 
-如果结尾行包含空白字符且之前的某一行的空白字符不以这些空白字符为前缀，则这是一个编译错误。
-
 \enterexample
-如下字面量为合法的多行字符串字面量：
+表~\ref{tab:multiline-string}~是一些多行字符串字面量及其等价的单行表示：
+
+\begin{floattable}{多行字符串字面量示例}{tab:multiline-string}{l|l}
+\topline
 \begin{codeblock}
-"""
+"
 abc
-"""
+"
 \end{codeblock}
-其等价于\tcode{"abc"}。
+&\tcode{"abc"}\\
+\hline
+
+\begin{codeblock}
+"
+abc
+   "
+\end{codeblock}
+&\tcode{"abc\textbackslash{}n\ \ \ "}\\
+\hline
+
+\begin{codeblock}
+"abc
+def
+"
+\end{codeblock}
+&\tcode{"abc\textbackslash{}ndef"}\\
+\hline
+
+\begin{codeblock}
+"
+abc\
+def
+"
+\end{codeblock}
+&\tcode{"abcdef"}\\
+\end{floattable}
 \exitexample
 
 \pnum
 字符串字面量可以包含字符串插值，其形式为$\tcode{\textbackslash(}e\tcode{)}$，其中$e$为表达式。字符串插值会被求值后转换为字符串插入当前位置。对原始字符串字面量而言，反斜杠和括号之间需要插入等量的\tcode{@}，否则仍然会被解释为字面符号。
 
+\rSec2[literal.char]{字符字面量}
+
+\begin{bnf}{CharacterLiteral}
+    \terminal{'} Character \terminal{'}
+\end{bnf}
+
+\begin{bnf}{Character}
+    \textnormal{除了\terminal{\textbackslash}和\terminal{'}以外的非换行可打印字符} \br
+    EscapeSeq
+\end{bnf}
+
+\pnum
+字符字面量表示单个字符，其类型为\tcode{char}。字符字面量由单引号包围，其中的字符可以是除了单引号和反斜杠以外的任意字符，或者转义序列。
+
 \rSec2[literal.symbol]{符号字面量}
 
 \begin{bnf}{SymbolLiteral}
-    \terminal{'} Identifier \br
-    \terminal{'(} UnqualID \terminal{)}
+    \terminal{'} Identifier
 \end{bnf}
 
 \pnum
@@ -328,15 +355,15 @@ $$ \tcode{false} \coloneqq \langle \mathrm{false}, \tcode{bool} \rangle $$
 \end{bnf}
 
 \pnum
-整数、浮点数与字符串能带有内建或用户自定义的后缀。后缀由字母开始，后跟任意数量的字母或数字，字面量与后缀之间可以添加\tcode{_}分隔。用户自定义的后缀不能与内建后缀相同，否则这是一个编译错误。
+整数、浮点数与字符串能带有内建或用户自定义的后缀。后缀由字母开始，后跟任意数量的字母或数字，字面量与后缀之间可以添加\tcode{_}分隔。用户自定义的后缀不能与内建后缀相同，否则这是一个编译错误。参见~\ref{op.suffix}。
+
+\rSec1[lex.lambda-param]{Lambda参数}
+
+\begin{bnf}{LambdaParameter}
+    \terminal{\$} Digit\bnfp \br
+    \terminal{\$} Identifier
+\end{bnf}
 
 \pnum
-假设字面量$l$带有自定义后缀$s$，则它等价于以下第一个合法的表达式：
-\begin{codeblock}
-    operator ""s(l)
-\end{codeblock}
-其中$i$是$l$移除后缀的形式；
-\begin{codeblock}
-    operator ""s(t)
-\end{codeblock}
-其中$t$是包含$i$所有字符的字符串字面量。
+Lambda参数只能在lambda作用域（\ref{scope.lambda}）中使用，用于引用匿名参数。其类型是待推导的。
+不在lambda作用域中使用lambda参数，或在显式指定参数的lambda表达式中使用lambda参数，是一个编译错误。
