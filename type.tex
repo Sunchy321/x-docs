@@ -114,7 +114,6 @@ $$ \tcode{Symbol} \coloneqq \bigcup_{\tcode{'}s} \left\{  \tcode{'}s \right\} $$
 \begin{bnf}{CompType}
     Type \terminal{?} \br
     Type \terminal{[} \terminal{]} \br
-    Type \terminal{[} \terminal{dyn} Expression \terminal{]} \br
     Type \terminal{[} Type \terminal{]} \br
     \terminal{(} TupleTypes\bnfs \terminal{)} \br
     \terminal{\{} StructTypes \terminal{\}} \br
@@ -151,10 +150,10 @@ $$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil
 \pnum
 $T\tcode{?}$为\term{可空类型}。如果$T$本身就是可空类型，则$T\tcode{?}$等价于$T$。否则，$T\tcode{?}$包含$T$的所有值和空值\tcode{nil}。
 
-$$ T\tcode{[dyn }N\tcode{]} \coloneqq T^N $$
+$$ T\tcode{[]} \coloneqq \bigcup^\infty_{i=1} T^i $$
 
 \pnum
-$T\tcode{[dyn }N\tcode{]}$为\term{数组类型}，代表$N$个$T$的值的序列。$T\tcode{[]}$为$T\tcode{[dyn _]}$的别名。
+$T\tcode{[]}$为\term{数组类型}，代表若干个$T$的值的序列。
 
 $$ T\tcode{[}K\tcode{]} \coloneqq T^K $$
 

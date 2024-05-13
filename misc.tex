@@ -39,12 +39,12 @@ enum Order {
 
 \indexlibrary{\idxcode{Range}}
 \begin{itemdecl}
-class Range<T, dyn S: T, dyn E: T>;
+class Range<T>;
 \end{itemdecl}
 
 \indexlibrary{\idxcode{ClosedRange}}
 \begin{itemdecl}
-class ClosedRange<T, dyn S: T, dyn E: T>;
+class ClosedRange<T>;
 \end{itemdecl}
 
 \pnum
@@ -57,12 +57,12 @@ class ClosedRange<T, dyn S: T, dyn E: T>;
 
 \indexlibrary{\idxcode{Range}!\idxcode{init}}
 \begin{itemdecl}
-func init<T, dyn S: T, dyn E: T>(start: T, end: T) -> Range<T, dyn S, dyn E>;
+func init<T>(start: T, end: T) -> Range<T>;
 \end{itemdecl}
 
 \indexlibrary{\idxcode{ClosedRange}!\idxcode{init}}
 \begin{itemdecl}
-func init<T, dyn S: T, dyn E: T>(start: T, end: T) -> ClosedRange<T, dyn S, dyn E>;
+func init<T>(start: T, end: T) -> ClosedRange<T>;
 \end{itemdecl}
 
 \pnum
@@ -71,13 +71,13 @@ func init<T, dyn S: T, dyn E: T>(start: T, end: T) -> ClosedRange<T, dyn S, dyn 
 \rSec2[core.range.impl]{实现}
 
 \begin{itemdecl}
-impl<T, dyn S, dyn E> Range<T, dyn S, dyn E> : Sequence<T, dyn E - S> {
+impl<T> Range<T> : Sequence<T> {
     type Iterator = RangeIterator<T>;
 }
 \end{itemdecl}
 
 \begin{itemdecl}
-impl<T, dyn S, dyn E> ClosedRange<T, dyn S, dyn E> : Sequence<T, dyn (E - S)+!> {
+impl<T> ClosedRange<T> : Sequence<T> {
     type Iterator = ClosedRangeIterator<T>;
 }
 \end{itemdecl}
