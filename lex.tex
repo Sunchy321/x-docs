@@ -2,6 +2,31 @@
 
 \rSec0[lex]{词法约定}
 
+\begin{bnf}{Token}
+    Identifier \br
+    Keyword \br
+    Punctuator \br
+    Literal \br
+    LambdaParameter \br
+    MacroInvocation
+\end{bnf}
+
+\begin{bnf}{TokenDelimited}
+    \terminal{(} TokenList\bnfq \terminal{)} \br
+    \terminal{[} TokenList\bnfq \terminal{]} \br
+    \terminal{\{} TokenList\bnfq \terminal{\}} \br
+    \terminal{\{|} TokenList\bnfq \terminal{|\}}
+\end{bnf}
+
+\begin{bnf}{TokenList}
+    TokenListItem\bnfp
+\end{bnf}
+
+\begin{bnf}{TokenListItem}
+    Token \textnormal{but not} \terminal{( ) [ ] \{ \} \{| |\}} \br
+    TokenDelimited
+\end{bnf}
+
 \pnum
 \term{程序文本}指将被翻译为\X{}程序的文本的整体或者一部分。它存储在\term{源文件}中，并以UTF-8编码读取。
 

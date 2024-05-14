@@ -33,11 +33,11 @@
 \pnum
 \tcode{throw}也可以当作表达式使用。参见~\ref{expr.stmt}。
 
-\rSec1[except.catch]{捕获异常}
-\indextext{异常处理!捕获}
+\rSec1[except.catch]{处理异常}
+\indextext{异常处理!处理}
 
 \pnum
-一个被抛出的异常可能会被最近的\tcode{catch}块或\tcode{catch}表达式捕获。
+一个被抛出的异常可能会被最近的\tcode{catch}块或\tcode{catch}表达式捕获。如果一个表达式的异常没有被捕获，则必须显式使用\tcode{try}关键字标识。
 
 \pnum
 一个\tcode{catch}块是跟在一个块后面的异常处理器。如果一个被抛出的异常经过带有\tcode{catch}块的块，则该异常将会依次对每个\tcode{catch}块进行模式匹配。如果某个模式匹配成功，则控制流转移到该\tcode{catch}块内部。如果没有\tcode{catch}块匹配，则异常将继续向外传播。

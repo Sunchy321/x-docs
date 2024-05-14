@@ -146,6 +146,9 @@ if x.filter{ true }
 \tcode{while}语句的类型为语句主体块包含的所有终止该循环的\tcode{break}语句值的类型以及\tcode{else}块的类型的公共类型。
 如果语句不含\tcode{else}块，则视为其类型为\tcode{void}或\tcode{never}（当循环条件被省略时）。
 
+\pnum
+\tcode{while}语句可以带有一个符号字面量作为标签，用于在嵌套循环中终止指定的循环。\enternote \tcode{while} 之后紧跟的符号字面量总是被解析为一个标签。如果你需要在循环条件中使用符号字面量，请使用括号将其包裹起来。 \exitnote
+
 \rSec1[stmt.for]{\tcode{for}语句}
 \indextext{语句!for}
 
@@ -180,6 +183,9 @@ $\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译
 \end{codeblock}
 
 其中$i$和$v$是内部使用的匿名变量名称。参见~\ref{core.seq}。
+
+\pnum
+与\tcode{while}语句相同，\tcode{for}语句也可以带有标签
 
 \rSec1[stmt.control]{控制语句}
 \indextext{语句!控制}

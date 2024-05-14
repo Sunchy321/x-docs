@@ -1,0 +1,28 @@
+%!TEX root = x.tex
+
+\rSec0[macro]{宏}
+\indextext{宏}
+
+\begin{bnf}{MacroInvocation}
+    \terminal{\#} MacroName TokenDelimited\bnfq
+\end{bnf}
+
+\begin{bnf}{MacroName}
+    Identifier
+\end{bnf}
+
+\pnum
+\term{宏}提供了一种在编译期生成代码的能力。宏可以接受参数，并展开成为特定的标记序列。宏的参数由一对对应的分隔符包围，且内部的分隔符也必须成对。
+
+\pnum
+宏名称是一个标识符，并且可以与关键字相同。
+
+\rSec1[macro.def]{宏定义}
+
+\begin{bnf}{MacroDefinition}
+    \terminal{macro} MacroName \terminal{\{} MacroRule\bnfs \terminal{\}}
+\end{bnf}
+
+\begin{bnf}{MacroRule}
+    TokenDelimited \terminal{->} TokenDelimited
+\end{bnf}
