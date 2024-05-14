@@ -13,7 +13,8 @@
 
 \begin{bnf}{ClassBody}
     \terminal{\{} ClassMember\bnfs \terminal{\}} \br
-    TupleType
+    TupleType \br
+    \terminal{=} Type
 \end{bnf}
 
 \begin{bnf}{ClassMember}
@@ -28,6 +29,16 @@
 
 \pnum
 \term{类}描述内部不透明的类型。
+
+\pnum
+类可以以显式指定其字段的方式声明，也可以在其后指定一个元组类型或普通类型。这种情况下，等价于以指定的类型构造了一个不透明类型。
+
+\enterexample
+\begin{codeblock}
+class T = int;
+type T = class int; // 与前者相同
+\end{codeblock}
+\exitexample
 
 \rSec1[class.member]{字段}
 \indextext{类!字段}
