@@ -11,7 +11,8 @@
     \terminal{operator} \terminal{\$} \br
     \terminal{operator} \terminal{if} \br
     \terminal{operator} \terminal{is} Type \br
-    \terminal{operator} \terminal{as} Type
+    \terminal{operator} \terminal{as} Type \br
+    \terminal{operator} \terminal{as} \terminal{?} Type
 \end{bnf}
 
 \begin{bnf}{OperatorName}
@@ -36,11 +37,11 @@
 \end{bnf}
 
 \begin{bnf}{CustomOperator}
-    OperatorSymbol\bnfp
+    \terminal{'}\bnfq OperatorSymbol\bnfp
 \end{bnf}
 
 \begin{bnf}{OperatorSymbol}[\oneof]
-    \terminal{\~ ! \% \^{} \& * - | + = / ? < > . '}
+    \terminal{\~ ! \% \^{} \& * - | + = / ? < > .}
 \end{bnf}
 
 \pnum
@@ -52,18 +53,18 @@
 \begin{floattable}{内建运算符}{tab:op}{lllll}
 \topline
 \tcode{+!} & \tcode{-!} & 前缀\tcode{+} & 前缀\tcode{-} & 前缀\tcode{!} \\
-\tcode{'\~} & \tcode{?} & \tcode{*} & \tcode{/} & \tcode{\%} \\
-二元\tcode{+} & 二元\tcode{-} & \tcode{shl} & \tcode{shr} & \tcode{'\&} \\
-\tcode{'\^{}} & \tcode{'|} & \tcode{..} & \tcode{..=} & \tcode{\~} \\
-\tcode{==} & \tcode{!=} & \tcode{<} & \tcode{<=} & \tcode{>} \\
-\tcode{>=} & \tcode{!<} & \tcode{!>} & \tcode{<>} & \tcode{cmp} \\
-\tcode{in} & \tcode{\&} & \tcode{|} &&\\
+\tcode{'\~} & \tcode{?} & 后缀\tcode{!}  & \tcode{*} & \tcode{/} \\
+\tcode{\%} & 二元\tcode{+} & 二元\tcode{-} & \tcode{shl} & \tcode{shr} \\
+\tcode{'\&} & \tcode{'\^{}} & \tcode{'|} & \tcode{..} & \tcode{..=} \\
+\tcode{\~} & \tcode{==} & \tcode{!=} & \tcode{<} & \tcode{<=} \\
+\tcode{>} & \tcode{>=} & \tcode{!<} & \tcode{!>} & \tcode{<>} \\
+\tcode{cmp} & \tcode{in} & \tcode{\&} & \tcode{|} &\\
 \hhline{|=====|}
-\tcode{.} & \tcode{await} & 后缀\tcode{!} & \tcode{??} & \tcode{!in} \\
-\tcode{is} & \tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} \\
-\tcode{*=} & \tcode{/=} & \tcode{\%=} & \tcode{shl_eq} & \tcode{shr_eq} \\
-\tcode{'\&=} & \tcode{'\^{}=} & \tcode{'|=} & \tcode{??=} & \tcode{++} \\
-\tcode{--} & \tcode{\~>} & \tcode{<\~} & \tcode{;} & \\
+\tcode{.} & \tcode{await} & \tcode{??} & \tcode{!in} & \tcode{is} \\
+\tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} & \tcode{*=} \\
+\tcode{/=} & \tcode{\%=} & \tcode{shl_eq} & \tcode{shr_eq} & \tcode{'\&=} \\
+\tcode{'\^{}=} & \tcode{'|=} & \tcode{??=} & \tcode{++} & \tcode{--} \\
+\tcode{\~>} & \tcode{<\~} & \tcode{;} && \\
 \end{floattable}
 
 \pnum
@@ -100,7 +101,7 @@
 用户可以声明自己的运算符。自定义运算符的名称由关键字\tcode{operator}后跟一个标识符或标点符号组成。
 
 \pnum
-自定义的运算符不能与内建的运算符或字符字面量相同，也不能是\tcode{'}、\tcode{''}、\tcode{//}、\tcode{/*}、\tcode{->}、\tcode{=>}或\tcode{...}。如果自定义的运算符是一个标识符，则它不能在任何作用域中与另一个标识符相同，否则这是一个编译错误。自定义的运算符也不能是\tcode{prefix}、\tcode{suffix}或\tcode{infix}。
+自定义的运算符不能与内建的运算符相同，也不能是\tcode{//}、\tcode{/*}、\tcode{->}、\tcode{=>}或\tcode{...}。如果自定义的运算符是一个标识符，则它不能在任何作用域中与另一个标识符相同，否则这是一个编译错误。自定义的运算符也不能是\tcode{prefix}、\tcode{suffix}或\tcode{infix}。
 
 \pnum
 自定义的运算符可以是前缀、后缀或者中缀的，分别使用\tcode{prefix}、\tcode{suffix}和\tcode{infix}指定。
@@ -229,14 +230,17 @@ func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符�
 \rSec2[op.over.suffix]{后缀运算符}
 \indextext{运算符!重载!后缀}
 
-\rSec2[op.over.null]{\tcode{?}运算符}
-\indextext{运算符!重载!\idxcode{?}}
+\rSec2[op.over.null]{空值检测运算符}
+\indextext{运算符!重载!空值检测}
 
 \pnum
 \tcode{?}运算符的重载解析与一般的后缀运算符相同，但返回值类型必须是可空类型或者重载了\tcode{?}运算符的类型。
 
 \pnum
-对于重载了的可空运算符调用$e\tcode{?}$或$e\tcode{!}$而言，将首先连续调用\tcode{operator suffix?}直到得到一个可空类型，然后对其进行内建的可空运算符求值。
+对于重载了的可空运算符调用$e\tcode{?}$而言，将首先连续调用\tcode{operator suffix?}直到得到一个可空类型，然后对其进行内建的可空运算符求值。
+
+\pnum
+如果一个类型没有重载后缀\tcode{!}但重载了\tcode{?}，则会连续调用\tcode{operator suffix?}直到得到一个可空类型或重载了后缀\tcode{!}的类型，并在这个值上进行后缀\tcode{!}运算。
 
 \rSec2[op.over.infix]{中缀运算符}
 \indextext{运算符!重载!中缀}
@@ -249,6 +253,7 @@ $\tcode{opeartor infix@(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或
 
 \pnum
 比较运算符的重载解析与一般的中缀运算符相同。\tcode{cmp}的返回类型必须为\tcode{Order}或\tcode{Order?}。
+如果类型$T$重载了\tcode{operator cmp}，则会自动生成其他的比较运算符：
 
 \begin{codeblock}
 func operator==(lhs: T, rhs: T) { (lhs cmp rhs) is .equal }
@@ -291,7 +296,17 @@ func operator!=(lhs: T, rhs: T) { !(lhs == rhs) }
 \pnum
 当布尔类型的表达式$e$被用于条件中时，会不断调用$e.\tcode{operator if()}$，直到返回值为\tcode{bool}为止。然后这个值将被用于条件判断。
 
+\rSec1[op.cast]{自定义类型转换函数}
+\indextext{类型转换!自定义}
+
+\pnum
+自定义类型转换函数由\tcode{opeartor as}或\tcode{operator as?}后跟类型构成。它可以用于将一个类型显式转换为另一个类型。
+
+\pnum
+自定义的$\tcode{operator as }T$返回类型必须为$T$；自定义的$\tcode{operator as? }T$返回类型必须为$T\tcode{?}$。它们都只接受一个参数。
+
 \rSec1[op.suffix]{自定义后缀函数}
+\indextext{后缀!自定义}
 
 \pnum
 自定义后缀函数由\tcode{operator}后跟一个字符串字面量构成。

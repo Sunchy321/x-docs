@@ -45,7 +45,8 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
     StmtExpr \br
     LambdaParameter \br
     LambdaExpr \br
-    DoExpr
+    DoExpr \br
+    TryExpr
     % NameofExpr \br TODO: nameof 宏
 \end{bnf}
 
@@ -358,7 +359,7 @@ let first3 = do! {
     NullCheckExpr \br
     PrevNextExpr \br
     IncDecExpr \br
-    CatchExpr
+    CastExpr
 \end{bnf}
 
 \rSec2[expr.sub]{下标运算符}
@@ -457,11 +458,11 @@ a? + 1 == b // 等号也会停止传播，等价于\tcode{(a? + 1) == b}
 \exitexample
 
 \pnum
-$e\tcode{!}$与$e\tcode{?}$类似，但它在$e$为\tcode{nil}的时候抛出\tcode{Exception.checkedNil}。
+后缀\tcode{!}将可空类型转换为非可空类型。对表达式而言，如果$e\tcode{!}$不为\tcode{nil}，则结果为$e$；否则调用\tcode{panic}。参见~\ref{except.panic}。
 
 \pnum
 如果空值检测运算符的操作数类型是$T\tcode{?}$，则整个表达式的类型为$T$。
-如果空值检测运算符的左操作数不是可空类型，则空值检测运算符将被忽略。实现可以为此提出一个警告。
+如果空值检测运算符的左操作数不是可空类型（且并未重载空值检测运算符），则空值检测运算符将被忽略。实现可以为此提出一个警告。
 
 \rSec2[expr.prev-next]{前驱后继运算符}
 \indextext{运算符!前驱后继}
@@ -484,15 +485,14 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \pnum
 自增运算符$e\tcode{++}$等价于$e\ \tcode{=}\ e\tcode{+!}$，自减运算符$e\tcode{--}$等价于$e\ \tcode{=}\ e\tcode{-!}$，但优先级不同，且$e$只被求值一次。
 
-\rSec2[expr.catch]{\tcode{catch}表达式}
-\indextext{表达式!\idxcode{catch}}
+\rSec2[expr.cast]{类型转换运算符}
+\indextext{运算符!类型转换}
 
-\begin{bnf}{CatchExpr}
-    SuffixExpr \terminal{.} \terminal{catch}
+\begin{bnf}{CastExpr}
+    SuffixExpr \terminal{as} Type \br
+    SuffixExpr \terminal{as} \terminal{?} Type \br
+    SuffixExpr \terminal{as} \terminal{!} Type
 \end{bnf}
-
-\pnum
-\tcode{.catch}捕获表达式的异常，被捕获的表达式$e$必须是能抛出异常的表达式。结果的类型为$\tcode{Result<}T\tcode{>}$，其中$T$为$e$的类型。参见~\ref{core.result}。
 
 \rSec1[expr.prefix]{前缀运算符}
 \indextext{运算符!前缀}
@@ -501,8 +501,7 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
     SuffixExpr \br
     MathPrefixExpr \br
     NotExpr \br
-    NegationExpr \br
-    TryExpr
+    NegationExpr
 \end{bnf}
 
 \rSec2[expr.prefix-math]{数学前缀运算符}
@@ -535,16 +534,6 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 
 \pnum
 位取反运算符\tcode{'\~}进行按位取反。操作数的类型必须是定长整数类型。
-
-\rSec2[expr.try]{\tcode{try}运算符}
-\indextext{运算符!\idxcode{try}}
-
-\begin{bnf}{TryExpr}
-    \terminal{try} SuffixExpr
-\end{bnf}
-
-\pnum
-\tcode{try}表达式用于显式使用一个可能会抛出异常的表达式。如果其操作数不能抛出异常，这是一个编译错误。
 
 \rSec1[expr.mul]{乘法运算符}
 \indextext{运算符!乘法}

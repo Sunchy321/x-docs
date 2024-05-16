@@ -7,28 +7,21 @@
 \indextext{异常处理!概述}
 
 \pnum
-\X 将程序中出现的问题分为三类：错误、异常与致命错误。错误是功能的预期结果的一部分，可能在使用该功能时频繁出现，例如\tcode{int.parse}解析了一个并非整数的字符串值；异常是功能预期结果之外的结果，通常较少出现，例如打开文件时文件不存在；致命错误是程序无法继续执行的错误，例如内存耗尽。
-
-\pnum
-如果函数可能会产生错误，则它应该返回可空类型或\tcode{Result}（参见\tcode{core.result}）。
-
-\pnum
-如果函数可能会产生异常，则它应该使用异常处理机制，使用\tcode{throw}抛出异常并强制调用者处理异常。
-
-\pnum
-如果函数产生了致命错误，则它应该调用\tcode{panic}直接终止程序的执行。
+\X 将程序中出现的问题分为一般错误与致命错误。一般错误能被上层代码处理，例如打开文件时文件不存在；致命错误则无法被处理，例如内存耗尽。
+代码中的一般错误可以使用异常机制来处理。致命错误应该调用\tcode{panic}直接终止程序的执行。参见~\ref{except.panic}。
 
 \rSec1[except.throw]{抛出异常}
 \indextext{异常处理!抛出}
 
 \pnum
-\tcode{throw}语句（参见~\ref{stmt.control}）抛出异常。整个函数将以抛出异常结束，并将异常传递给调用者。所有函数的局部变量将被销毁。
+\tcode{throw}表达式（参见~\ref{stmt.control}）抛出异常。这等价于函数以结果类型的错误值返回。
+在没有\tcode{throw}修饰符的函数中使用\tcode{throw}表达式是一个编译错误。
 
 \pnum
-异常的参数必须是一个不可变值，且它的生存期将被扩展到这个异常被处理。
+\tcode{throw}表达式的参数必须实现了\tcode{ErrorCode}。
 
 \pnum
-一个不带参数的\tcode{throw}语句只能在\tcode{catch}块中使用。这个语句可以将当前处理的异常重新抛出。
+不带参数的\tcode{throw}表达式只能在\tcode{catch}块中使用。它重新抛出当前捕获的异常。
 
 \pnum
 \tcode{throw}也可以当作表达式使用。参见~\ref{expr.stmt}。
@@ -36,17 +29,22 @@
 \rSec1[except.catch]{处理异常}
 \indextext{异常处理!处理}
 
-\pnum
-一个被抛出的异常可能会被最近的\tcode{catch}块或\tcode{catch}表达式捕获。如果一个表达式的异常没有被捕获，则必须显式使用\tcode{try}关键字标识。
+\begin{bnf}{TryExpr}
+    \terminal{try} Expression CatchBlock\bnfs
+\end{bnf}
+
+\begin{bnf}{CatchBlock}
+    \terminal{catch} Pattern\bnfq Block
+\end{bnf}
 
 \pnum
-一个\tcode{catch}块是跟在一个块后面的异常处理器。如果一个被抛出的异常经过带有\tcode{catch}块的块，则该异常将会依次对每个\tcode{catch}块进行模式匹配。如果某个模式匹配成功，则控制流转移到该\tcode{catch}块内部。如果没有\tcode{catch}块匹配，则异常将继续向外传播。
+\tcode{try}表达式可以解构结果类型$T\tcode{ throw }E$。如果其子表达式为正确值$e$，则整个表达式的值就为$e$。否则，将错误值与每个\tcode{catch}子句的模式进行匹配。如果找到了匹配的块，则整个表达式的值就为该块的值。如果没有找到匹配的块，则异常会继续向上抛出，等价于一个隐含的\tcode{catch \{ throw \}}。
+
+\pnum
+\tcode{try}表达式的类型$T$与所有\tcode{catch}块的类型的公共类型。
 
 \pnum
 如果一个异常传播到了最顶层函数的最外层，将会调用\tcode{core::terminate}。
-
-\pnum
-\tcode{catch}表达式捕获异常并将其包装到\tcode{Result}中。表达式的类型为\tcode{Result<T, E>}，其中\tcode{T}为表达式的类型，\tcode{E}为异常的类型。如果表达式$e$抛出异常$e^\dagger$，则其值为$\tcode{.Error(}e^\dagger\tcode{)}$，否则其值为$\tcode{.OK(}e\tcode{)}$。
 
 \rSec1[except.func.throw]{函数\tcode{throw}修饰符}
 
@@ -61,7 +59,7 @@
 \end{bnf}
 
 \pnum
-\tcode{throw}修饰符显式指定了函数会产生什么类型的异常。\tcode{throw}后面的括号标记了可能抛出的异常类型。如果括号内部为空，则代表该函数不抛出任何异常。如果括号被省略，将会自动推导函数抛出的异常类型。
+\tcode{throw}修饰符显式指定了函数会产生什么类型的异常。\tcode{throw}后面的括号标记了可能抛出的异常类型。如果括号内部为空，则代表该函数不抛出任何异常。如果括号被省略，将会自动推导函数抛出的异常类型。这些类型必须实现了\tcode{ErrorCode}。
 
 \rSec1[except.panic]{\tcode{panic}}
 \indextext{异常处理!\idxcode{panic}}

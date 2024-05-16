@@ -6,10 +6,16 @@
 \indextext{类型}
 
 \begin{bnf}{Type}
+    NormalType \br
+    ErrorType
+\end{bnf}
+
+\begin{bnf}{NormalType}
     \terminal{(} Type \terminal{)} \br
     FundaType \br
     SpecialType \br
     CompType \br
+    OpaqueType \br
     SomeType \br
     AnyType \br
     \terminal{typeof} \terminal{(} Expression \terminal{)} \br
@@ -39,6 +45,7 @@ $$ \mathcal{V} = \{ \langle v, T, Q \rangle \mid T \in \mathcal{T}, v \in T, Q \
     \terminal{uint} \terminal{<} Expression \terminal{>} \br
     \terminal{float} \br
     \terminal{float} \terminal{<} Expression \terminal{>} \br
+    \terminal{char}
     SymbolType
 \end{bnf}
 
@@ -190,7 +197,7 @@ $T_1\tcode{|}\ldots\tcode{|}T_n$ 称作\term{联合类型}。其中各个$T_i$�
     Type ThrowQual\bnfq ReturnType
 \end{bnf}
 
-\rSec3[type.opaque]{不透明类型}
+\rSec2[type.opaque]{不透明类型}
 \indextext{类型!不透明}
 
 \begin{bnf}{OpaqueType}
@@ -213,6 +220,9 @@ let l: U = j; // 错误，\tcode{T}和\tcode{U}之间没有隐式转换
 
 \end{codeblock}
 \exitexample
+
+\pnum
+如果创建一个元组或结构类型的不透明类型，则其各成员的默认访问级别为\tcode{private}。
 
 \rSec2[type.some]{\tcode{some}类型}
 \indextext{类型!\tcode{some}}
@@ -278,6 +288,16 @@ y = x; // 正确，\tcode{any T}之间可以互相赋值
 
 \end{codeblock}
 \exitexample
+
+\rSec2[type.result]{结果类型}
+\indextext{类型!结果类型}
+
+\begin{bnf}{ResultType}
+    NormalType \terminal{throw} NormalType
+\end{bnf}
+
+\pnum
+结果类型$T\tcode{ throw }E$标识一个可能产生错误的值，其中$T$是正常的返回值类型，$E$是错误类型，且必须实现\tcode{ErrorCode}。
 
 \rSec2[type.named]{具名类型}
 
