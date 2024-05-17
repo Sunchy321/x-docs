@@ -7,7 +7,7 @@
 
 \begin{bnf}{Type}
     NormalType \br
-    ErrorType
+    ResultType
 \end{bnf}
 
 \begin{bnf}{NormalType}
@@ -297,7 +297,7 @@ y = x; // 正确，\tcode{any T}之间可以互相赋值
 \end{bnf}
 
 \pnum
-结果类型$T\tcode{ throw }E$标识一个可能产生错误的值，其中$T$是正常的返回值类型，$E$是错误类型，且必须实现\tcode{ErrorCode}。
+结果类型$T\tcode{ throw }E$标识一个可能产生错误的值，其中$T$是正常的返回值类型，$E$是错误类型，且必须实现\tcode{ErrorCode}。$T$和$E$都不能是结果类型。
 
 \rSec2[type.named]{具名类型}
 

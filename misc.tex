@@ -105,11 +105,76 @@ class ClosedRangeIterator<T>;
 
 \rSec1[core.error]{错误处理}
 
+\rSec2[core.error.trait]{概念}
+
+\indexlibrary{\idxcode{ErrorCode}}
+\begin{itemdecl}
+trait ErrorCode { /* ... */ }
+\end{itemdecl}
+
+\pnum
+\tcode{ErrorCode}是一个概念，用于表示错误。它是一个空的trait，用于标记实现了错误的类型。
+
+\indexlibrary{\idxcode{ErrorCode}!\idxcode{impl}!\idxcode{never}}
+\begin{itemdecl}
+impl never : ErrorCode { }
+\end{itemdecl}
+
+\pnum
+\tcode{never}实现了\tcode{ErrorCode}，表示不会产生错误。
+
+\rSec2[core.error.impl]{实现}
+
+\indexlibrary{结果类型!\idxcode{impl}}
+\begin{itemdecl}
+impl<T, E> T throw E { /* ... */ }
+\end{itemdecl}
+
+\indexlibrary{结果类型!\idxcode{unwrap}}
+\begin{itemdecl}
+func unwrap() throw(E) -> T {
+    try this
+}
+\end{itemdecl}
+
+\pnum
+\tcode{unwrap}展开结果，如果结果是错误值，则将其直接抛出。
+
+\indexlibrary{结果类型!\idxcode{operator suffix?}}
+\begin{itemdecl}
+func operator suffix?() -> T? {
+    try this catch { nil }
+}
+\end{itemdecl}
+
+\pnum
+后缀\tcode{?}取出结果的值。如果结果是错误值，则返回\tcode{nil}。
+
+\indexlibrary{结果类型!\idxcode{operator suffix!}}
+\begin{itemdecl}
+func operator suffix!() -> T {
+    try this
+}
+\end{itemdecl}
+
+\pnum
+后缀\tcode{!}取出结果的值。如果结果是错误值，则直接抛出。
+
+\indexlibrary{结果类型!\idxcode{expect}}
+\begin{itemdecl}
+func expect(failMessage: string) -> T {
+    try this catch { panic(failMessage) }
+}
+\end{itemdecl}
+
+\pnum
+\tcode{expect}取出结果的值。如果结果是错误值，则调用\tcode{panic}并输出\tcode{failMessage}。
+
 \rSec2[core.panic]{\tcode{panic}}
 
 \indexlibrary{\idxcode{panic}}
 \begin{itemdecl}
-func panic(message = "") -> never;
+func panic(message: string = "") -> never;
 \end{itemdecl}
 
 \pnum
