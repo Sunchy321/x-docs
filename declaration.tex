@@ -38,6 +38,29 @@
     \terminal{=} Type
 \end{bnf}
 
+\pnum
+类型声明用于为类型创建别名。
+
+\rSec1[decl.class]{类声明}
+\indextext{声明!类}
+
+\begin{bnf}{ClassDecl}
+    ClassQual\bnfs \terminal{class} Identifier ClassBody
+\end{bnf}
+
+\begin{bnf}{ClassQual}
+    \terminal{const}
+\end{bnf}
+
+\begin{bnf}{ClassBody}
+    StructType \br
+    TupleType \br
+    \terminal{=} Type
+\end{bnf}
+
+\pnum
+类声明创建不透明类型。$\tcode{class }C\ B$等价于$\tcode{type }C\tcode{ = class }B$。
+
 \rSec1[qual.dir]{限定符指令}
 \indextext{限定符指令}
 

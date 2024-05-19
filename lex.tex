@@ -205,13 +205,13 @@
 \end{bnf}
 
 \begin{bnf}{ExponentPart}
-    \terminal{e} Sign\bnfq Digits \br
-    \terminal{E} Sign\bnfq Digits
+    \terminal{e} Sign\bnfq Digit\bnfp \br
+    \terminal{E} Sign\bnfq Digit\bnfp
 \end{bnf}
 
 \begin{bnf}{BinaryExponentPart}
-    \terminal{p} Sign\bnfq Digits \br
-    \terminal{P} Sign\bnfq Digits
+    \terminal{p} Sign\bnfq Digit\bnfp \br
+    \terminal{P} Sign\bnfq Digit\bnfp
 \end{bnf}
 
 \begin{bnf}{Sign}[\oneof]
@@ -269,7 +269,7 @@
 
 \pnum
 字符串字面量表示UTF-8字符串，其类型为\tcode{string}。
-普通字符串字面量被单个双引号包围。其中可以使用反斜杠开始的转义序列表示其他字符。
+普通字符串字面量被双引号包围。其中可以使用反斜杠开始的转义序列表示其他字符。
 普通字符串字面量也可以前后加上等量的\tcode{@}，此时它被称为\term{原始字符串字面量}。原始字符串字面量中的反斜杠不会被解释为转义序列，而是字符本身。
 
 \pnum
@@ -345,7 +345,7 @@ def
 \end{bnf}
 
 \pnum
-符号字面量用于标识成员名称，其类型和其值为其标识符或内部ID的值。其内部ID不能为另一个符号字面量。
+符号字面量用于标识成员名称，其类型和其值为其标识符的值。
 
 \rSec2[literal.boolean]{布尔字面量}
 

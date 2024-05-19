@@ -79,7 +79,7 @@ $\tcode{int<}w\tcode{>}$是$\tcode{int}_{l,h}$的别名，但满足$l\ge-2^{w-1}
 
 $$ \tcode{float<}s\tcode{>}^\ast \subset \mathcal{R} $$
 $$ \tcode{float<}s\tcode{>}^\dagger \subset \{ +\infty, -\infty, \mathrm{NaN} \} $$
-$$ \tcode{float<}s\tcode{>} \coloneqq \tcode{float}^\ast \cup \tcode{float}^\dagger $$
+$$ \tcode{float<}s\tcode{>} \coloneqq \tcode{float<}s\tcode{>}^\ast \cup \tcode{float<}s\tcode{>}^\dagger $$
 
 \pnum
 $\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tcode{float}为\tcode{float<64>}的别名。
