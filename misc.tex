@@ -115,7 +115,7 @@ trait ErrorCode { /* ... */ }
 \pnum
 \tcode{ErrorCode}是一个概念，用于表示错误。它是一个空的trait，用于标记实现了错误的类型。
 
-\indexlibrary{\idxcode{ErrorCode}!\idxcode{impl}!\idxcode{never}}
+\indexlibrary{\idxcode{ErrorCode}!实现!\idxcode{never}}
 \begin{itemdecl}
 impl never : ErrorCode { }
 \end{itemdecl}
@@ -125,7 +125,7 @@ impl never : ErrorCode { }
 
 \rSec2[core.error.impl]{实现}
 
-\indexlibrary{结果类型!\idxcode{impl}}
+\indexlibrary{结果类型!实现}
 \begin{itemdecl}
 impl<T, E> T throw E { /* ... */ }
 \end{itemdecl}
@@ -148,7 +148,7 @@ func operator suffix?() -> T? {
 \end{itemdecl}
 
 \pnum
-后缀\tcode{?}取出结果的值。如果结果是错误值，则返回\tcode{nil}。
+后缀\tcode{?}取出结果的值。如果结果是错误值，则返回\tcode{nil}。\enternote 由于内建后缀\tcode{?}运算符的特征，错误值的\tcode{nil}实际上会向上传播到整个表达式。\exitnote
 
 \indexlibrary{结果类型!\idxcode{operator suffix!}}
 \begin{itemdecl}
@@ -182,36 +182,3 @@ func panic(message: string = "") -> never;
 
 \pnum
 如果\tcode{panic}在执行过程中再次调用了\tcode{panic}，则会直接终止程序的执行而略过任何对象的析构。
-
-\rSec2[core.result]{\tcode{Result}}
-
-\indexlibrary{\idxcode{Result}}
-\begin{itemdecl}
-enum Result<T, E is Error = any Error> {
-    Ok(T),
-    Error(E)
-}
-\end{itemdecl}
-
-\rSec3[core.result.impl]{实现}
-
-\indexlibrary{\idxcode{Result}!\idxcode{impl}}
-\begin{itemdecl}
-impl<T, E> Result<T, E> { /* ... */ }
-\end{itemdecl}
-
-\indexlibrary{\idxcode{Result}!\idxcode{unwrap}}
-\begin{itemdecl}
-let unwrap: T { get throw(E); }
-\end{itemdecl}
-
-\pnum
-\tcode{unwrap}返回\tcode{Result}的值。如果\tcode{Result}是\tcode{Error}，则会抛出那个异常。
-
-\indexlibrary{\idxcode{Result}!\idxcode{operator suffix?}}
-\begin{itemdecl}
-func operator suffix?(r: Result<T, E>) -> T?;
-\end{itemdecl}
-
-\pnum
-\tcode{operator suffix?}将\tcode{Result}转换为可空类型。如果\tcode{Result}是\tcode{Error}，则返回\tcode{nil}。

@@ -15,11 +15,9 @@ trait Sequence<T> {
     type Iterator : core::Iterator<T>;
 
     let size: uint;
-    let iterator: Iterator;
+    let iter: Iterator;
 
-    func map(f: T -> U) -> self<U>;
-
-    func operator\{\dollar}() { this.size }
+    let isEmpty => this.size == 0;
 }
 \end{itemdecl}
 
@@ -36,10 +34,23 @@ trait Sequence<T> {
 \tcode{size}是序列的大小。序列重载了\tcode{operator\$}，返回\tcode{size}。
 
 \pnum
-\tcode{iterator}是序列的迭代器。
+\tcode{iter}是序列的迭代器。
 
 \pnum
-\tcode{map}将序列中的每个元素应用函数\tcode{f}，返回一个新的序列。
+\tcode{isEmpty}返回序列是否为空。它的默认实现将序列大小与0比较。
+
+\indexlibrary{\idxcode{Sequence}!实现}
+\begin{itemdecl}
+impl<T> Sequence<T> {
+    func operator \{\dollar\}() { this.size }
+
+
+}
+\end{itemdecl}
+
+\pnum
+序列重载了\tcode{operator\$}，它与\tcode{this.size}等价。
+
 
 \indexlibrary{\idxcode{Iterator}}
 \begin{itemdecl}

@@ -132,8 +132,8 @@ if x.filter{ true }
 \indextext{语句!for}
 
 \begin{bnf}{ForStatement}
-    \terminal{for} SymbolLiteral\bnfq Pattern \terminal{:} Expression Block \br
-    \terminal{for} SymbolLiteral\bnfq Pattern \terminal{:} Expression Block \terminal{else} Block
+    \terminal{for} SymbolLiteral\bnfq \terminal{await}\bnfq Pattern \terminal{:} Expression Block \br
+    \terminal{for} SymbolLiteral\bnfq \terminal{await}\bnfq Pattern \terminal{:} Expression Block \terminal{else} Block
 \end{bnf}
 
 \pnum
@@ -152,7 +152,7 @@ $\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译
 
 \begin{codeblock}
 {
-    let mut \{$i$} = \{$e$}.iterator;
+    let mut \{$i$} = \{$e$}.iter;
 
     while let \{$v$} = \{$i$}.next(); \{$v$} != nil {
         \{$p$} = \{$v$};
@@ -164,7 +164,10 @@ $\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译
 其中$i$和$v$是内部使用的匿名变量名称。参见~\ref{core.seq}。
 
 \pnum
-与\tcode{while}语句相同，\tcode{for}语句也可以带有标签
+与\tcode{while}语句相同，\tcode{for}语句也可以带有标签。
+
+\pnum
+\tcode{for}语句可以带有一个\tcode{await}标识，代表该语句进行异步迭代。
 
 \rSec1[stmt.control]{控制语句}
 \indextext{语句!控制}
