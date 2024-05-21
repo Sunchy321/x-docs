@@ -31,6 +31,18 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \pnum
 \term{丢弃表达式 $e$ 的结果}指，在决定 $e$ 的类型时，直接将它确定为 \tcode{never} 而跳过所有步骤；在对 $e$ 求值时，进行所有步骤，但是如果求值正常结束，丢弃最后的值。
 
+\pnum
+完整表达式指下列情况之一：
+
+\begin{itemize}
+    \item 表达式语句中的表达式；
+    \item 一个语句表达式；
+    \item 绑定语句中的初始化表达式；
+    \item \tcode{if}、\tcode{match}、\tcode{while}的条件表达式；
+    \item \tcode{for}语句的迭代表达式；
+    \item \tcode{return}、\tcode{throw}、\tcode{break}表达式的子表达式。
+\end{itemize}
+
 \rSec1[expr.primary]{基本表达式}
 \indextext{表达式!基本}
 
@@ -454,6 +466,15 @@ a? + 1 // \tcode{nil}
 a? + 1 ?? 1 // $1$，\tcode{?}不会越过\tcode{??}运算符
 (a? + 1) ?? 1 // 同上，但是更清晰
 a? + 1 == b // 等号也会停止传播，等价于\tcode{(a? + 1) == b}
+
+func f(i: int) => i + 1;
+
+f(a?) // 整个表达式的类型为\tcode{int?}，值为\tcode{nil}
+f(a ?? 2) // 被空值检测运算符截断，整个表达式的类型为\tcode{int}，值为\tcode{3}
+
+let mut b: int? = 1;
+
+b = a?; // 被赋值运算符截断，\tcode{b}成为\tcode{nil}
 \end{codeblock}
 \exitexample
 
@@ -465,7 +486,10 @@ a? + 1 == b // 等号也会停止传播，等价于\tcode{(a? + 1) == b}
 如果空值检测运算符的左操作数不是可空类型（且并未重载空值检测运算符），则空值检测运算符将被忽略。实现可以为此提出一个警告。
 
 \pnum
-结果类型重载了空值检测运算符。参见~\ref{core.error.impl}。
+如果$e$是结果类型$T\mathbin{\tcode{throw}}E$，则$e\tcode{?}$与$\tcode{(try }e\tcode{ catch \{ nil \})?}$等价。
+
+\pnum
+如果$e$是结果类型，则$e!$在$e$为正确值的情况下返回$e$，否则抛出$e$的错误值，即等价于$\tcode{try }e$。
 
 \rSec2[expr.prev-next]{前驱后继运算符}
 \indextext{运算符!前驱后继}

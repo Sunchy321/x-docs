@@ -1,66 +1,52 @@
 %!TEX root = x.tex
 
-\rSec0[class]{类}
-\indextext{类}
+\rSec0[impl]{实现}
+\indextext{实现}
 
-\begin{bnf}{ClassDecl}
-    ClassQual\bnfs \terminal{class} Identifier ClassBody
+\begin{bnf}{ImplDecl}
+    \terminal{impl} Type TraitSpec\bnfq ImplBody
 \end{bnf}
 
-\begin{bnf}{ClassQual}
-    \terminal{const}
-\end{bnf}
-
-\begin{bnf}{ClassBody}
-    \terminal{\{} ClassMember\bnfs \terminal{\}} \br
-    TupleType \br
-    \terminal{=} Type
-\end{bnf}
-
-\begin{bnf}{ClassMember}
-    FieldDecl \br
-    PropertyDecl \br
-    FuncDecl \br
-    TypeDecl \br
-    ClassDecl \br
-    EnumDecl \br
-    TraitDecl
-\end{bnf}
-
-\pnum
-\term{类}描述内部不透明的类型。
-
-\pnum
-类可以以显式指定其字段的方式声明，也可以在其后指定一个元组类型或普通类型。这种情况下，等价于以指定的类型构造了一个不透明类型。
-
-\enterexample
-\begin{codeblock}
-class T = int;
-type T = class int; // 与前者相同i
-\end{codeblock}
-\exitexample
-
-\rSec1[class.member]{字段}
-\indextext{类!字段}
-
-\begin{bnf}{FieldDecl}
-    FieldQual\bnfs BindKeyword Identifier TypeNotation Initializer\bnfq \terminal{;}
-    FieldQual\bnfs BindKeyword Identifier Initializer \terminal{;}
-\end{bnf}
-
-\begin{bnf}{TypeNotation}
+\begin{bnf}{TraitSpec}
     \terminal{:} Type
 \end{bnf}
 
-\begin{bnf}{Initializer}
-    \terminal{=} Expression
+\begin{bnf}{ImplBody}
+    \terminal{\{} ImplMember\bnfs \terminal{\}} \br
+    \terminal{;}
+    \terminal{=} \terminal{never} \terminal{;}
+\end{bnf}
+
+\begin{bnf}{ImplMember}
+    TypeDecl \br
+    FuncDecl \br
+    PropertyDecl
 \end{bnf}
 
 \pnum
-类中的字段表示类的内部状态，其默认访问级别为\tcode{private}。具有\tcode{mut}修饰的是可变字段。类字段可以显式指定类型，也可以通过初始值推导类型。
+\term{实现}用于为类型添加额外的特性。实现可以显式指定以令类型满足某个概念。
 
-\rSec1[class.property]{属性}
-\indextext{类!属性}
+% \rSec1[impl.member]{字段}
+% \indextext{类!字段}
+
+% \begin{bnf}{FieldDecl}
+%     FieldQual\bnfs BindKeyword Identifier TypeNotation Initializer\bnfq \terminal{;}
+%     FieldQual\bnfs BindKeyword Identifier Initializer \terminal{;}
+% \end{bnf}
+
+% \begin{bnf}{TypeNotation}
+%     \terminal{:} Type
+% \end{bnf}
+
+% \begin{bnf}{Initializer}
+%     \terminal{=} Expression
+% \end{bnf}
+
+% \pnum
+% 类中的字段表示类的内部状态，其默认访问级别为\tcode{private}。具有\tcode{mut}修饰的是可变字段。类字段可以显式指定类型，也可以通过初始值推导类型。
+
+\rSec1[impl.props]{属性}
+\indextext{实现!属性}
 
 \begin{bnf}{PropertyDecl}
     PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq Initializer\bnfq PropertyBody \terminal{;} \br
@@ -96,7 +82,7 @@ type T = class int; // 与前者相同i
 \end{bnf}
 
 \pnum
-类中还可以声明\term{属性}。属性是类对外暴露的接口，其默认访问级别为\tcode{public}。属性的定义至少需要包含一个访问器。访问器的块或表达式具有lambda作用域。
+实现可以给类型添加\term{属性}。属性的定义至少需要包含一个访问器。访问器的块或表达式具有lambda作用域，且隐含\tcode{this}参数。
 
 \pnum
 属性的访问器可以以上下文关键字\tcode{get}、\tcode{set}、\tcode{willSet}或\tcode{didSet}开始。
@@ -108,9 +94,6 @@ type T = class int; // 与前者相同i
 如果\tcode{set}访问器不显式写出参数，则视为其具有lambda参数\tcode{\$value}。如果\tcode{willSet}或\tcode{didSet}不显式写出参数，则视为其具有lambda参数\tcode{\$oldValue}和\tcode{\$newValue}。
 
 \pnum
-如果属性$p$的声明中既不包含\tcode{get}也不包含\tcode{set}访问器，则视作该类具有字段$p'$，且具有访问器$\tcode{get}\mathrel{\tcode{=>}}\tcode{this.}p'$。
-如果该属性有\tcode{mut}修饰，则还视为该属性具有访问器$\tcode{set => this.}p'\tcode{ = \$value}$。
-如果\tcode{get}或\tcode{set}访问器后直接跟分号，则视作以上述方式生成访问器，且另一个对应的访问器若存在则必须采用这种省略方式声明。
 如果属性以直接后跟$\mathrel{\tcode{=>}}e$的方式声明，则视作该属性具有访问器$\tcode{get} \mathrel{\tcode{=>}} e$。
 
 \pnum
@@ -145,33 +128,25 @@ type T = class int; // 与前者相同i
 \indextext{方法}
 
 \pnum
-类中的函数声明称作\term{方法}。方法隐含了一个\tcode{this}参数，其为调用该方法的对象。
+实现中的函数声明称作\term{方法}。方法隐含了一个\tcode{this}参数，其为调用该方法的对象。
 
 \pnum
-如果类内方法显式指定了\tcode{this}参数，则它的类型必须是这个类。在这种情况下，可以省略\tcode{this}的类型，而仅包含修饰符。如果省略\tcode{this}参数，则\tcode{this}不包含任何修饰符。
+方法可以显式指定\tcode{this}参数以为其添加修饰符。\tcode{this}参数要么省略类型指示，要么包含一个仅具有修饰符的类型指示，这些修饰符就是\tcode{this}的类型。
 
 \enterexample
 \begin{codeblock}
-class A {
+impl A {
     f() { } // \#1
-    f(this: A) { } // 与\#1等价
-    f(this: int) { } // 错误，类方法不能指定另外的\tcode{this}类型
-    f(this: A mut) { } // \#2，可以修改\tcode{A}的成员
-    f(this: mut) { } // 与\#2等价
+    f(this) { } // 与\#1等价
+    f(this: int) { } // 错误，方法不能指定另外的\tcode{this}类型
+    f(this: mut) { } // \#2，可以修改\tcode{A}的成员
 }
 
-f(this: A) { } // 可以，与\#1等价
-f(this: int) { } // 可以，类外方法能任意指定\tcode{this}类型
 \end{codeblock}
 \exitexample
 
-\rSec2[method.lookup]{方法查找}
-\indextext{方法!查找}
-
-\pnum
-
-\rSec1[class.init]{构造器}
-\indextext{类!构造器}
+\rSec1[impl.init]{构造器}
+\indextext{实现!构造器}
 
 \pnum
 构造器是函数名称为关键字\tcode{init}的方法。构造器可以接受任意类型的参数并且不返回值。
@@ -181,13 +156,13 @@ f(this: int) { } // 可以，类外方法能任意指定\tcode{this}类型
 不能在成员被赋值之前使用它们的值，或者调用使用它们值的方法。这是一个编译错误。
 
 \pnum
-泛型类的构造器可以显式指定返回类型，这称为\tcode{参与推导的构造器}。这类构造器可以单独指定泛型参数。
+泛型实现的构造器可以显式指定返回类型，这称为\tcode{参与推导的构造器}。这类构造器可以单独指定泛型参数。
 
-\rSec1[class.deinit]{析构器}
-\indextext{类!析构器}
-
-\pnum
-析构器是函数名称为关键字\tcode{deinit}的方法。析构器不接受任何非\tcode{this}参数且不返回值。不能在类外部定义析构器。析构器不能抛出异常。
+\rSec1[impl.deinit]{析构器}
+\indextext{实现!析构器}
 
 \pnum
-当一个类对象被销毁时，将会调用析构器。
+析构器是函数名称为关键字\tcode{deinit}的方法。析构器不接受任何非\tcode{this}参数且不返回值。
+
+\pnum
+当一个对象被销毁时，将会调用析构器。

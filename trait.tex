@@ -27,25 +27,3 @@
 
 \pnum
 \term{概念}对类型进行约束，也可以为满足条件的类型提供额外的功能。
-
-\rSec1[impl]{实现}
-\indextext{实现}
-
-\begin{bnf}{ImplDecl}
-    \terminal{impl} Type TraitSpec\bnfq ImplBody
-\end{bnf}
-
-\begin{bnf}{TraitSpec}
-    \terminal{:} Type
-\end{bnf}
-
-\begin{bnf}{ImplBody}
-    \terminal{\{} ImplMember\bnfs \terminal{\}}
-\end{bnf}
-
-\begin{bnf}{ImplMember}
-    ClassMember
-\end{bnf}
-
-\pnum
-\term{实现}用于为类型添加额外的特性。实现可以显式指定以令类型满足某个概念。

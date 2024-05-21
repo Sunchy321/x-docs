@@ -109,7 +109,7 @@ class ClosedRangeIterator<T>;
 
 \indexlibrary{\idxcode{ErrorCode}}
 \begin{itemdecl}
-trait ErrorCode { /* ... */ }
+trait ErrorCode { }
 \end{itemdecl}
 
 \pnum
@@ -123,6 +123,14 @@ impl never : ErrorCode { }
 \pnum
 \tcode{never}实现了\tcode{ErrorCode}，表示不会产生错误。
 
+\indexlibrary{\idxcode{ErrorCode}!实现!\idxcode{void}}
+\begin{itemdecl}
+impl void : ErrorCode = never;
+\end{itemdecl}
+
+\pnum
+\tcode{void}被禁止实现\tcode{ErrorCode}，这是为了避免不带参数的\tcode{throw}表达式产生理解歧义。
+
 \rSec2[core.error.impl]{实现}
 
 \indexlibrary{结果类型!实现}
@@ -130,35 +138,56 @@ impl never : ErrorCode { }
 impl<T, E> T throw E { /* ... */ }
 \end{itemdecl}
 
-\indexlibrary{结果类型!\idxcode{unwrap}}
+\indexlibrary{结果类型!\idxcode{isOK}}
+\indexlibrary{结果类型!\idxcode{isError}}
 \begin{itemdecl}
-func unwrap() throw(E) -> T {
-    try this
+let isOK: bool {
+    get {
+        try this catch { false } else { true }
+    }
+}
+
+let isError: bool {
+    get { !this.isOK }
 }
 \end{itemdecl}
 
 \pnum
-\tcode{unwrap}展开结果，如果结果是错误值，则将其直接抛出。
+\tcode{isOK}当结果是正确值的时候返回\tcode{true}，否则返回\tcode{false}。\tcode{isError}与之相反。
 
-\indexlibrary{结果类型!\idxcode{operator suffix?}}
+\indexlibrary{结果类型!\idxcode{takeOK}}
+\indexlibrary{结果类型!\idxcode{takeError}}
 \begin{itemdecl}
-func operator suffix?() -> T? {
-    try this catch { nil }
+func takeOK() -> T? { this? }
+func takeError() -> E? { try this catch let e { e } else { nil } }
+\end{itemdecl}
+
+\pnum
+\tcode{takeOK}取出正确值。如果结果是错误值，则返回\tcode{nil}。\tcode{takeError}取出错误值。如果结果是正确值，则返回\tcode{nil}。
+
+\indexlibrary{结果类型!\idxcode{map}}
+\begin{itemdecl}
+func map<U>(f: T -> U) throw(E) -> U {
+    f(try this)
+}
+
+func map<U>(f: T -> U, or or: U) -> U {
+    f(this? ?? or)
 }
 \end{itemdecl}
 
 \pnum
-后缀\tcode{?}取出结果的值。如果结果是错误值，则返回\tcode{nil}。\enternote 由于内建后缀\tcode{?}运算符的特征，错误值的\tcode{nil}实际上会向上传播到整个表达式。\exitnote
+\tcode{map}将正确值映射为其他值。错误值会被抛出。如果提供了\tcode{or}参数，则是错误值时会返回\tcode{or}。
 
-\indexlibrary{结果类型!\idxcode{operator suffix!}}
+\indexlibrary{结果类型!\idxcode{inspect}}
 \begin{itemdecl}
-func operator suffix!() -> T {
-    try this
+func inspect(f: T -> void) -> void {
+    f(this?)
 }
 \end{itemdecl}
 
 \pnum
-后缀\tcode{!}取出结果的值。如果结果是错误值，则直接抛出。
+\tcode{inspect}将使用正确值调用函数\tcode{f}。如果结果是错误值，则不会调用\tcode{f}。
 
 \indexlibrary{结果类型!\idxcode{expect}}
 \begin{itemdecl}
@@ -169,6 +198,114 @@ func expect(failMessage: string) -> T {
 
 \pnum
 \tcode{expect}取出结果的值。如果结果是错误值，则调用\tcode{panic}并输出\tcode{failMessage}。
+
+\indexlibrary{结果类型!\idxcode{expectError}}
+\begin{itemdecl}
+func expectError(failMessage: string) -> E {
+    try this catch let e { e } else { panic(failMessage) }
+}
+\end{itemdecl}
+
+\pnum
+\tcode{expectError}取出结果的错误值。如果结果是正确值，则调用\tcode{panic}并输出\tcode{failMessage}。
+
+\indexlibrary{结果类型!\idxcode{and}}
+\begin{itemdecl}
+func and<U>(other: U throw E) throw -> U {
+    try this catch let e { throw e } else { try other }
+}
+\end{itemdecl}
+
+\pnum
+\tcode{and}返回第一个错误值。如果第一个结果是正确值，则返回第二个结果。
+
+\indexlibrary{结果类型!\idxcode{andThen}}
+\begin{itemdecl}
+func andThen<U>(f: T -> U throw E) throw(E) -> U {
+    try f(try this)
+}
+\end{itemdecl}
+
+\pnum
+如果结果是错误值，则直接抛出该值。否则以正确值调用函数\tcode{f}。\enternote 与\tcode{map}不同的是，\tcode{andThen}的\tcode{f}本身也可能产生错误。\exitnote
+
+\indexlibrary{结果类型!\idxcode{or}}
+\begin{itemdecl}
+func or(other: T throw E) -> T {
+    this? ?? try other
+}
+\end{itemdecl}
+
+\pnum
+\tcode{or}返回第一个正确值。如果第一个结果是错误值，则返回第二个结果。
+
+\indexlibrary{结果类型!\idxcode{orElse}}
+\begin{itemdecl}
+func orElse<F>(f: E -> T throw F) throw(F) -> T {
+    try this catch let e { try f(e) }
+}
+\end{itemdecl}
+
+\pnum
+如果结果是正确值，则直接返回该值。否则以错误值调用函数\tcode{f}。
+
+\indexlibrary{结果类型!\idxcode{unwrapOr}}
+\begin{itemdecl}
+func unwrapOr(default: T) -> T {
+    this? ?? default
+}
+\end{itemdecl}
+
+\pnum
+\tcode{unwrapOr}返回结果的正确值。如果结果是错误值，则返回\tcode{default}。
+
+\indexlibrary{结果类型!\idxcode{unwrapOrElse}}
+\begin{itemdecl}
+impl<T, E> T throw E if T is default {
+    func unwrapOrDefault() -> T {
+        this? ?? self::default
+    }
+}
+\end{itemdecl}
+
+\pnum
+如果$T$是\tcode{core::Default}，则\tcode{unwrapOrDefault}等同于以\tcode{T::default}调用的\tcode{unwrapOr}。
+
+\indexlibrary{结果类型!\idxcode{toOK}}
+\begin{itemdecl}
+impl<T> T throw never {
+    func toOK() -> T {
+        try this
+    }
+}
+\end{itemdecl}
+
+\pnum
+如果错误类型为\tcode{never}，则意味着永远不会发生错误。此时\tcode{toOK}将结果类型直接转换为正确值。
+
+\indexlibrary{结果类型!\idxcode{toError}}
+\begin{itemdecl}
+impl<E> never throw E {
+    func toError() -> E {
+        try this
+    }
+}
+\end{itemdecl}
+
+\pnum
+如果正确类型为\tcode{never}，则意味着永远不会得到正确值。此时\tcode{toError}将结果类型直接转换为错误值。
+
+\indexlibrary{结果类型!\idxcode{flatten}}
+\begin{itemdecl}
+impl<T, E> (T throw E) throw E {
+    func flatten() throw(E) -> T {
+        this!!
+    }
+}
+\end{itemdecl}
+
+\pnum
+\tcode{flatten}将嵌套的结果类型展平。
 
 \rSec2[core.panic]{\tcode{panic}}
 
