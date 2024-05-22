@@ -38,9 +38,16 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
     \item 表达式语句中的表达式；
     \item 一个语句表达式；
     \item 绑定语句中的初始化表达式；
+    \item lambda表达式的函数体表达式；
     \item \tcode{if}、\tcode{match}、\tcode{while}的条件表达式；
     \item \tcode{for}语句的迭代表达式；
-    \item \tcode{return}、\tcode{throw}、\tcode{break}表达式的子表达式。
+    \item \tcode{return}、\tcode{throw}、\tcode{break}表达式的子表达式；
+    \item 函数参数的默认值表达式；
+    \item 函数体与属性体表达式；
+    \item 枚举的初始化表达式；
+    \item 模式匹配与泛型的约束表达式；
+    \item \tcode{typeof}的参数表达式；
+    \item 泛型参数的非类型表达式。
 \end{itemize}
 
 \rSec1[expr.primary]{基本表达式}
@@ -275,7 +282,7 @@ $T\tcode{\{\}}$总是被解释为以对象字面量创建值。\enternote 如果
     IfStatement \br
     \terminal{if} Condition \terminal{then} Expression \br
     \terminal{if} Condition \terminal{then} Expression \terminal{else} Expression \br
-    \terminal{if} Condition \terminal{then} Expression \terminal{else} IfStatement
+    \terminal{if} Condition \terminal{then} Expression \terminal{else} IfExpr
 \end{bnf}
 
 \pnum
@@ -475,6 +482,8 @@ f(a ?? 2) // 被空值检测运算符截断，整个表达式的类型为\tcode{
 let mut b: int? = 1;
 
 b = a?; // 被赋值运算符截断，\tcode{b}成为\tcode{nil}
+
+match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断，不会传播到整个\tcode{match}表达式级别
 \end{codeblock}
 \exitexample
 
@@ -526,41 +535,31 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 
 \begin{bnf}{PrefixExpr}
     SuffixExpr \br
-    MathPrefixExpr \br
-    NotExpr \br
-    NegationExpr
-\end{bnf}
-
-\rSec2[expr.prefix-math]{数学前缀运算符}
-\indextext{运算符!数学前缀}
-
-\begin{bnf}{MathPrefixExpr}
     \terminal{+} PrefixExpr \br
-    \terminal{-} PrefixExpr
+    \terminal{-} PrefixExpr \br
+    \terminal{!} PrefixExpr \br
+    \terminal{'\~} PrefixExpr \br
+    SomeExpr
 \end{bnf}
 
 \pnum
 前缀运算符$\mathbin{\tcode{+}}$和$\mathbin{\tcode{-}}$分别表示正号和负号。其中$\mathbin{\tcode{+}}$的值为其操作数的值，而$\mathbin{\tcode{-}}$的值为其相反数。操作数类型必须为算术类型。
 
-\rSec2[expr.not]{逻辑否运算符}
-\indextext{运算符!逻辑否}
-
-\begin{bnf}{NotExpr}
-    \terminal{!} PrefixExpr
-\end{bnf}
-
 \pnum
 逻辑否运算符\tcode{!}用于对布尔值取反。如果操作数为\tcode{true}，则结果为\tcode{false}；如果操作数为\tcode{false}，则结果为\tcode{true}。
 
-\rSec2[expr.neg]{位取反运算符}
-\indextext{运算符!位取反}
+\pnum
+位取反运算符\tcode{'\~}进行按位取反。操作数的类型必须是定长整数类型。
 
-\begin{bnf}{NegationExpr}
-    \terminal{'\~} PrefixExpr
+\rSec2[expr.some]{\idxcode{some}运算符}
+\indextext{运算符!some}
+
+\begin{bnf}{SomeExpr}
+    \terminal{some} PrefixExpr
 \end{bnf}
 
 \pnum
-位取反运算符\tcode{'\~}进行按位取反。操作数的类型必须是定长整数类型。
+\tcode{some}运算符用于将一个值转换为可空值。如果操作数的类型为$T$，则结果的类型为$T\tcode{?}$。
 
 \rSec1[expr.mul]{乘法运算符}
 \indextext{运算符!乘法}

@@ -11,6 +11,7 @@
     NullPattern \br
     ExprPattern \br
     BindPattern \br
+    SomePattern \br
     ArrayPattern \br
     TuplePattern \br
     StructPattern \br
@@ -48,6 +49,16 @@
 
 \pnum
 $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathcal{e}$当且仅当$\mathcal{v}\mathrel{\tcode{==}}\mathcal{e}$。
+
+\rSec1[pattern.some]{\idxcode{some}模式}
+\indextext{模式匹配!\idxcode{some}}
+
+\begin{bnf}{SomePattern}
+    \terminal{some} Pattern
+\end{bnf}
+
+\pnum
+\tcode{some}模式匹配可空类型。如果该值为非空，则匹配成功。
 
 \rSec1[pattern.array]{数组模式}
 \indextext{模式匹配!数组}
@@ -127,9 +138,14 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 
 \begin{bnf}{PatternBind}
     Identifier PatternAssertion \br
+    SomePatternBind \br
     ArrayPatternBind \br
     TuplePatternBind \br
     StructPatternBind
+\end{bnf}
+
+\begin{bnf}{SomePatternBind}
+    \terminal{some} AnyPatternBind
 \end{bnf}
 
 \begin{bnf}{ArrayPatternBind}

@@ -224,20 +224,20 @@ let l: U = j; // 错误，\tcode{T}和\tcode{U}之间没有隐式转换
 \pnum
 如果创建一个元组或结构类型的不透明类型，则其各成员的默认访问级别为\tcode{private}。
 
-\rSec2[type.some]{\tcode{some}类型}
-\indextext{类型!\tcode{some}}
+\rSec2[type.impl]{\tcode{impl}类型}
+\indextext{类型!\tcode{impl}}
 
 \begin{bnf}{SomeType}
-    \terminal{some} Type \br
-    \terminal{some} \terminal{_}
+    \terminal{impl} Type \br
+    \terminal{impl} \terminal{_}
 \end{bnf}
 
 \pnum
-$\tcode{some}\ T$标识一个静态待推导类型，但保证该类型为$T$的子类型。
-\tcode{some _}代表一个基础类型待推导的\tcode{some}类型。
+$\tcode{impl}\ T$标识一个静态待推导类型，但保证该类型为$T$的子类型。
+\tcode{impl _}代表一个基础类型待推导的\tcode{impl}类型。
 
 \pnum
-\tcode{some}还能用于简化泛型函数声明。参见~\ref{generic.some}。
+\tcode{impl}还能用于简化泛型函数声明。参见~\ref{generic.impl}。
 
 \enterexample
 \begin{codeblock}
