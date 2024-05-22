@@ -50,7 +50,7 @@
 \pnum
 $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathcal{e}$当且仅当$\mathcal{v}\mathrel{\tcode{==}}\mathcal{e}$。
 
-\rSec1[pattern.some]{\idxcode{some}模式}
+\rSec1[pattern.some]{\tcode{some}模式}
 \indextext{模式匹配!\idxcode{some}}
 
 \begin{bnf}{SomePattern}
@@ -204,7 +204,7 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 选择模式同时匹配多个模式。如果其中有模式匹配成功，则整个模式匹配成功。匹配将从左到右进行。
 
 \pnum
-选择模式中使用的模式不能包含绑定模式。
+选择模式各分支可以包含绑定模式，但绑定的变量必须在每个分支中都出现且类型相同，否则这是一个编译错误。
 
 \rSec1[pattern.type]{类型断言}
 \indextext{模式匹配!类型断言}
