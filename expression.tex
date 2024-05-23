@@ -378,7 +378,8 @@ let first3 = do! {
     NullCheckExpr \br
     PrevNextExpr \br
     IncDecExpr \br
-    CastExpr
+    CastExpr \br
+    MatchExpr
 \end{bnf}
 
 \rSec2[expr.sub]{下标运算符}
@@ -530,6 +531,20 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
     SuffixExpr \terminal{as} \terminal{!} Type
 \end{bnf}
 
+\rSec2[expr.match]{匹配运算符}
+\indextext{运算符!匹配}
+
+\begin{bnf}{MatchExpr}
+    RangeExpr \terminal{is} Pattern \br
+    RangeExpr \terminal{!is} Pattern
+\end{bnf}
+
+\pnum
+$a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!is}} p$等价于$\tcode{!(}a \mathrel{\tcode{is}} p\tcode{)}$。表达式的类型为\tcode{bool}。
+
+\pnum
+\enternote \tcode{!is}中\tcode{!}和\tcode{is}之间必须没有空白，否则会被识别成两个不同的运算符。\exitnote
+
 \rSec1[expr.prefix]{前缀运算符}
 \indextext{运算符!前缀}
 
@@ -591,8 +606,8 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 
 \begin{bnf}{ShiftExpr}
     AddExpr \br
-    ShiftExpr \terminal{shl} AddExpr \br
-    ShiftExpr \terminal{shr} AddExpr
+    AddExpr \terminal{shl} AddExpr \br
+    AddExpr \terminal{shr} AddExpr
 \end{bnf}
 
 \pnum
@@ -629,6 +644,7 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 参数类型必须是整数类型。参见~\ref{core.range}。
 
 \rSec1[expr.connect]{连接运算符}
+\indextext{运算符!连接}
 
 \begin{bnf}{ConnectExpr}
     RangeExpr \br
@@ -657,13 +673,12 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \pnum
 $a\mathbin{\tcode{??}}b$首先对$a$求值，如果其结果不是\tcode{nil}，则表达式的值为$a$，且$b$不会被求值；否则表达式的值为$b$。
 
-\rSec1[expr.cmp-in]{比较运算符、包含运算符和匹配运算符}
+\rSec1[expr.cmp-in]{比较运算符、包含运算符}
 
 \begin{bnf}{BooleanExpr}
     RangeExpr \br
     CompareExpr \br
-    IncludeExpr \br
-    MatchExpr
+    IncludeExpr
 \end{bnf}
 
 \pnum
@@ -729,16 +744,8 @@ $a\ \tcode{cmp}\ b$比较两个表达式，其结果类型为\tcode{Order}。其
 \pnum
 $a \mathrel{\tcode{in}} b$检测$a$是否在$b$中。$a \mathrel{\tcode{!in}} b$等价于$\tcode{!(}a \mathrel{\tcode{in}} b\tcode{)}$。表达式的类型为\tcode{bool}。
 
-\rSec2[expr.match]{匹配运算符}
-\indextext{运算符!匹配}
-
-\begin{bnf}{MatchExpr}
-    RangeExpr \terminal{is} Pattern \br
-    RangeExpr \terminal{!is} Pattern
-\end{bnf}
-
 \pnum
-$a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!is}} p$等价于$\tcode{!(}a \mathrel{\tcode{is}} p\tcode{)}$。表达式的类型为\tcode{bool}。使用的模式不能包含绑定模式。
+\enternote \tcode{!in}中\tcode{!}和\tcode{in}之间必须没有空白，否则会被识别成两个不同的运算符。\exitnote
 
 \rSec1[expr.logic]{逻辑运算符}
 \indextext{运算符!逻辑}
@@ -769,8 +776,6 @@ $a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!i
     SuffixExpr \terminal{'\^{}=} LogicExpr \br
     SuffixExpr \terminal{'|=} LogicExpr \br
     SuffixExpr \terminal{??=} LogicExpr \br
-    SuffixExpr \terminal{++} \br
-    SuffixExpr \terminal{--} \br
     SuffixExpr \terminal{<\~} LogicExpr \br
     LogicExpr \terminal{\~>} SuffixExpr
 \end{bnf}

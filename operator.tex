@@ -108,18 +108,19 @@
 后缀与前缀运算符不能指定优先级。后缀运算符的优先级总是高于前缀运算符，并高于所有类型的中缀运算符。
 中缀运算符可以指定其优先级。表~\ref{tab:op-precedence}~展示了可选择的中缀运算符优先级。
 
-\begin{floattable}{中缀运算符优先级}{tab:op-precedence}{lll}
+\begin{floattable}{中缀运算符优先级}{tab:op-precedence}{lll|c}
 \topline
-\tcode{*} & \tcode{/} & \tcode{\%} \\
-\tcode{+} & \tcode{-} &\\
-\tcode{shl} & \tcode{shr} &\\
-\tcode{'\&} & \tcode{'\^{}} & \tcode{'|} \\
-\tcode{..} & \tcode{..=} &\\
-\tcode{\~} &&\\
-\tcode{??} &&\\
-\tcode{==} 等 &&\\
-\tcode{\&} & \tcode{|} &\\
-\tcode{=}等 &&\\
+& 运算符 & & 结合性 \\
+\tcode{*} & \tcode{/} & \tcode{\%} & 左结合 \\
+\tcode{+} & \tcode{-} & & 左结合 \\
+\tcode{shl} & \tcode{shr} & & 不结合 \\
+\tcode{'\&} & \tcode{'\^{}} & \tcode{'|} & 左结合，不能混用 \\
+\tcode{..} & \tcode{..=} & & 不结合 \\
+\tcode{\~} && & 左结合，不能混用 \\
+\tcode{??} && & 右结合，不能混用 \\
+\tcode{==} 等 && & 特殊结合性 \\
+\tcode{\&} & \tcode{|} & & 左结合，不能混用 \\
+\tcode{=}等 && & 不结合 \\
 \end{floattable}
 
 \pnum
