@@ -132,10 +132,49 @@ $$ \tcode{Symbol} \coloneqq \bigcup_{\tcode{'}s} \left\{  \tcode{'}s \right\} $$
     OpaqueType
 \end{bnf}
 
+\rSec3[type.optional]{可空类型}
+\indextext{类型!可空}
+
+$$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil} \} $$
+
+\pnum
+$T\tcode{?}$为\term{可空类型}。$T\tcode{?}$包含$T$的所有值（使用\tcode{some}标识）和空值\tcode{nil}。
+
+\rSec3[type.array]{数组类型}
+\indextext{类型!数组}
+
+$$ T\tcode{[]} \coloneqq \bigcup^\infty_{i=1} T^i $$
+
+\pnum
+$T\tcode{[]}$为\term{数组类型}，代表有限个类型$T$的值的序列。
+
+\rSec3[type.dict]{字典类型}
+\indextext{类型!字典}
+
+$$ T\tcode{[}K\tcode{]} \coloneqq T^K $$
+
+\pnum
+$T\tcode{[}K\tcode{]}$为\term{字典类型}，代表键类型$K$到值类型$T$的映射。
+
+\rSec3[type.tuple]{元组类型}
+\indextext{类型!元组}
+
 \begin{bnf}{TupleTypes}
     Type \br
     TupleTypes \terminal{,} Type
 \end{bnf}
+
+$$ \tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{,}\tcode{)} \coloneqq \prod^n_{i=1} T_i $$
+$$ \tcode{()} \coloneqq \tcode{void} $$
+
+\pnum
+$\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{)}$称作\term{元组类型}，代表有限个值的序列。
+
+\pnum
+特别地，只有一个元素的元组与其内部元素类型等价；没有元素的元组与\tcode{void}等价。
+
+\rSec3[type.struct]{结构类型}
+\indextext{类型!结构}
 
 \begin{bnf}{StructTypes}
     StructType \br
@@ -150,44 +189,10 @@ $$ \tcode{Symbol} \coloneqq \bigcup_{\tcode{'}s} \left\{  \tcode{'}s \right\} $$
     \terminal{mut}
 \end{bnf}
 
-\begin{bnf}{UnionType}
-    Type \terminal{|} Type \br
-    UnionType \terminal{|} Type
-\end{bnf}
-
-$$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil} \} $$
-
-\pnum
-$T\tcode{?}$为\term{可空类型}。如果$T$本身就是可空类型，则$T\tcode{?}$等价于$T$。否则，$T\tcode{?}$包含$T$的所有值和空值\tcode{nil}。
-
-$$ T\tcode{[]} \coloneqq \bigcup^\infty_{i=1} T^i $$
-
-\pnum
-$T\tcode{[]}$为\term{数组类型}，代表若干个$T$的值的序列。
-
-$$ T\tcode{[}K\tcode{]} \coloneqq T^K $$
-
-\pnum
-$T\tcode{[}K\tcode{]}$为\term{字典类型}。
-
-$$ \tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{,}\tcode{)} \coloneqq \prod^n_{i=1} T_i $$
-$$ \tcode{()} \coloneqq \tcode{void} $$
-
-\pnum
-$\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{)}$称作\term{元组类型}。特别地，只有一个元素的元组与其内部元素类型等价；没有元素的元组与\tcode{void}等价。
-
 $$ \tcode{\{} K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n \tcode{\}} \coloneqq \prod^n_{i=1} T_i $$
 
 \pnum
-$\tcode{\{}K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n\tcode{\}}$称作\term{结构类型}。
-
-\pnum
-$\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{) -> }R$称作\term{函数类型}。
-
-$$ T_1 \tcode{|} \ldots \tcode{|} T_n \coloneqq \bigcup^n_{i=1} \{ \langle v_i, T_i \rangle \mid v_i \in T_i \} $$
-
-\pnum
-$T_1\tcode{|}\ldots\tcode{|}T_n$ 称作\term{联合类型}。其中各个$T_i$是无序的。相同的$T_i$将被视为一个。
+$\tcode{\{}K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n\tcode{\}}$称作\term{结构类型}。结构类型可以使用标识符访问其成员。
 
 \rSec3[type.func]{函数类型}
 \indextext{类型!函数}
@@ -196,6 +201,9 @@ $T_1\tcode{|}\ldots\tcode{|}T_n$ 称作\term{联合类型}。其中各个$T_i$�
     Parameter ThrowQual\bnfq ReturnType \br
     Type ThrowQual\bnfq ReturnType
 \end{bnf}
+
+\pnum
+$\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{) -> }R$称作\term{函数类型}。
 
 \rSec2[type.opaque]{不透明类型}
 \indextext{类型!不透明}
