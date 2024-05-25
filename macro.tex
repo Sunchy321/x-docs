@@ -26,3 +26,21 @@
 \begin{bnf}{MacroRule}
     TokenDelimited \terminal{->} TokenDelimited
 \end{bnf}
+
+\rSec1[macro.builtin]{内建宏}
+\indextext{内建宏}
+
+\pnum
+一些宏内建于语言之中，它们提供了无法通过用户实现的功能。
+
+\rSec2[macro.src-pos]{源代码位置}
+\indextext{内建宏!源代码位置}
+
+\pnum
+\tcode{\#file}扩展为标识当前文件的路径的常量字符串。\tcode{\#line}扩展为当前行号。\tcode{\#column}扩展为当前列号。如果这些宏由一个宏展开调用，则使用的是最外层宏展开的对应位置。
+
+\rSec2[macro.nameof]{\tcode{nameof}}
+\indextext{内建宏!\idxcode{nameof}}
+
+\pnum
+$\tcode{\#nameof(}id\tcode{)}$扩展为值为$id$的常量字符串。

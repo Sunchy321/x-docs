@@ -4,8 +4,8 @@
 \indextext{函数}
 
 \begin{bnf}{FuncDecl}
-    FuncQual\bnfs \terminal{func} UnqualID Parameter ThrowQual\bnfq ReturnType\bnfq Block \br
-    FuncQual\bnfs \terminal{func} UnqualID Parameter ThrowQual\bnfq \terminal{=>} Expression \terminal{;}
+    FuncQual\bnfs \terminal{func} UnqualID  Parameter ThrowQual\bnfq ReturnType\bnfq Block \br
+    FuncQual\bnfs \terminal{func} UnqualID  Parameter ThrowQual\bnfq \terminal{=>} Expression \terminal{;}
 \end{bnf}
 
 \begin{bnf}{FuncQual}
@@ -19,23 +19,75 @@
 \end{bnf}
 
 \begin{bnf}{ParamList}
-    ParamDecl \br
-    ParamList \terminal{,} ParamDecl
+    ThisParamDecl \br
+    ThisParamDecl \terminal{,} NamedParamList \br
+    ThisParamDecl \terminal{,} UnnamedParamList \br
+    ThisParamDecl \terminal{,} UnnamedParamList \terminal{,} NamedParamList \br
+    UnnamedParamList \br
+    UnnamedParamList \terminal{,} NamedParamList \br
+    NamedParamList
 \end{bnf}
 
-\begin{bnf}{ParamDecl}
-    ParamName \terminal{:} Type\bnfq \br
-    \tcode{this} \terminal{:} TypeQualifier\bnfp
+\begin{bnf}{UnnamedParamList}
+    UnnamedParamDecl \br
+    UnnamedParamList \terminal{,} UnnamedParamDecl
 \end{bnf}
 
-\begin{bnf}{ParamName}
-    Identifier \br
-    \terminal{this}
+\begin{bnf}{NamedParamList}
+    NamedParamDecl \br
+    NamedParamList \terminal{,} NamedParamDecl
+\end{bnf}
+
+\begin{bnf}{UnnamedParamDecl}
+    ParamQual\bnfq Identifier \terminal{:} Type\bnfq
+\end{bnf}
+
+\begin{bnf}{NamedParamDecl}
+    ParamQual\bnfq \terminal{(} Identifier \terminal{)} Identifier \terminal{:} Type\bnfq
+\end{bnf}
+
+\begin{bnf}{ThisParamDecl}
+    \terminal{this} \br
+    \terminal{this} \terminal{:} TypeQualifier\bnfp
+\end{bnf}
+
+\begin{bnf}{ParamQual}
+    \terminal{mut} \br
+    \terminal{ref} \br
+    \terminal{ref} \terminal{mut} \br
+    \terminal{lazy}
 \end{bnf}
 
 \begin{bnf}{ReturnType}
     \terminal{->} Type
 \end{bnf}
+
+\rSec1[param.qual]{参数修饰符}
+\indextext{参数修饰符}
+
+\pnum
+参数修饰符修饰函数参数，指定参数的某些属性。
+
+\rSec2[param.qual.mut]{\tcode{mut}}
+\indextext{参数修饰符!\idxcode{mut}}
+
+\pnum
+\tcode{mut}修饰的参数是可变的，可以在函数内部被修改或重新赋值。\enternote 由于参数总是移动传递，所以除非使用\tcode{ref}修饰，否则调用处实参的值不会受影响。\exitnote
+
+\rSec2[param.qual.ref]{\tcode{ref}}
+\indextext{参数修饰符!\idxcode{ref}}
+
+\pnum
+\tcode{ref}修饰的参数以引用方式传递，调用处实参的值会受影响。除非使用\tcode{mut}修饰，否则参数是只读的。
+
+\pnum
+\tcode{this}参数总是以引用方式传递，即使没有显式指定。
+
+\rSec2[param.qual.lazy]{\tcode{lazy}}
+\indextext{参数修饰符!\idxcode{lazy}}
+
+\pnum
+\tcode{lazy}修饰的参数是惰性求值的，只有在函数内部使用时才会计算实参的值。
 
 \rSec1[func.async]{异步函数}
 

@@ -53,18 +53,18 @@
 \begin{floattable}{内建运算符}{tab:op}{lllll}
 \topline
 \tcode{+!} & \tcode{-!} & 前缀\tcode{+} & 前缀\tcode{-} & 前缀\tcode{!} \\
-\tcode{'\~} & \tcode{?} & 后缀\tcode{!}  & \tcode{*} & \tcode{/} \\
-\tcode{\%} & 二元\tcode{+} & 二元\tcode{-} & \tcode{shl} & \tcode{shr} \\
-\tcode{'\&} & \tcode{'\^{}} & \tcode{'|} & \tcode{..} & \tcode{..=} \\
-\tcode{\~} & \tcode{==} & \tcode{!=} & \tcode{<} & \tcode{<=} \\
-\tcode{>} & \tcode{>=} & \tcode{!<} & \tcode{!>} & \tcode{<>} \\
-\tcode{cmp} & \tcode{in} & \tcode{\&} & \tcode{|} &\\
+\tcode{'\~} & 前缀\tcode{*} & \tcode{?} & 后缀\tcode{!} & \tcode{*} \\
+\tcode{/} & \tcode{\%} & 二元\tcode{+} & 二元\tcode{-} & \tcode{shl} \\
+\tcode{shr} & \tcode{'\&} & \tcode{'\^{}} & \tcode{'|} & \tcode{..} \\
+\tcode{..=} & \tcode{\~} & \tcode{==} & \tcode{!=} & \tcode{<} \\
+\tcode{<=} & \tcode{>} & \tcode{>=} & \tcode{!<} & \tcode{!>} \\
+\tcode{<>} & \tcode{cmp} & \tcode{in} & \tcode{\&} & \tcode{|} \\
 \hhline{|=====|}
-\tcode{.} & \tcode{await} & \tcode{??} & \tcode{!in} & \tcode{is} \\
-\tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} & \tcode{*=} \\
-\tcode{/=} & \tcode{\%=} & \tcode{shl_eq} & \tcode{shr_eq} & \tcode{'\&=} \\
-\tcode{'\^{}=} & \tcode{'|=} & \tcode{??=} & \tcode{++} & \tcode{--} \\
-\tcode{\~>} & \tcode{<\~} & \tcode{;} && \\
+\tcode{.} & \tcode{await} & 前缀\tcode{\&} & \tcode{??} & \tcode{!in} \\
+\tcode{is} & \tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} \\
+\tcode{*=} & \tcode{/=} & \tcode{\%=} & \tcode{shl_eq} & \tcode{shr_eq} \\
+\tcode{'\&=} & \tcode{'\^{}=} & \tcode{'|=} & \tcode{??=} & \tcode{++} \\
+\tcode{--} & \tcode{\~>} & \tcode{<\~} & \tcode{;} & \\
 \end{floattable}
 
 \pnum
@@ -213,6 +213,9 @@ func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符�
 \end{codeblock}
 \exitexample
 
+\rSec2[op.over.suffix]{后缀运算符}
+\indextext{运算符!重载!后缀}
+
 \rSec2[op.over.call]{函数调用运算符}
 \indextext{运算符!重载!函数调用}
 
@@ -225,12 +228,6 @@ func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符�
 \rSec2[op.over.sub]{下标运算符}
 \indextext{运算符!重载!下标}
 
-\rSec2[op.over.prefix]{前缀运算符}
-\indextext{运算符!重载!前缀}
-
-\rSec2[op.over.suffix]{后缀运算符}
-\indextext{运算符!重载!后缀}
-
 \rSec2[op.over.null]{空值检测运算符}
 \indextext{运算符!重载!空值检测}
 
@@ -242,6 +239,15 @@ func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符�
 
 \pnum
 如果一个类型没有重载后缀\tcode{!}但重载了\tcode{?}，则会连续调用\tcode{operator suffix?}直到得到一个可空类型或重载了后缀\tcode{!}的类型，并在这个值上进行后缀\tcode{!}运算。
+
+\rSec2[op.over.prefix]{前缀运算符}
+\indextext{运算符!重载!前缀}
+
+\rSec2[op.over.deref]{解引用运算符}
+\indextext{运算符!重载!解引用}
+
+\pnum
+前缀\tcode{\&}运算符遵循一般前缀运算符的重载规则，但其返回类型必须是引用类型。
 
 \rSec2[op.over.infix]{中缀运算符}
 \indextext{运算符!重载!中缀}

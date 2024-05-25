@@ -66,7 +66,6 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
     LambdaExpr \br
     DoExpr \br
     TryExpr
-    % NameofExpr \br TODO: nameof 宏
 \end{bnf}
 
 \pnum
@@ -407,23 +406,30 @@ let first3 = do! {
 \end{bnf}
 
 \begin{bnf}{UnnamedArgs}
-    Expression \br
-    UnnamedArgs \terminal{,} Expression
+    Argument \br
+    UnnamedArgs \terminal{,} Argument
 \end{bnf}
 
 \begin{bnf}{NamedArgs}
-    Identifier \terminal{:} Expression \br
-    NamedArgs \terminal{,} Identifier \terminal{:} Expression
+    Identifier \terminal{:} Argument \br
+    NamedArgs \terminal{,} Identifier \terminal{:} Argument
+\end{bnf}
+
+\begin{bnf}{Argument}
+    ParamQual\bnfq Expression
 \end{bnf}
 
 \pnum
 函数调用运算符用于调用函数。括号内的项作为参数传递给函数。
 
 \pnum
-如果函数调用运算符的左操作数形如$o\tcode{.}f$，其中$f$是一个名称且不是$o$的成员名称，则这称作\term{方法调用}。此时，$o$将作为$f$的第一个位置参数传递给函数$f$。
+如果函数调用运算符的左操作数形如$o\tcode{.}f$，其中$f$是一个名称且不是$o$的成员名称，则这称作\term{方法调用}。此时，$o$将作为$f$的\tcode{this}参数传递给函数$f$。
 
 \pnum
 函数调用运算符可以后跟一个块。这个块将作为一个匿名lambda块，创建一个lambda表达式并作为函数的最后一个位置参数传递给函数。若此时函数没有任何其他参数，则函数调用的小括号可以省略。
+
+\pnum
+如果函数参数指定了修饰符，则传递实参时必须显式传递相同的修饰符。
 
 \rSec2[expr.member]{成员访问运算符}
 \indextext{运算符!成员访问}
@@ -441,7 +447,29 @@ let first3 = do! {
 $o\tcode{.}i$用于元组成员的访问，表示$o$的第$i$个元素。$i$必须是一个不包含前缀或后缀的十进制字面量。如果$i$大于元组的长度，这是一个编译错误。
 
 \pnum
-$o\tcode{.(}e\tcode{)}$首先对$e$求值。如果得到一个\tcode{symbol}类型的值，则对$o$进行成员访问。如果得到一个整数类型的值，则对$o$进行元组成员访问。否则，这是一个编译错误。$e$必须是常量表达式。
+$o\tcode{.(}e\tcode{)}$首先对$e$求值。如果得到一个\tcode{symbol}类型的值，则对$o$进行成员访问。如果得到一个整数类型的值，则对$o$进行元组成员访问。此时$o$必须是一个常量表达式。否则，$o$必须是一个带有\tcode{this}参数的函数类型，且其必须后跟一个函数调用运算符，此时将视为对$e$调用方法$o$。
+
+\enterexample
+\begin{codeblock}
+let o = { a: 1, b: 2 };
+let s = 'a;
+
+o.(s) // 等价于\tcode{o.a}
+
+let t = (1, 2);
+let k = 0;
+
+t.(k) // 等价于\tcode{t.0}
+
+impl int {
+    func test() => this;
+}
+
+let f: (this: int) -> int = int::test;
+
+0.(f)() // 等价于\tcode{0.test()}
+\end{codeblock}
+\exitexample
 
 \rSec2[expr.await]{\tcode{await}运算符}
 \indextext{运算符!await}
@@ -554,6 +582,8 @@ $a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!i
     \terminal{-} PrefixExpr \br
     \terminal{!} PrefixExpr \br
     \terminal{'\~} PrefixExpr \br
+    \terminal{\&} PrefixExpr \br
+    \terminal{*} PrefixExpr \br
     SomeExpr
 \end{bnf}
 
@@ -565,6 +595,12 @@ $a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!i
 
 \pnum
 位取反运算符\tcode{'\~}进行按位取反。操作数的类型必须是定长整数类型。
+
+\pnum
+引用运算符\tcode{\&}获得操作数的引用。
+
+\pnum
+解引用运算符\tcode{*}获得一个引用指向的值。
 
 \rSec2[expr.some]{\tcode{some}运算符}
 \indextext{运算符!\idxcode{some}}
