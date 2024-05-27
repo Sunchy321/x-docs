@@ -28,7 +28,7 @@
 \end{bnf}
 
 \begin{bnf}{RelativeImportPath}
-    \terminal{.} ImportPathPart \br
+    \terminal{this} \terminal{.} ImportPathPart \br
     RelativeImportPath \terminal{.} ImportPathPart
 \end{bnf}
 
@@ -42,7 +42,8 @@
     \terminal{*} \br
     \terminal{operator} \br
     Identifier \br
-    Identifier \terminal{as} Identifier
+    Identifier \terminal{as} Identifier \br
+    OperatorID
 \end{bnf}
 
 \pnum
@@ -55,19 +56,19 @@
 外部路径以模块名开始，用于导入外部模块。
 
 \pnum
-内部路径以\tcode{root.}开始，从当前模块根目录开始寻找模块。
+内部路径以\tcode{this.}开始，从当前模块根目录开始寻找模块。
 
 \pnum
 相对路径以\tcode{.}开始，从当前模块文件开始寻找模块。
 
 \pnum
-模块的路径各部分可以使用一个标识符或者字符串标识。上下文关键字\tcode{root}指代当前模块的根目录，但只能用于开头；上下文关键字\tcode{super}指代当前目录的父目录。模块路径组成可以与\tcode{root}或\tcode{super}相同，但此时必须使用字符串表示。
+模块的路径各部分可以使用一个标识符或者字符串标识。上下文关键字\tcode{this}指代当前模块的根目录，但只能用于开头；上下文关键字\tcode{super}指代当前目录的父目录。模块路径组成可以与\tcode{this}或\tcode{super}相同，但此时必须使用字符串表示。
 
 \enterexample
 \begin{codeblock}
 import root.foo.bar; // 导入\tcode{/foo/bar}模块
-import .baz; // 导入当前目录下的\tcode{baz}模块
-import .super.qux; // 导入父目录下的\tcode{qux}模块
+import this.baz; // 导入当前目录下的\tcode{baz}模块
+import this.super.qux; // 导入父目录下的\tcode{qux}模块
 
 import "some-hypen"; // 导入外部模块\tcode{some-hypen}
 import "super"; // 导入外部模块\tcode{super}
@@ -85,14 +86,17 @@ import "super"; // 导入外部模块\tcode{super}
 \end{bnf}
 
 \pnum
-模块的每个顶层声明都具有\term{访问可见性}。访问可见性有以下三种类型：公开（\tcode{public}）、内部（\tcode{internal}）、私有（\tcode{private}），其级别依次降低。
-类成员和实现成员也具有访问可见性。
+模块的每个顶层声明都具有\term{访问可见性}。访问可见性有以下三种类型：公开（\tcode{public}）、内部（\tcode{internal}）、私有（\tcode{private}）、局部，其级别依次降低。
+实现成员也具有访问可见性。
 
 \pnum
 导入一个外部模块的内容时，只有公开的内容才能被导入。导入一个内部模块的内容时，只有公开和内部的内容才能被导入。私有模块只能被该模块内部访问。
 
 \pnum
-顶层声明的默认可见性为\tcode{internal}。类字段的默认可见性为\tcode{private}。其他类成员和实现成员的默认可见性为\tcode{public}。如果一个成员没有显式指定可见性，且其所在实体的可见性比其默认可见性要更低，则使用其所在实体的可见性。
+声明和实现成员的默认可见性为\tcode{public}。如果一个成员没有显式指定可见性，且其所在实体的可见性比其默认可见性要更低，则使用其所在实体的可见性。
+
+\pnum
+如果一个声明位于函数内部，则它具有局部可见性。具有局部可见性的实体只能在其所在函数内部访问。函数的参数也具有局部可见性。
 
 \enterexample
 \begin{codeblock}

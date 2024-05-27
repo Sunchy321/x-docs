@@ -134,7 +134,6 @@
 如果中缀运算符的优先级组处于\tcode{==}组，则其不能与任何内建运算符混用，且其返回值必须为布尔类型。
 如果中缀运算符处于\tcode{\&}组，则其不能与任何内建运算符混用，且其参数和返回值必须为布尔类型。
 如果中缀运算符处于\tcode{=}组，则其不能与任何内建运算符混用，且其返回值必须是\tcode{void}。
-自定义的与\tcode{??}或\tcode{\&}优先级相同的运算符不具有短路求值特性。
 如果两个自定义运算符具有相同等级的优先级，且不是内建的优先级，则在一个表达式中将其混用是一个编译错误。
 如果一个自定义运算符未指定优先级，则它与任何优先级高于\tcode{==}的中缀运算符混用是一个编译错误。
 
@@ -240,6 +239,12 @@ func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符�
 \pnum
 如果一个类型没有重载后缀\tcode{!}但重载了\tcode{?}，则会连续调用\tcode{operator suffix?}直到得到一个可空类型或重载了后缀\tcode{!}的类型，并在这个值上进行后缀\tcode{!}运算。
 
+\rSec2[op.over.inc-dec]{自增自减运算符}
+\indextext{运算符!重载!自增自减}
+
+\pnum
+自增自减运算符的返回值类型必须为\tcode{void}或\tcode{never}。
+
 \rSec2[op.over.prefix]{前缀运算符}
 \indextext{运算符!重载!前缀}
 
@@ -257,6 +262,7 @@ func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符�
 $\tcode{opeartor infix@(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或\\$\tcode{opeartor infix@([}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{])}$，取先匹配的那一个。如果没有找到匹配的重载函数，且该运算符所处的优先级组未定义其结合性，则这是一个编译错误。否则，将会按照其结合性拆分为多次以两个参数调用的形式。若仍然无法找到匹配的重载函数，则这是一个编译错误。
 
 \rSec2[op.over.cmp]{比较运算符}
+\indextext{运算符!重载!比较}
 
 \pnum
 比较运算符的重载解析与一般的中缀运算符相同。\tcode{cmp}的返回类型必须为\tcode{Order}或\tcode{Order?}。
@@ -283,10 +289,37 @@ func operator!=(lhs: T, rhs: T) { !(lhs == rhs) }
 
 \tcode{operator<}与\tcode{opeartor!<}、\tcode{operator>}与\tcode{operator!>}也有类似的自动生成规则。\enternote 虽然\tcode{!in}不能被重载，但是它也有类似的语义。\exitnote
 
-\rSec2[op.over.assign]{赋值运算符}
+\pnum
+一些类型会自动生成默认的\tcode{operator==}运算符：
+
+\begin{codeblock}
+
+func operator==(lhs: T?, rhs: T?) {
+    match (lhs, rhs) {
+        case (nil, nil) => true
+        case (some let lhs, some let rhs) => l == r
+        case _ => false
+    }
+}
+
+\end{codeblock}
+
+仅当其中用到的\tcode{operator==}存在时，该运算符才会被生成。
+
+\rSec2[op.over.logic]{逻辑运算符}
+\indextext{运算符!重载!逻辑}
 
 \pnum
-赋值运算符，及与其相同优先级的运算符的重载函数必须返回\tcode{void}。
+逻辑运算符的重载解析与一般的中缀运算符相同，但参数必须均以\tcode{lazy}修饰。重载调用时会隐式加入\tcode{lazy}修饰。
+
+\pnum
+自定义的逻辑运算符也必须遵循上述规则。
+
+\rSec2[op.over.assign]{赋值运算符}
+\indextext{运算符!重载!赋值}
+
+\pnum
+赋值运算符，及与其相同优先级的运算符的重载函数必须返回\tcode{void}或\tcode{never}。
 
 \rSec2[op.over.dollar]{\tcode{\$}运算符}
 \indextext{运算符!重载!\$}

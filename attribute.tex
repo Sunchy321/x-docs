@@ -16,7 +16,13 @@
 特性可以修饰特定的程序实体，以对其添加特定的描述或限制。
 
 \rSec1[attr.noreturn]{\tcode{noreturn}}
-\indextext{特性!noreturn}
+\indextext{特性!\idxcode{noreturn}}
 
 \pnum
-\tcode{noreturn}修饰的函数将不会返回。函数的返回类型必须是\tcode{never}。实现可以对实际控制流能到达函数结尾的\tcode{noreturn}函数提出一个警告或编译错误。
+\tcode{noreturn}修饰的函数将不会返回。函数的返回类型必须是\tcode{never}。编译器可以对实际控制流能到达函数结尾的\tcode{noreturn}函数提出一个警告或编译错误。
+
+\rSec1[attr.deprecated]{\tcode{deprecated}}
+\indextext{特性!\idxcode{deprecated}}
+
+\pnum
+\tcode{deprecated}特性用于标记已经过时的程序实体。编译器可以对使用已经过时的程序实体提出一个警告或编译错误。
