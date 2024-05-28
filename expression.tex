@@ -210,16 +210,16 @@ let a = (int[])[1, 2, 3]; // 可以
 \exitexample
 
 \pnum
-$T\tcode{(}a_1\tcode{,}\ldots\tcode{,}a_n\tcode{)}$以参数给定的参数创建一个类型为$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有lambda块。如果这个对象的初始化器只接受这一个参数，也可以省略括号。
+$T\tcode{(}a_1\tcode{,}\ldots\tcode{,}a_n\tcode{)}$以参数给定的参数创建$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有lambda块。如果这个对象的初始化器只接受这一个参数，也可以省略括号。
 
 \pnum
-$T\tcode{[}v_1\tcode{,}\ldots\tcode{,}v_n\tcode{]}$以对应的数组字面量为参数创建一个类型为$T$的对象。
+$T\tcode{[}v_1\tcode{,}\ldots\tcode{,}v_n\tcode{]}$以对应的数组字面量为参数创建$T$的对象。
 
 \pnum
-$T\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{|\}}$以对应的字典字面量创建一个类型为$T$的对象。
+$T\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{|\}}$以对应的字典字面量创建$T$的对象。
 
 \pnum
-$T\tcode{\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\}}$以结构方式创建一个类型为$T$的对象。
+$T\tcode{\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\}}$以结构方式创建$T$的对象。
 
 \pnum
 如果$T$是结构类型，则每个$kv$对都会用来初始化对应的成员。如果$v$不能隐式转换到成员的类型，则这是一个编译错误。如果有成员未被显式指定初始值，且其不是可空类型，则这是一个编译错误；如果是可空类型，则其初始值为\tcode{nil}。
@@ -229,12 +229,14 @@ $T\tcode{\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\}}$以
 
 \begin{itemize}
     \item 以具名参数初始化，等价于$T\tcode{(}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{)}$；
-    \item 以单个结构字面量的方式初始化，等价于$T\tcode{(\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\})}$；
-    \item 首先默认初始化$T()$，然后依次执行$T\tcode{.}k_1\tcode{=}v_1$到$T\tcode{.}k_n\tcode{=}v_n$。
+    \item 以单个结构字面量的方式初始化，等价于$T\tcode{(\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\})}$。
 \end{itemize}
 
 \pnum
 $T\tcode{\{\}}$总是被解释为以对象字面量创建值。\enternote 如果你需要创建一个具有空lambda块的值，请使用$T\tcode{(do \{\})}$。\exitnote
+
+\pnum
+如果使用了内建的初始化方式或者采用了不抛出异常的初始化器，则结果类型为$T$；否则，结果类型为$T\mathbin{\tcode{throw}}E$，其中$E$为抛出的异常类型。
 
 \rSec2[expr.enum]{匿名静态成员表达式}
 

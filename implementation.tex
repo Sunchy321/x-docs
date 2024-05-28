@@ -128,7 +128,7 @@
 \indextext{方法}
 
 \pnum
-实现中的函数声明称作\term{方法}。方法隐含了一个\tcode{this}参数，其为调用该方法的对象。
+实现中可以包含函数声明，其中含有\tcode{this}参数的称为方法。\tcode{this}参数指代调用该方法的对象。
 
 \pnum
 方法可以显式指定\tcode{this}参数以为其添加修饰符。\tcode{this}参数要么省略类型指示，要么包含一个仅具有修饰符的类型指示，这些修饰符就是\tcode{this}的类型。
@@ -136,10 +136,8 @@
 \enterexample
 \begin{codeblock}
 impl A {
-    f() { } // \#1
-    f(this) { } // 与\#1等价
-    f(this: int) { } // 错误，方法不能指定另外的\tcode{this}类型
-    f(this: mut) { } // \#2，可以修改\tcode{A}的成员
+    f(this) { } // \#1
+    f(&mut this) { } // \#2，可以修改\tcode{A}的成员
 }
 
 \end{codeblock}
@@ -149,20 +147,16 @@ impl A {
 \indextext{实现!构造器}
 
 \pnum
-构造器是函数名称为关键字\tcode{init}的方法。构造器可以接受任意类型的参数并且不返回值。
+构造器是名称为关键字\tcode{init}的函数。构造器可以接受任意类型的参数并且返回一个\tcode{self}类型的值，或者返回一个\tcode{self}类型的值的同时抛出一个异常。构造器不能是方法。
 
 \pnum
-在构造器内部可以修改\tcode{this}成员的值，即使\tcode{this}并未显式被标记为\tcode{mut}。
-不能在成员被赋值之前使用它们的值，或者调用使用它们值的方法。这是一个编译错误。
-
-\pnum
-泛型实现的构造器可以显式指定返回类型，这称为\tcode{参与推导的构造器}。这类构造器可以单独指定泛型参数。
+具有泛型参数的构造器可以指定与\tcode{self}不同的返回类型，这称为\term{参与推导的构造器}。
 
 \rSec1[impl.deinit]{析构器}
 \indextext{实现!析构器}
 
 \pnum
-析构器是函数名称为关键字\tcode{deinit}的方法。析构器不接受任何非\tcode{this}参数且不返回值。
+析构器是名称为关键字\tcode{deinit}的方法。析构器不接受任何非\tcode{this}参数且不返回值。析构器不能抛出异常。
 
 \pnum
 当一个对象被销毁时，将会调用析构器。
