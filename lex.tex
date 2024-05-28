@@ -15,7 +15,6 @@
     \terminal{(} TokenList\bnfq \terminal{)} \br
     \terminal{[} TokenList\bnfq \terminal{]} \br
     \terminal{\{} TokenList\bnfq \terminal{\}} \br
-    \terminal{\{|} TokenList\bnfq \terminal{|\}}
 \end{bnf}
 
 \begin{bnf}{TokenList}
@@ -23,7 +22,7 @@
 \end{bnf}
 
 \begin{bnf}{TokenListItem}
-    Token \textnormal{but not} \terminal{( ) [ ] \{ \} \{| |\}} \br
+    Token \textnormal{but not} \terminal{( ) [ ] \{ \}} \br
     TokenDelimited
 \end{bnf}
 
@@ -102,8 +101,6 @@
 \begin{floattable}{多字符标点符号}{tab:multichar-punc}{lllll}
 \topline
 \tcode{'(}  &
-\tcode{\{|} &
-\tcode{|\}} &
 \tcode{->}  &
 \tcode{=>}  \\
 \tcode{::}  &

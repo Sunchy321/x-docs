@@ -128,7 +128,8 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \end{bnf}
 
 \begin{bnf}{DictLiteral}
-    \terminal{\{|} DictItems\bnfq \terminal{|\}}
+    \terminal{[} DictItems \terminal{]} \br
+    \terminal{[} \terminal{:} \terminal{]}
 \end{bnf}
 
 \begin{bnf}{DictItems}
@@ -138,7 +139,8 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 
 \begin{bnf}{DictItem}
     Expression \terminal{:} Expression \br
-    \terminal{...} Expression
+    \terminal{...} Expression \br
+    \terminal{...} Expression \terminal{:} \terminal{...} Expression
 \end{bnf}
 
 \pnum
@@ -151,19 +153,35 @@ $\tcode{'(}id\tcode{)}$表示与$id$对应的符号表达式。$id$本身不能�
 \tcode{nil}的类型为$T\tcode{?}$，其中$T$为待推导的类型参数。
 
 \pnum
-数组字面量$\tcode{[}e_1\tcode{,}\ldots\tcode{,}e_n\tcode{]}$表示一个显式写出其各元素的数组值。其类型为$T\tcode{[]}$，其中$T$为各表达式的公共类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须实现\tcode{Sequence}。如果数组字面量不包含任何成员，则$T$是一个待推导的类型。
+数组字面量$\tcode{[}e_1\tcode{,}\ldots\tcode{,}e_n\tcode{]}$表示一个显式写出其各元素的数组值。
+其类型为$T\tcode{[]}$，其中$T$为各表达式的公共类型。
+如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须可迭代。
+如果数组字面量不包含任何成员，则$T$是一个待推导的类型。
 
 \pnum
-元组字面量$\tcode{(}e_1\tcode{,}\ldots\tcode{,}e_n\tcode{)}$表示一个显式写出其各元素的元组值。其类型为$\tcode{(}T_1\tcode{,}\ldots\tcode{,}T_n\tcode{)}$，其中$T_i$为$e_i$的类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须也是一个元组。特别的，\tcode{()}的类型为\tcode{void}，是\tcode{void}的唯一值。
+元组字面量$\tcode{(}e_1\tcode{,}\ldots\tcode{,}e_n\tcode{)}$表示一个显式写出其各元素的元组值。
+其类型为$\tcode{(}T_1\tcode{,}\ldots\tcode{,}T_n\tcode{)}$，其中$T_i$为$e_i$的类型。
+如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须也是一个元组。
+特别的，\tcode{()}的类型为\tcode{void}，是\tcode{void}的唯一值。
 
 \pnum
-结构字面量$\tcode{\{}k_1\tcode{:}e_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}e_n\tcode{\}}$表示一个显式写出其各元素的结构值。其类型为$\tcode{\{}k_1\tcode{:}T_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}T_n\tcode{\}}$，其中$T_i$为$e_i$的类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各成员以相同标签显式插入在该位置。$e$必须是结构类型。\enternote 结构字面量必须至少包含一个键值对。\tcode{\{\}}将被解析为一个块。 \exitnote
+结构字面量$\tcode{\{}k_1\tcode{:}e_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}e_n\tcode{\}}$表示一个显式写出其各元素的结构值。
+其类型为$\tcode{\{}k_1\tcode{:}T_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}T_n\tcode{\}}$，其中$T_i$为$e_i$的类型。
+如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各成员以相同标签显式插入在该位置。$e$必须是结构类型。
+\enternote 结构字面量必须至少包含一个键值对。\tcode{\{\}}将被解析为一个块。\exitnote
 
 \pnum
 结构字面量$\tcode{\{}e\tcode{\}}$是$\tcode{\{}e\tcode{:}e\tcode{\}}$的简写。$e$必须是一个标识符。
 
 \pnum
-字典字面量$\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{|\}}$表示一个显式写出其各元素的字典值。其类型为$T\tcode{[}K\tcode{]}$，其中$T$为各$v_i$的类型，$K$为各$k_i$的公共类型。如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素对显式插入在该位置。$e$必须是字典类型。如果字典字面量不包含任何类型，则$T$和$K$是待推导的类型。
+字典字面量$\tcode{[}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{]}$表示一个显式写出其各元素的字典值。
+其类型为$T\tcode{[}K\tcode{]}$，其中$T$为各$v_i$的类型，$K$为各$k_i$的公共类型。
+如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素对显式插入在该位置，$e$必须是字典类型。
+如果其中包含形如$\tcode{...}k\mathbin{\tcode{:}}\tcode{...}v$的项，则视同将$k$和$v$的各元素组成键值对显式插入在该位置。$k$和$v$必须是可迭代的。如果两者产生的值不能对应，则多出的值会被忽略。
+如果如果字典字面量不包含任何表达式，则$T$和$K$是待推导的类型。
+
+\pnum
+如果以方括号界定的字面量只包含元素展开，则其总是被识别为数组字面量。
 
 \rSec2[expr.lit.init]{初始化字面量}
 \indextext{表达式!字面量!初始化}
@@ -189,7 +207,7 @@ $\tcode{'(}id\tcode{)}$表示与$id$对应的符号表达式。$id$本身不能�
 \end{bnf}
 
 \begin{bnf}{TypeDictLiteral}
-    TypeName \terminal{\{|} DictItems\bnfq \terminal{|\}}
+    TypeName DictLiteral
 \end{bnf}
 
 \pnum
@@ -216,7 +234,7 @@ $T\tcode{(}a_1\tcode{,}\ldots\tcode{,}a_n\tcode{)}$以参数给定的参数创�
 $T\tcode{[}v_1\tcode{,}\ldots\tcode{,}v_n\tcode{]}$以对应的数组字面量为参数创建$T$的对象。
 
 \pnum
-$T\tcode{\{|}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{|\}}$以对应的字典字面量创建$T$的对象。
+$T\tcode{[}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{]}$以对应的字典字面量创建$T$的对象。
 
 \pnum
 $T\tcode{\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\}}$以结构方式创建$T$的对象。
