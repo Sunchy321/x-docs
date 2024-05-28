@@ -113,7 +113,7 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \end{bnf}
 
 \begin{bnf}{StructLiteral}
-    \terminal{\{} StructItems \terminal{\}}
+    \terminal{\{} StructItems\bnfq \terminal{\}}
 \end{bnf}
 
 \begin{bnf}{StructItems}
@@ -168,10 +168,12 @@ $\tcode{'(}id\tcode{)}$表示与$id$对应的符号表达式。$id$本身不能�
 结构字面量$\tcode{\{}k_1\tcode{:}e_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}e_n\tcode{\}}$表示一个显式写出其各元素的结构值。
 其类型为$\tcode{\{}k_1\tcode{:}T_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}T_n\tcode{\}}$，其中$T_i$为$e_i$的类型。
 如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各成员以相同标签显式插入在该位置。$e$必须是结构类型。
+如果其中包含形如$e$的项，且$e$是一个标识符，则视同$e\mathbin{\tcode{:}}e$。
 \enternote 结构字面量必须至少包含一个键值对。\tcode{\{\}}将被解析为一个块。\exitnote
 
 \pnum
-结构字面量$\tcode{\{}e\tcode{\}}$是$\tcode{\{}e\tcode{:}e\tcode{\}}$的简写。$e$必须是一个标识符。
+形如\tcode{\{\}}的表达式总是被视为一个空的结构字面量而不是块。\enternote 如果需要创建一个空的块，请使用\tcode{do! \{\}}。\exitnote
+形如$\tcode{\{}e\tcode{\}}$的表达式总是被视为一个块而不是结构字面量。\enternote 如果需要创建结构字面量，请显式写为$\tcode{\{}e\tcode{:}e\tcode{\}}$。\exitnote
 
 \pnum
 字典字面量$\tcode{[}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{]}$表示一个显式写出其各元素的字典值。
@@ -181,7 +183,7 @@ $\tcode{'(}id\tcode{)}$表示与$id$对应的符号表达式。$id$本身不能�
 如果如果字典字面量不包含任何表达式，则$T$和$K$是待推导的类型。
 
 \pnum
-如果以方括号界定的字面量只包含元素展开，则其总是被识别为数组字面量。
+如果以方括号界定的字面量只包含元素展开，则其总是被识别为数组字面量。\enternote 如果需要创建一个只包含元素展开的字典字面量，请将其中一个元素改写为键值对的展开。\exitnote
 
 \rSec2[expr.lit.init]{初始化字面量}
 \indextext{表达式!字面量!初始化}
@@ -232,8 +234,6 @@ $T\tcode{(}a_1\tcode{,}\ldots\tcode{,}a_n\tcode{)}$以参数给定的参数创�
 
 \pnum
 $T\tcode{[}v_1\tcode{,}\ldots\tcode{,}v_n\tcode{]}$以对应的数组字面量为参数创建$T$的对象。
-
-\pnum
 $T\tcode{[}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{]}$以对应的字典字面量创建$T$的对象。
 
 \pnum
@@ -251,7 +251,7 @@ $T\tcode{\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\}}$以
 \end{itemize}
 
 \pnum
-$T\tcode{\{\}}$总是被解释为以对象字面量创建值。\enternote 如果你需要创建一个具有空lambda块的值，请使用$T\tcode{(do \{\})}$。\exitnote
+$T\tcode{\{\}}$、$T\tcode{\{}e\tcode{\}}$和$T\tcode{[...}e\tcode{]}$的语法歧义将按与普通字面量类似的规则解决（见上）。
 
 \pnum
 如果使用了内建的初始化方式或者采用了不抛出异常的初始化器，则结果类型为$T$；否则，结果类型为$T\mathbin{\tcode{throw}}E$，其中$E$为抛出的异常类型。
