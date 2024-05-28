@@ -746,9 +746,6 @@ $a\mathbin{\tcode{??}}b$首先对$a$求值，如果其结果是$\mathbin{\tcode{
 
 \begin{bnf}{CompareExpr}
     RangeExpr \terminal{!=} RangeExpr \br
-    RangeExpr \terminal{!<} RangeExpr \br
-    RangeExpr \terminal{!>} RangeExpr \br
-    RangeExpr \terminal{<>} RangeExpr \br
     RangeExpr \terminal{cmp} RangeExpr \br
     LessChainExpr \br
     GreaterChainExpr
@@ -776,12 +773,9 @@ $a\mathbin{\tcode{??}}b$首先对$a$求值，如果其结果是$\mathbin{\tcode{
 a\ \tcode{==}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.equal} \\
 a\ \tcode{!=}\ b &\iff a\ \tcode{cmp}\ b \ne \tcode{.equal} \\
 a\ \tcode{<}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.less} \\
-a\ \tcode{!<}\ b &\iff a\ \tcode{cmp}\ b \ne \tcode{.less} \\
 a\ \tcode{>}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.greater} \\
-a\ \tcode{!>}\ b &\iff a\ \tcode{cmp}\ b \ne \tcode{.greater} \\
 a\ \tcode{<=}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.less}\ \mathrm{or} \ \tcode{.equal} \\
 a\ \tcode{>=}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.greater}\ \mathrm{or} \ \tcode{.equal} \\
-a\ \tcode{<>}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.less}\ \mathrm{or} \ \tcode{.greater}
 \end{align*}
 
 \pnum

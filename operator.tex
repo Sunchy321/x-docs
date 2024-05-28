@@ -57,8 +57,8 @@
 \tcode{/} & \tcode{\%} & 二元\tcode{+} & 二元\tcode{-} & \tcode{shl} \\
 \tcode{shr} & \tcode{'\&} & \tcode{'\^{}} & \tcode{'|} & \tcode{..} \\
 \tcode{..=} & \tcode{\~} & \tcode{==} & \tcode{!=} & \tcode{<} \\
-\tcode{<=} & \tcode{>} & \tcode{>=} & \tcode{!<} & \tcode{!>} \\
-\tcode{<>} & \tcode{cmp} & \tcode{in} & \tcode{\&} & \tcode{|} \\
+\tcode{<=} & \tcode{>} & \tcode{>=} & \tcode{cmp} & \tcode{in} \\
+\tcode{\&} & \tcode{|} & & & \\
 \hhline{|=====|}
 \tcode{.} & \tcode{await} & 前缀\tcode{\&} & \tcode{??} & \tcode{!in} \\
 \tcode{is} & \tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} \\
@@ -272,12 +272,9 @@ $\tcode{opeartor infix@(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或
 func operator==(lhs: T, rhs: T) { (lhs cmp rhs) is .equal }
 func operator!=(lhs: T, rhs: T) { (lhs cmp rhs) !is .equal }
 func operator<(lhs: T, rhs: T) { (lhs cmp rhs) is .less }
-func operator!<(lhs: T, rhs: T) { (lhs cmp rhs) !is .less }
 func operator<=(lhs: T, rhs: T) { (lhs cmp rhs) is .less | .equal }
 func operator>(lhs: T, rhs: T) { (lhs cmp rhs) is .greater }
-func operator!>(lhs: T, rhs: T) { (lhs cmp rhs) !is .greater }
 func operator>=(lhs: T, rhs: T) { (lhs cmp rhs) is .greater | .equal }
-func operator<>(lhs: T, rhs: T) { (lhs cmp rhs) is .less | .greater }
 \end{codeblock}
 
 \pnum
@@ -287,7 +284,7 @@ func operator<>(lhs: T, rhs: T) { (lhs cmp rhs) is .less | .greater }
 func operator!=(lhs: T, rhs: T) { !(lhs == rhs) }
 \end{codeblock}
 
-\tcode{operator<}与\tcode{opeartor!<}、\tcode{operator>}与\tcode{operator!>}也有类似的自动生成规则。\enternote 虽然\tcode{!in}不能被重载，但是它也有类似的语义。\exitnote
+\enternote 虽然\tcode{!in}不能被重载，但是它也有类似的语义。\exitnote
 
 \pnum
 一些类型会自动生成默认的\tcode{operator==}运算符：
