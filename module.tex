@@ -94,6 +94,7 @@ import "super"; // 导入外部模块\tcode{super}
 
 \pnum
 声明和实现成员的默认可见性为\tcode{public}。如果一个成员没有显式指定可见性，且其所在实体的可见性比其默认可见性要更低，则使用其所在实体的可见性。
+实现的默认可见性与被实现实体的可见性相同。
 
 \pnum
 如果一个声明位于函数内部，则它具有局部可见性。具有局部可见性的实体只能在其所在函数内部访问。函数的参数也具有局部可见性。
@@ -101,15 +102,21 @@ import "super"; // 导入外部模块\tcode{super}
 \enterexample
 \begin{codeblock}
 class X {
-    let x: int; // 默认为\tcode{private}
-    public let y: int; // 显式指定为\tcode{public}
+    x: int; // 默认为\tcode{private}
+    public y: int; // 显式指定为\tcode{public}
+}
+
+impl X {
     func f() {} // 默认为\tcode{public}
     private func g() {} // 显式指定为\tcode{private}
 }
 
 internal class Y {
-    let x: int; // 默认为\tcode{private}
-    public let y: int; // 显式指定为\tcode{public}
+    x: int; // 默认为\tcode{private}
+    public y: int; // 显式指定为\tcode{public}
+}
+
+impl Y {
     func f() {} // 默认为\tcode{internal}
     public func g() {} // 显式指定为\tcode{public}
 }
