@@ -14,7 +14,7 @@
 \begin{bnf}{TokenDelimited}
     \terminal{(} TokenList\bnfq \terminal{)} \br
     \terminal{[} TokenList\bnfq \terminal{]} \br
-    \terminal{\{} TokenList\bnfq \terminal{\}} \br
+    \terminal{\{} TokenList\bnfq \terminal{\}}
 \end{bnf}
 
 \begin{bnf}{TokenList}
@@ -28,6 +28,13 @@
 
 \pnum
 \term{程序文本}指将被翻译为\X{}程序的文本的整体或者一部分。它存储在\term{源文件}中，并以UTF-8编码读取。
+
+\pnum
+程序文本将被分割为\term{标记}的序列。标记是程序文本中的最小单元，包括标识符、关键字、标点符号、字面量、lambda参数。
+标记之间包含的空白字符或注释会被忽略。
+
+\pnum
+宏调用是特殊的标记，它将在编译时展开为标记序列。
 
 \rSec1[lex.comment]{注释}
 

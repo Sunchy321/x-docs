@@ -51,18 +51,18 @@
 
 \pnum
 被导入的模块可以通过三种方式指定：外部路径、内部路径或相对路径。
-
-\pnum
 外部路径以模块名开始，用于导入外部模块。
+内部路径以\tcode{root}开始，从当前模块根目录开始寻找模块。
+相对路径以\tcode{this}开始，从当前模块文件开始寻找模块。
 
 \pnum
-内部路径以\tcode{this.}开始，从当前模块根目录开始寻找模块。
+模块的路径各部分可以使用一个标识符或者字符串标识。
+上下文关键字\tcode{root}指代当前模块的根目录，但只能用于开头；上下文关键字\tcode{super}指代当前目录的父目录。
+其他关键字或上下文关键字都将作为普通标识符处理。
+模块目录名称可以与\tcode{this}、\tcode{root}或\tcode{super}相同，但此时必须使用字符串表示。
 
 \pnum
-相对路径以\tcode{.}开始，从当前模块文件开始寻找模块。
-
-\pnum
-模块的路径各部分可以使用一个标识符或者字符串标识。上下文关键字\tcode{this}指代当前模块的根目录，但只能用于开头；上下文关键字\tcode{super}指代当前目录的父目录。模块路径组成可以与\tcode{this}或\tcode{super}相同，但此时必须使用字符串表示。
+模块的目录名称可以包含连字符，并可以通过将连字符转换为下划线的对应标识符引用。如果对应位置分别为下划线和连字符的目录都存在，则该标识符将会引用下划线的目录。以字符串方式引用目录名不会进行此类转换。
 
 \enterexample
 \begin{codeblock}
@@ -70,7 +70,7 @@ import root.foo.bar; // 导入\tcode{/foo/bar}模块
 import this.baz; // 导入当前目录下的\tcode{baz}模块
 import this.super.qux; // 导入父目录下的\tcode{qux}模块
 
-import "some-hypen"; // 导入外部模块\tcode{some-hypen}
+import some_hypen; // 导入外部模块\tcode{some-hypen}
 import "super"; // 导入外部模块\tcode{super}
 \end{codeblock}
 \exitexample
