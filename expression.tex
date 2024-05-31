@@ -98,13 +98,23 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \end{bnf}
 
 \begin{bnf}{ExprList}
+    ExprListNoComma \terminal{,}\bnfq
+\end{bnf}
+
+\begin{bnf}{ExprListNoComma}
     ExprItem \br
-    ExprList \terminal{,} ExprItem
+    ExprListNoComma \terminal{,} ExprItem
 \end{bnf}
 
 \begin{bnf}{TupleExprList}
+    Expression \terminal{,} \br
+    \terminal{...} Expression \terminal{,}\bnfq \br
+    TupleExprListNoComma \terminal{,}\bnfq
+\end{bnf}
+
+\begin{bnf}{TupleExprListNoComma}
     ExprItem \terminal{,} ExprItem \br
-    TupleExprList \terminal{,} ExprItem
+    TupleExprListNoComma \terminal{,} ExprItem
 \end{bnf}
 
 \begin{bnf}{ExprItem}
@@ -117,8 +127,12 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \end{bnf}
 
 \begin{bnf}{StructItems}
+    StructItemsNoComma \terminal{,}\bnfq
+\end{bnf}
+
+\begin{bnf}{StructItemsNoComma}
     StructItem \br
-    StructItems \terminal{,} StructItem
+    StructItemsNoComma \terminal{,} StructItem
 \end{bnf}
 
 \begin{bnf}{StructItem}
@@ -133,8 +147,12 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \end{bnf}
 
 \begin{bnf}{DictItems}
+    DictItemsNoComma \terminal{,}\bnfq
+\end{bnf}
+
+\begin{bnf}{DictItemsNoComma}
     DictItem \br
-    DictItems \terminal{,} DictItem
+    DictItemsNoComma \terminal{,} DictItem
 \end{bnf}
 
 \begin{bnf}{DictItem}
@@ -162,7 +180,7 @@ $\tcode{'(}id\tcode{)}$表示与$id$对应的符号表达式。$id$本身不能�
 元组字面量$\tcode{(}e_1\tcode{,}\ldots\tcode{,}e_n\tcode{)}$表示一个显式写出其各元素的元组值。
 其类型为$\tcode{(}T_1\tcode{,}\ldots\tcode{,}T_n\tcode{)}$，其中$T_i$为$e_i$的类型。
 如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须也是一个元组。
-特别的，\tcode{()}的类型为\tcode{void}，是\tcode{void}的唯一值。
+特别的，$\tcode{(}e\tcode{,)}$表示一元元组，此时逗号不能省略。\tcode{()}的类型为\tcode{void}，是\tcode{void}的唯一值。
 
 \pnum
 结构字面量$\tcode{\{}k_1\tcode{:}e_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}e_n\tcode{\}}$表示一个显式写出其各元素的结构值。
