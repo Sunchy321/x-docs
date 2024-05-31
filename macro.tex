@@ -24,8 +24,87 @@
 \end{bnf}
 
 \begin{bnf}{MacroRule}
-    TokenDelimited \terminal{->} TokenDelimited
+    MacroPattern \terminal{->} TokenDelimited
 \end{bnf}
+
+\begin{bnf}{MacroPattern}
+    \terminal{(} MacroItem\bnfs \terminal{)} \br
+    \terminal{[} MacroItem\bnfs \terminal{]} \br
+    \terminal{\{} MacroItem\bnfs \terminal{\}}
+\end{bnf}
+
+\begin{bnf}{MacroItem}
+    MacroToken \br
+    MacroPattern \br
+    \terminal{\#} Identifier \terminal{:} MacroItemType \br
+    \terminal{\#} \terminal{(} MacroItem\bnfp \terminal{)} MacroSep\bnfs MacroRepeat
+\end{bnf}
+
+\begin{bnf}{MacroItemType}{\oneof}
+    \terminal{id expr block stmt decl pat type path qual attr tokenTree }
+\end{bnf}
+
+\begin{bnf}{MacroToken}
+    Token \textnormal{但不是} \terminal{( ) [ ] \{ \}}
+\end{bnf}
+
+\begin{bnf}{MacroSep}
+    Token \textnormal{但不是} \terminal{( ) [ ] \{ \} + * ?}
+\end{bnf}
+
+\begin{bnf}{MacroToken}{\oneof}
+    \terminal{+ * ?}
+\end{bnf}
+
+\begin{bnf}{MacroReplacer}
+    \terminal{\{} MacroReplacerItem\bnfs \terminal{\}}
+\end{bnf}
+
+\begin{bnf}{MacroReplacerItem}
+    MacroToken \br
+    TokenDelimited \br
+    MacroInvocation \br
+    \terminal{\#} \terminal{(} MacroReplacerItem\bnfp \terminal{)} MacroSep\bnfs MacroRepeat
+\end{bnf}
+
+\pnum
+宏定义通过称为\term{声明宏}的方式创建宏。宏定义在关键字后跟\tcode{macro}和宏名称，然后是一对大括号，其中包含宏规则。
+宏规则由宏模式和宏转换两部分组成。宏模式和宏转换是由一对定界符包括的标记序列。
+
+\pnum
+宏模式定义了宏替换的模式。宏模式由一系列项组成。每个项可以是标记、定界符包含的宏模式、宏匹配项或者宏重复项。
+标记匹配完全相同的单个标记，但不能指定匹配定界符。
+定界符包含的宏模式匹配成对的定界符以及内部的模式。最外层的宏模式也按照相同方式匹配。
+宏匹配项匹配一个特定的程序项。
+宏重复项匹配括号内部的程序项，但是可以以指定的分隔符分隔，并可以指定为重复任意次、重复至少一次或者重复零次或一次。
+
+\pnum
+宏匹配项指定的特定程序项的含义如表~\ref{tab:macro-item-type}~所示。
+
+\begin{floattable}{整数字面量后缀}{tab:macro-item-type}{c|c}
+    \topline
+    类型 & 匹配的程序项 \\
+    \hline
+    \tcode{id} & 单个标识符 \\
+    \tcode{expr} & 表达式 \\
+    \tcode{block} & 块 \\
+    \tcode{stmt} & 语句 \\
+    \tcode{decl} & 声明 \\
+    \tcode{pat} & 模式 \\
+    \tcode{type} & 类型 \\
+    \tcode{path} & 路径 \\
+    \tcode{qual} & 单个修饰符 \\
+    \tcode{attr} & 属性 \\
+    \tcode{tokenTree} & 成对定界符及其内部的标记，或单个非定界符标记 \\
+\end{floattable}
+
+\pnum
+当宏展开时，首先将参数中的所有宏递归展开（在展开点）。然后对宏定义中每条规则的模式依次进行匹配。如果某一项的模式匹配成功，则按照对应的宏转换将输入的标记序列转换为结果标记序列。如果所有规则都无法匹配，则这是一个编译错误。
+
+\pnum
+宏转换指定了宏展开的结果。其中的普通标记项及定界符将按原样输出。宏展开项如果其名称与模式中的匹配项相同，则展开为特定的展开项；否则按照一般的宏展开规则递归展开（在定义点）。
+宏转换中的重复项表示重复展开。其中被匹配了多次的匹配项也必须在转换中被使用了等量次数，否则这是一个编译错误。
+产生的标记序列（不包括宏展开最外层的定界符）被插入到宏展开点。
 
 \rSec1[macro.builtin]{内建宏}
 \indextext{内建宏}
