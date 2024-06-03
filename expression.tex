@@ -415,7 +415,7 @@ let first3 = do! {
     MatchExpr
 \end{bnf}
 
-\rSec2[expr.sub]{下标运算符}
+\rSec2[expr.index]{下标运算符}
 \indextext{运算符!下标}
 
 \begin{bnf}{IndexExpr}
@@ -423,7 +423,17 @@ let first3 = do! {
 \end{bnf}
 
 \pnum
-下标运算符用于对数组进行访问。$a\tcode{[}i\tcode{]}$表示数组$a$的第$i$个元素。用户自定义的下标运算符可以接受多于一个参数。
+下标运算符用于对数组或字典进行访问。用户自定义的下标运算符可以接受多于一个参数。
+
+\pnum
+对数组$T\tcode{[]}$而言，$a\tcode{[}i\tcode{]}$表示数组$a$的第$i$个元素。如果$i$超出可索引的范围，则会\tcode{panic}。结果类型是$T\tcode{\&}$。
+
+\pnum
+对字典$T\tcode{[}K\tcode{]}$而言，$d\tcode{[}k\tcode{]}$表示字典$d$的键$k$对应的值。如果字典中没有这个键，则会返回\tcode{nil}。结果类型是$T\tcode{?}$。
+此外，在赋值语境下，$d\tcode{[}k\tcode{] = }e$表示将键$k$对应的值设为$e$。如果字典中没有这个键，则会插入一个新的键值对。$e$的类型需要为$T$。
+
+\pnum
+下标运算可以在可变和不可变的情况下具有不同的重载语义。参见~\ref{op.over.index}。
 
 \rSec2[expr.call]{函数调用运算符}
 \indextext{运算符!函数调用}

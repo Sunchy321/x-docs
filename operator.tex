@@ -5,16 +5,6 @@
 
 \rSec1[op.name]{运算符名称}
 
-\begin{bnf}{OperatorID}
-    \terminal{operator} OperatorType\bnfq OperatorName \br
-    \terminal{operator} StringLiteral \br
-    \terminal{operator} \terminal{\$} \br
-    \terminal{operator} \terminal{if} \br
-    \terminal{operator} \terminal{is} Type \br
-    \terminal{operator} \terminal{as} Type \br
-    \terminal{operator} \terminal{as} \terminal{?} Type
-\end{bnf}
-
 \begin{bnf}{OperatorName}
     Operator \br
     Identifier \br
@@ -45,10 +35,7 @@
 \end{bnf}
 
 \pnum
-运算符名称指代对应的运算符函数的名称，用来重载运算符。运算符名称由关键字\tcode{operator}后跟运算符组成。\tcode{operator}后面可以跟\tcode{infix}、\tcode{prefix}或\tcode{suffix}以消歧义。
-
-\pnum
-\tcode{operator}后跟的运算符可以是内建运算符或自定义运算符。表~\ref{tab:op}~列出了全部内建运算符，其中上半部分为可以重载的运算符，下半部分为不能重载的运算符。
+表~\ref{tab:op}~列出了全部内建运算符，其中上半部分为可以重载的运算符，下半部分为不能重载的运算符。
 
 \begin{floattable}{内建运算符}{tab:op}{lllll}
 \topline
@@ -67,29 +54,20 @@
 \tcode{--} & \tcode{\~>} & \tcode{<\~} & \tcode{;} & \\
 \end{floattable}
 
-\pnum
-\tcode{operator}后面还能跟有一些特殊符号组合，表示特殊含义。
-
-\pnum
-\tcode{opeartor()}重载函数调用（\ref{expr.call}）。\tcode{operator[]}重载下标运算符（\ref{expr.sub}）。\tcode{opeartor\$}重载\tcode{\$}（\ref{expr.dollar}）。\tcode{opeartor if}允许其它值被用于条件中。$\tcode{operatro is} T$创建自定义隐式转换。$\tcode{opeartor as}\ T$创建自定义显式转换。
-
-\pnum
-\tcode{operator}后跟一个字符串字面量用于自定义后缀。这个字符串字面量必须是一个空字符串，且不包含任何前缀。
-
 \rSec1[op.user]{自定义运算符}
 \indextext{运算符!自定义}
 
 \begin{bnf}{OpeartorDeclaration}
-    \terminal{operator} CustomOperator OperatorSpecifier \terminal{;} \br
-    \terminal{operator} Identifier OperatorSpecifier \terminal{;}
+    \terminal{operator} CustomOperator OperatorSpecifier OperatorTraitBinder \terminal{;} \br
+    \terminal{operator} Identifier OperatorSpecifier OperatorTraitBinder \terminal{;}
 \end{bnf}
 
 \begin{bnf}{OperatorSpecifier}
     \terminal{prefix} \br
     \terminal{suffix} \br
     \terminal{infix} \br
-    \terminal{infix} \terminal{:} OperatorName \br
-    \terminal{infix} \terminal{:} \terminal{(} OperatorPrecedence \terminal{,} OperatorPrecedence \terminal{)}
+    \terminal{infix} \terminal{(} OperatorName \terminal{)} \br
+    \terminal{infix} \terminal{(} OperatorPrecedence \terminal{,} OperatorPrecedence \terminal{)}
 \end{bnf}
 
 \begin{bnf}{OperatorPrecedence}
@@ -97,8 +75,17 @@
     \terminal{_}
 \end{bnf}
 
+\begin{bnf}{OperatorTraitBinder}
+    \terminal{=} PathList
+\end{bnf}
+
+\begin{bnf}{PathList}
+    Path \br
+    PathList \terminal{,} Path
+\end{bnf}
+
 \pnum
-用户可以声明自己的运算符。自定义运算符的名称由关键字\tcode{operator}后跟一个标识符或标点符号组成。
+用户可以声明自己的运算符。自定义运算符需要指定一个或多个概念方法，实现此概念的类型可以使用这个运算符，且等价于调用该方法。
 
 \pnum
 自定义的运算符不能与内建的运算符相同，也不能是\tcode{//}、\tcode{/*}、\tcode{->}、\tcode{=>}或\tcode{...}。如果自定义的运算符是一个标识符，则它不能在任何作用域中与另一个标识符相同，否则这是一个编译错误。自定义的运算符也不能是\tcode{prefix}、\tcode{suffix}或\tcode{infix}。
@@ -111,6 +98,7 @@
 \begin{floattable}{中缀运算符优先级}{tab:op-precedence}{lll|c}
 \topline
 & 运算符 & & 结合性 \\
+\capsep
 \tcode{*} & \tcode{/} & \tcode{\%} & 左结合 \\
 \tcode{+} & \tcode{-} & & 左结合 \\
 \tcode{shl} & \tcode{shr} & & 不结合 \\
@@ -133,24 +121,24 @@
 \pnum
 如果中缀运算符的优先级组处于\tcode{==}组，则其不能与任何内建运算符混用，且其返回值必须为布尔类型。
 如果中缀运算符处于\tcode{\&}组，则其不能与任何内建运算符混用，且其参数和返回值必须为布尔类型。
-如果中缀运算符处于\tcode{=}组，则其不能与任何内建运算符混用，且其返回值必须是\tcode{void}。
+如果中缀运算符处于\tcode{=}组，则其不能与任何内建运算符混用，且其返回值必须是\tcode{void}或\tcode{never}。
 如果两个自定义运算符具有相同等级的优先级，且不是内建的优先级，则在一个表达式中将其混用是一个编译错误。
 如果一个自定义运算符未指定优先级，则它与任何优先级高于\tcode{==}的中缀运算符混用是一个编译错误。
 
 \enterexample
 \begin{codeblock}
-operator >> infix : +;
-operator << infix : +;
-operator !! infix : (*, +);
-operator ~~ infix : (*, +);
+operator >> infix(+) = A::a;
+operator << infix(+) = B::b;
+operator !! infix(*, +) = C::c;
+operator ~~ infix(*, +) = D::d;
 
 a >> b + c; // OK，等价于\tcode{(a >> b) + c}
 a >> b << c; // OK，等价于\tcode{(a >> b) << c}
 a !! b * c; // OK，等价于\tcode{a !! (b * c)}
 a !! b ~~ c; // 错误，不能在同一个表达式中混用具有新优先级的运算符
 
-operator ** infix;
-operator && infix;
+operator ** infix = E::e;
+operator && infix = F::f;
 
 a ** b * c; // 错误，未指定优先级的运算符不能与\tcode{*}混用
 a = a ** b; // 可以，允许赋值运算符
@@ -163,10 +151,10 @@ a ** b && c; // 错误，相互之间也不能混用
 
 \enterexample
 \begin{codeblock}
-operator ** suffix;
-operator ** infix;
-operator && prefix;
-operator && infix;
+operator ** suffix = A::a;
+operator ** infix = B::b;
+operator && prefix = C::c;
+operator && infix = D::d;
 
 a ** && b; // 错误，无法确定谁为中缀运算符
 (a**) && b; // 可以
@@ -203,56 +191,116 @@ a ** (&&b); // 可以
 \indextext{运算符!重载}
 
 \pnum
-运算符可以被重载，以为其他类似提供类似于内建类型的行为。当声明一个重载运算符函数时，视同内建的运算符具有一个对应的重载函数签名来进行重载检测。
+运算符可以通过实现其对应概念的方式重载。如果一个类型为一个运算符实现了多个概念，则将会使用第一个可使用的概念。
 
 \enterexample
 \begin{codeblock}
-func operator+(lhs: int?, rhs: int?) { lhs? + rhs? } // 可以
-func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符冲突
+trait A { func a(&mut this) -> int; }
+trait B { func b(this) -> int; }
+
+operator ** prefix = A::a, B::b;
+
+class X = ();
+
+impl X : A { func a(&mut this) => 1; }
+impl X : B { func b(this) => 2; }
+
+let x = () as X;
+
+**x; // \tcode{A::a}不适用，调用\tcode{B::b}，返回\tcode{2}
+
+let mut x = () as X;
+
+**x; // 调用\tcode{A::a}，返回\tcode{1}
 \end{codeblock}
 \exitexample
 
+\pnum
+可重载的内建运算符也都有其对应的概念方法。所有概念方法都位于模块\tcode{core.ops}中。
+
 \rSec2[op.over.suffix]{后缀运算符}
 \indextext{运算符!重载!后缀}
+
+\pnum
+表~\ref{tab:trait-suffix}~列出了可重载的内建后缀运算符对应的概念。
+
+\begin{floattable}{后缀运算符概念}{tab:trait-suffix}{ll}
+\topline
+运算符 & 概念 \\
+\capsep
+\tcode{[]} & \tcode{IndexMut::indexMut}, \tcode{Index::index} \\
+\tcode{()} & \tcode{FunctorMut::callMut}, \tcode{Functor::call}, \tcode{FunctorOnce::callOnce} \\
+\tcode{?} & \tcode{Failable::chain} \\
+\tcode{!} & \tcode{Failable::unwrap} \\
+\tcode{+?} & \tcode{Successor::next} \\
+\tcode{-?} & \tcode{Predecessor::prev} \\
+\tcode{++} & \tcode{Increment::inc} \\
+\tcode{--} & \tcode{Decrement::dec} \\
+\tcode{as} & \tcode{Into::into} \\
+\tcode{as?} & \tcode{TryInto::tryInto} \\
+\end{floattable}
+
+\rSec2[op.over.index]{下标运算符}
+\indextext{运算符!重载!下标}
+
+\pnum
+下标运算符有两个对应的概念方法：\tcode{IndexMut::indexMut}和\tcode{Index::index}，其中前者对应可变的情况。两个概念都需要一个函数类型的泛型参数。
 
 \rSec2[op.over.call]{函数调用运算符}
 \indextext{运算符!重载!函数调用}
 
 \pnum
-函数调用运算符可以接受任意数量的参数并返回任意值。重载了这个运算符的类型可以隐式转换到对应的函数类型。
-
-\pnum
-函数调用运算符只能作为类方法被重载。
-
-\rSec2[op.over.sub]{下标运算符}
-\indextext{运算符!重载!下标}
+函数调用运算符有三个对应的概念方法：\tcode{FunctorMut::callMut}、\tcode{Functor::call}和\tcode{FunctorOnce::callOnce}，分别对应可变、不可变和只能调用一次的情况。这三个概念都需要一个函数类型的泛型参数。
 
 \rSec2[op.over.null]{空值检测运算符}
 \indextext{运算符!重载!空值检测}
 
 \pnum
-\tcode{?}运算符的重载解析与一般的后缀运算符相同，但返回值类型必须是可空类型或者重载了\tcode{?}运算符的类型。
+后缀\tcode{?}运算符对应\tcode{Failable::chain}。后缀\tcode{!}运算符对应\tcode{Failable::unwrap}。
 
 \pnum
-对于重载了的可空运算符调用$e\tcode{?}$而言，将首先连续调用\tcode{operator suffix?}直到得到一个可空类型，然后对其进行内建的可空运算符求值。
+\tcode{Failable::chain}的返回类型必须实现了\tcode{Failable}（可空类型对\tcode{Failable}的实现是内建的）。
 
 \pnum
-如果一个类型没有重载后缀\tcode{!}但重载了\tcode{?}，则会连续调用\tcode{operator suffix?}直到得到一个可空类型或重载了后缀\tcode{!}的类型，并在这个值上进行后缀\tcode{!}运算。
-
-\rSec2[op.over.inc-dec]{自增自减运算符}
-\indextext{运算符!重载!自增自减}
+对重载了的后缀\tcode{?}的求值将会连续调用\tcode{Failable::chain}直到得到一个可空类型，然后对其进行内建的后缀\tcode{?}运算符求值。
 
 \pnum
-自增自减运算符的返回值类型必须为\tcode{void}或\tcode{never}。
+\tcode{Failable::unwrap}需要返回一个\tcode{ControlFlow}类型。如果返回$\tcode{.Return(}e\tcode{)}$，则将这个值作为后缀\tcode{!}的值；如果返回$\tcode{.Throw(}e\tcode{)}$，则将这个值作为异常抛出。
+
+\pnum
+\tcode{Failable::unwrap}有一个内建实现，它对自身调用一次\tcode{Failable::chain}之后在其上调用\tcode{Failable::unwrap}。
+
+\rSec2[op.over.as]{类型转换运算符}
+\indextext{运算符!重载!类型转换}
+
+\pnum
+转换运算符\tcode{as}对应\tcode{Into::into}。转换运算符\tcode{as?}对应\tcode{TryInto::tryInto}。它们也可能由对应的\tcode{From}或\tcode{TryFrom}生成。
+
+\pnum
+转换运算符\tcode{as!}采用内建语义。它不能被显式重载以与\tcode{as?}采取不一致的语义。
 
 \rSec2[op.over.prefix]{前缀运算符}
 \indextext{运算符!重载!前缀}
+
+\pnum
+表~\ref{tab:trait-prefix}~列出了可重载的内建前缀运算符对应的概念。
+
+\begin{floattable}{前缀运算符概念}{tab:trait-prefix}{ll}
+\topline
+运算符 & 概念 \\
+\capsep
+\tcode{+} & \tcode{Positive::positive} \\
+\tcode{-} & \tcode{Negative::negative} \\
+\tcode{!} & \tcode{Not::not} \\
+\tcode{'\~} & \tcode{Complement::compl} \\
+\tcode{*} & \tcode{DerefMut::derefMut}, \tcode{Deref::deref} \\
+\end{floattable}
 
 \rSec2[op.over.deref]{解引用运算符}
 \indextext{运算符!重载!解引用}
 
 \pnum
-前缀\tcode{\&}运算符遵循一般前缀运算符的重载规则，但其返回类型必须是引用类型。
+前缀\tcode{*}运算符对应\tcode{Deref::deref}和\tcode{DerefMut::derefMut}，分别为不可变和可变版本。其返回类型必须是引用类型。
 
 \rSec2[op.over.infix]{中缀运算符}
 \indextext{运算符!重载!中缀}
@@ -261,47 +309,69 @@ func operator+(lhs: int, rhs: int) { lhs + rhs } // 错误，与内建运算符�
 对中缀运算符\tcode{@}而言，$e_1\mathbin{\tcode{@}}e_2\mathbin{\tcode{@}}\ldots\mathbin{\tcode{@}}e_n$将会调用
 $\tcode{opeartor infix@(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或\\$\tcode{opeartor infix@([}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{])}$，取先匹配的那一个。如果没有找到匹配的重载函数，且该运算符所处的优先级组未定义其结合性，则这是一个编译错误。否则，将会按照其结合性拆分为多次以两个参数调用的形式。若仍然无法找到匹配的重载函数，则这是一个编译错误。
 
+\pnum
+表~\ref{tab:trait-infix}~列出了可重载的内建中缀运算符对应的概念。
+
+\begin{floattable}{中缀运算符概念}{tab:trait-infix}{ll}
+\topline
+运算符 & 概念 \\
+\capsep
+\tcode{*} & \tcode{Multiply::multiply} \\
+\tcode{/} & \tcode{Divide::divide} \\
+\tcode{\%} & \tcode{Modulo::modulo} \\
+\tcode{+} & \tcode{Add::add} \\
+\tcode{-} & \tcode{Subtract::subtract} \\
+\tcode{shl} & \tcode{ShiftLeft::shiftLeft} \\
+\tcode{shr} & \tcode{ShiftRight::shiftRight} \\
+\tcode{'\&} & \tcode{BitAnd::bitAnd} \\
+\tcode{'\^{}} & \tcode{BitXor::bitXor} \\
+\tcode{'|} & \tcode{BitOr::bitOr} \\
+\tcode{..} & \tcode{RangeTo::rangeTo} \\
+\tcode{..=} & \tcode{ClosedRangeTo::closedrangeTo} \\
+\tcode{\~} & \tcode{Concat::concat} \\
+\tcode{in} & \tcode{Include::include} \\
+\tcode{\&} & \tcode{LogicAnd::logicAnd} \\
+\tcode{|} & \tcode{LogicOr::logicOr} \\
+\tcode{+=} & \tcode{AddAssign::addAssign} \\
+\tcode{-=} & \tcode{SubtractAssign::subtractAssign} \\
+\tcode{*=} & \tcode{MultiplyAssign::multiplyAssign} \\
+\tcode{/=} & \tcode{DivideAssign::divideAssign} \\
+\tcode{\%=} & \tcode{ModuloAssign::moduloAssign} \\
+\tcode{shl_eq} & \tcode{ShiftLeftAssign::shiftLeftAssign} \\
+\tcode{shr_eq} & \tcode{ShiftRightAssign::shiftRightAssign} \\
+\tcode{'\&=} & \tcode{BitAndAssign::bitAndAssign} \\
+\tcode{'\^{}=} & \tcode{BitXorAssign::bitXorAssign} \\
+\tcode{'|=} & \tcode{BitOrAssign::bitOrAssign} \\
+\tcode{<~} & \tcode{AppendRight::appendRight} \\
+\tcode{~>} & \tcode{AppendLeft::appendLeft} \\
+\end{floattable}
+
 \rSec2[op.over.cmp]{比较运算符}
 \indextext{运算符!重载!比较}
 
 \pnum
-比较运算符的重载解析与一般的中缀运算符相同。\tcode{cmp}的返回类型必须为\tcode{Order}或\tcode{Order?}。
-如果类型$T$重载了\tcode{operator cmp}，则会自动生成其他的比较运算符：
-
-\begin{codeblock}
-func operator==(lhs: T, rhs: T) { (lhs cmp rhs) is .equal }
-func operator!=(lhs: T, rhs: T) { (lhs cmp rhs) !is .equal }
-func operator<(lhs: T, rhs: T) { (lhs cmp rhs) is .less }
-func operator<=(lhs: T, rhs: T) { (lhs cmp rhs) is .less | .equal }
-func operator>(lhs: T, rhs: T) { (lhs cmp rhs) is .greater }
-func operator>=(lhs: T, rhs: T) { (lhs cmp rhs) is .greater | .equal }
-\end{codeblock}
+相等运算符\tcode{==}与\tcode{Equal::equal}或\tcode{PartialEqual::partialEqual}关联。
 
 \pnum
-如果类型$T$重载了\tcode{operator==}，则会自动生成\tcode{operator!=}：
-
-\begin{codeblock}
-func operator!=(lhs: T, rhs: T) { !(lhs == rhs) }
-\end{codeblock}
-
-\enternote 虽然\tcode{!in}不能被重载，但是它也有类似的语义。\exitnote
+不等运算符\tcode{!=}与\tcode{PartialEqual::partialNotEqual}关联。它提供了默认实现，因此重载了\tcode{==}的类型不需要显式重载\tcode{!=}。
 
 \pnum
-一些类型会自动生成默认的\tcode{operator==}运算符：
+类型总是默认实现\tcode{Equal}。也可以通过显式实现来替换默认的实现。
 
-\begin{codeblock}
+\pnum
+比较运算符\tcode{cmp}与\tcode{Ordered::compare}或\tcode{PartialOrdered::partialCompare}关联。
 
-func operator==(lhs: T?, rhs: T?) {
-    match (lhs, rhs) {
-        case (nil, nil) => true
-        case (some let lhs, some let rhs) => l == r
-        case _ => false
-    }
-}
+\pnum
+\tcode{<}、\tcode{<=}、\tcode{>}、\tcode{>=}分别与\tcode{PartialOrdered::lessThan}、\tcode{PartialOrdered::lessEqual}、\tcode{PartialOrdered::greaterThan}、\tcode{PartialOrdered::greaterEqual}关联。它们提供了默认实现，因此重载了\tcode{cmp}的类型不需要显式重载这些运算符。
 
-\end{codeblock}
+\rSec2[op.over.in]{包含运算符}
+\indextext{运算符!重载!包含}
 
-仅当其中用到的\tcode{operator==}存在时，该运算符才会被生成。
+\pnum
+\tcode{in}运算符与\tcode{Include::include}关联。与其他二元运算符相反的是，$a\mathbin{\tcode{in}}b$将被翻译为$b\tcode{.include(}a\tcode{)}$。
+
+\pnum
+\tcode{!in}的语义总是保持与\tcode{in}相反。它不能被重载。
 
 \rSec2[op.over.logic]{逻辑运算符}
 \indextext{运算符!重载!逻辑}
@@ -322,56 +392,4 @@ func operator==(lhs: T?, rhs: T?) {
 \indextext{运算符!重载!\idxcode{\$}}
 
 \pnum
-\tcode{\$}表达式将被转换为对当前序列$s$调用$s\tcode{.operator\$()}$。它只能接受一个\tcode{this}参数。
-
-\rSec2[op.over.if]{条件运算符}
-\indextext{运算符!重载!条件}
-
-\pnum
-\tcode{operator if}允许类型在条件中被使用。重载了\tcode{operator if}、\tcode{operator perfix!}、\tcode{opeartor\&}和\tcode{opeartor|}的类型和\tcode{bool}称为\term{布尔类型}。它只能接受一个\tcode{this}参数，且其返回值类型必须为布尔类型。
-
-\pnum
-当布尔类型的表达式$e$被用于条件中时，会不断调用$e.\tcode{operator if()}$，直到返回值为\tcode{bool}为止。然后这个值将被用于条件判断。
-
-\rSec1[op.cast]{自定义类型转换函数}
-\indextext{类型转换!自定义}
-
-\pnum
-自定义类型转换函数由\tcode{opeartor as}或\tcode{operator as?}后跟类型构成。它可以用于将一个类型显式转换为另一个类型。
-
-\pnum
-自定义的$\tcode{operator as }T$返回类型必须为$T$；自定义的$\tcode{operator as? }T$返回类型必须为$T\tcode{?}$。它们都只接受一个参数。
-
-\rSec1[op.suffix]{自定义后缀函数}
-\indextext{后缀!自定义}
-
-\pnum
-自定义后缀函数由\tcode{operator}后跟一个字符串字面量构成。
-这个字符串字面量必须为空字符串、且不能是原始字符串字面量。
-它不会进行求值，且其后缀就是该后缀函数所使用的后缀。
-
-\pnum
-自定义后缀的规则与标识符相同，但会自动去除前导的\tcode{_}。如果前导的下划线多于一个，这是一个编译错误。
-自定义后缀不能与内建后缀相同。
-
-\enterexample
-\begin{codeblock}
-operator ""s; // 后缀为\tcode{s}
-operator ""_s; // 同上
-operator ""__s; // 错误，多于一个下划线
-
-0x0123ABC; // 没有后缀
-0x0123_ABC; // 后缀为\tcode{ABC}，下划线用作区分
-\end{codeblock}
-\exitexample
-
-\pnum
-假设字面量$l$带有自定义后缀$s$，则它等价于以下第一个合法的表达式：
-\begin{codeblock}
-    operator ""\{$s$}(\{$i$})
-\end{codeblock}
-其中$i$是$l$移除后缀的形式；
-\begin{codeblock}
-    operator ""\{$s$}(\{$t$})
-\end{codeblock}
-其中$t$是包含$i$所有字符的字符串字面量。
+\tcode{\$}表达式将被转换为对当前序列$s$调用$s\tcode{.size()}$。它只能接受一个\tcode{this}参数。当前序列必须实现\tcode{Dollar}。

@@ -31,7 +31,7 @@ trait Sequence<T> {
 \tcode{Iterator}是序列的迭代器类型，其必须实现了\tcode{Iterator<T>}。
 
 \pnum
-\tcode{size}是序列的大小。序列重载了\tcode{operator\$}，返回\tcode{size}。
+\tcode{size}是序列的大小。序列实现了\tcode{Dollar}，返回\tcode{size}。
 
 \pnum
 \tcode{iter}是序列的迭代器。
@@ -41,16 +41,13 @@ trait Sequence<T> {
 
 \indexlibrary{\idxcode{Sequence}!实现}
 \begin{itemdecl}
-impl<T> Sequence<T> {
-    func operator \{\dollar\}() { this.size }
-
-
+impl<T> Sequence<T> : Dollar {
+    func dollar() { this.size }
 }
 \end{itemdecl}
 
 \pnum
-序列重载了\tcode{operator\$}，它与\tcode{this.size}等价。
-
+序列实现了\tcode{Dollar}，返回序列的大小。
 
 \indexlibrary{\idxcode{Iterator}}
 \begin{itemdecl}

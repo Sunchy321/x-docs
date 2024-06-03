@@ -68,8 +68,14 @@ lambda表达式的块或表达式以及函数调用表达式的lambda块具有la
 \begin{codeblock}
 let a = [1, 2, 3, 4, 5];
 let o = { a };
-func operator()(this: int[]) -> int[] { [] }
-func v(this: int[], index: int) -> int[] { [] }
+
+impl int[] : Functor<() -> int[]> {
+    func call(&this): int[] => [];
+}
+
+impl int[] {
+    func v(index: usize): int[] => [];
+}
 
 a[$ - 1] // 当前序列为a
 a($ - 1) // 当前序列为a
@@ -86,8 +92,7 @@ a.v($ - 1) // 方法调用，当前序列为a
 \begin{bnf}{UnqualID}
     Identifier \br
     \terminal{init} \br
-    \terminal{deinit} \br
-    OperatorID
+    \terminal{deinit}
 \end{bnf}
 
 \pnum

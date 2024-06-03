@@ -413,7 +413,7 @@ $$ \tcode{'}s \preceq \tcode{Symbol} $$
 所有符号字面量类型都是\tcode{Symbol}的子类型。
 
 \pnum
-\tcode{bool}没有语言内建的子类型约束。但是，其他类型的值可以在\tcode{if}表达式中当作条件使用，这通过重载\tcode{operator if}运算符实现。
+\tcode{bool}没有语言内建的子类型约束。但是，其他类型的值可以在\tcode{if}表达式中当作条件使用，这通过实现\tcode{Condition}完成。
 
 \begin{equation*}
 \begin{aligned}

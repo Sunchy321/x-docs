@@ -179,7 +179,7 @@
 \begin{floattable}{整数字面量后缀}{tab:integer-suffix}{c|c||c|c}
     \topline
     后缀 & 对应的类型 & 后缀 & 对应的类型 \\
-    \hline
+    \capsep
     无          & $\tcode{int}_i$     & \tcode{u}   & $\tcode{uint}_i$     \\
     \tcode{i8}  & $\tcode{int<8>}_i$  & \tcode{u8}  & $\tcode{uint<8>}_i$  \\
     \tcode{i16} & $\tcode{int<16>}_i$ & \tcode{u16} & $\tcode{uint<16>}_i$ \\
@@ -231,7 +231,7 @@
 \begin{floattable}{浮点字面量后缀}{tab:floating-suffix}{c|c}
     \topline
     后缀 & 对应的类型 \\
-    \hline
+    \capsep
     无或\tcode{f64} & \tcode{float<64>} \\
     \tcode{f32} & \tcode{float<32>} \\
 \end{floattable}
@@ -384,7 +384,25 @@ $$ \tcode{false} \coloneqq \langle \mathrm{false}, \tcode{bool} \rangle $$
 \end{bnf}
 
 \pnum
-整数、浮点数与字符串能带有内建或用户自定义的后缀。后缀由字母开始，后跟任意数量的字母或数字，字面量与后缀之间可以添加\tcode{_}分隔。用户自定义的后缀不能与内建后缀相同，否则这是一个编译错误。参见~\ref{op.suffix}。
+整数、浮点数与字符串能带有内建或用户自定义的后缀。后缀由字母开始，后跟任意数量的字母或数字，字面量与后缀之间可以添加\tcode{_}分隔。用户自定义的后缀不能与内建后缀相同，否则这是一个编译错误。
+
+\pnum
+自定义后缀的规则与标识符相同，但会自动去除前导的\tcode{_}。如果前导的下划线多于一个，这是一个编译错误。
+自定义后缀不能与内建后缀相同。
+
+\enterexample
+\begin{codeblock}
+IntegerLiteral<'s>; // 后缀为\tcode{s}
+IntegerLiteral<'_s>; // 错误，后缀不能包含前导下划线
+
+0x0123ABC; // 没有后缀
+0x0123_ABC; // 后缀为\tcode{ABC}，下划线用作区分
+\end{codeblock}
+\exitexample
+
+\pnum
+概念\tcode{IntegerLiteral}、\tcode{FloatingLiteral}、\tcode{StringLiteral}、\tcode{CharacterLiteral}用于实现具有特定后缀的字面量。
+如果有多于一个类型实现了相同的后缀或者提供了非法的后缀，这是一个编译错误。
 
 \rSec1[lex.lambda-param]{Lambda参数}
 
