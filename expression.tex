@@ -345,7 +345,8 @@ $T\tcode{\{\}}$、$T\tcode{\{}e\tcode{\}}$和$T\tcode{[...}e\tcode{]}$的语法�
 \end{bnf}
 
 \begin{bnf}{LambdaQual}
-    \terminal{async}
+    \terminal{async} \br
+    ThrowQual
 \end{bnf}
 
 \begin{bnf}{LambdaParameter}
@@ -363,20 +364,15 @@ $\tcode{\$}$后跟数字$i$指代第$i$个参数。$\tcode{\$}$后跟标识符$n
 \indextext{表达式!\idxcode{do}}
 
 \begin{bnf}{DoExpr}
-    LambdaQual\bnfs \terminal{do} DoQual\bnfs Block \br
-    LambdaQual\bnfs \terminal{do} DoQual\bnfs \terminal{!} Block
-\end{bnf}
-
-\begin{bnf}{DoQual}
-    \terminal{async}
-    ThrowQual
+    \terminal{do} LambdaQual\bnfs Block \br
+    \terminal{do!} LambdaQual\bnfs Block
 \end{bnf}
 
 \pnum
 \tcode{do}后跟一个块创建一个没有显式指定参数的lambda表达式。
 
 \pnum
-\tcode{do!}后跟一个块创建一个无参的lambda表达式并立即调用它，将其值作为整个表达式的值。
+\tcode{do!}后跟一个块创建一个无参的lambda表达式并立即调用它，将其值作为整个表达式的值。\enternote \tcode{do}和后面的\tcode{!}之间必须没有空白，否则会被识别成两个分开的运算符。\exitnote
 
 \enterexample
 \begin{codeblock}
@@ -598,9 +594,11 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \end{bnf}
 
 \pnum
-$\tcode{as }T$运算符用于进行显式的类型转换，结果的类型为\tcode{T}。$\tcode{as? }T$用于进行可能失败的类型转换，结果类型为$T\tcode{?}$。$\tcode{as! }T$用于进行强制类型转换，如果转换失败则\tcode{panic}，结果类型为\tcode{T}。
+$e\mathbin{\tcode{as}}T$运算符用于进行显式的类型转换，结果的类型为\tcode{T}。
 
 \pnum
+$e\mathbin{\tcode{as?}}T$用于进行可能失败的类型转换，结果类型为可空类型或结果类型。
+$e\mathbin{\tcode{as!}}T$用于进行强制类型转换，其等价于$\tcode{(}e\mathbin{\tcode{as?}}T\tcode{)!}$。
 \enternote \tcode{as?}和\tcode{as!}中\tcode{as}和后面的符号之间必须没有空白，否则会被识别为两个分开的运算符。\exitnote
 
 \rSec2[expr.match]{匹配运算符}
