@@ -288,13 +288,13 @@ $T\tcode{\{\}}$、$T\tcode{\{}e\tcode{\}}$和$T\tcode{[...}e\tcode{]}$的语法�
 静态成员和枚举符可以在适当的上下文中省略类型名称而使用自动推导。参见~\ref{deduct.static}。
 
 \rSec2[expr.this]{\tcode{this}}
-\indextext{表达式!this}
+\indextext{表达式!\idxcode{this}}
 
 \pnum
 表达式\tcode{this}在类方法或扩展方法中表示当前方法的调用者。如果没有在参数中显式指定\tcode{this}的类型，则其类型为\tcode{self}。
 
 \rSec2[expr.dollar]{\tcode{\$}}
-\indextext{表达式!\$}
+\indextext{表达式!\idxcode{\$}}
 
 \pnum
 表达式\tcode{\$}只能在序列作用域（\ref{scope.sequence}）中使用。
@@ -338,10 +338,10 @@ $T\tcode{\{\}}$、$T\tcode{\{}e\tcode{\}}$和$T\tcode{[...}e\tcode{]}$的语法�
 \tcode{break}、\tcode{continue}、\tcode{return}和\tcode{throw}表达式的语义与其对应的语句的语义相同，类型为\tcode{never}。
 
 \rSec2[expr.lambda]{Lambda表达式}
-\indextext{表达式!Lambda}
+\indextext{表达式!lambda}
 
 \begin{bnf}{LambdaExpr}
-    LambdaQual\bnfs LambdaParameter ReturnType\bnfs \terminal{=>} LambdaBody
+    LambdaParameter LambdaQual\bnfs ReturnType\bnfq \terminal{=>} LambdaBody
 \end{bnf}
 
 \begin{bnf}{LambdaQual}
@@ -360,7 +360,7 @@ $T\tcode{\{\}}$、$T\tcode{\{}e\tcode{\}}$和$T\tcode{[...}e\tcode{]}$的语法�
 $\tcode{\$}$后跟数字$i$指代第$i$个参数。$\tcode{\$}$后跟标识符$n$指代具名参数$n$。
 
 \rSec3[expr.do]{\tcode{do}表达式}
-\indextext{表达式!do}
+\indextext{表达式!\idxcode{do}}
 
 \begin{bnf}{DoExpr}
     LambdaQual\bnfs \terminal{do} DoQual\bnfs Block \br
@@ -500,7 +500,7 @@ let k = 0;
 t.(k) // 等价于\tcode{t.0}
 
 impl int {
-    func test() => this;
+    func test(this) => this;
 }
 
 let f: (this: int) -> int = int::test;
@@ -510,7 +510,7 @@ let f: (this: int) -> int = int::test;
 \exitexample
 
 \rSec2[expr.await]{\tcode{await}运算符}
-\indextext{运算符!await}
+\indextext{运算符!\idxcode{await}}
 
 \begin{bnf}{AwaitExpr}
     SuffixExpr \terminal{.} \terminal{await}
@@ -555,14 +555,14 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
 \exitexample
 
 \pnum
-后缀\tcode{!}将可空类型转换为非可空类型。对表达式而言，如果$e\tcode{!}$不为\tcode{nil}，则结果为$e$；否则调用\tcode{panic}。参见~\ref{except.panic}。
+后缀\tcode{!}将可空类型转换为非可空类型。对表达式而言，如果$e\tcode{!}$不为\tcode{nil}，则结果为$e$；否则\tcode{panic}。参见~\ref{except.panic}。
 
 \pnum
 如果空值检测运算符的操作数类型是$T\tcode{?}$，则整个表达式的类型为$T$。
 如果空值检测运算符的左操作数不是可空类型（且并未重载空值检测运算符），则空值检测运算符将被忽略。编译器可以为此提出一个警告。
 
 \pnum
-如果$e$是结果类型$T\mathbin{\tcode{throw}}E$，则$e\tcode{?}$与$\tcode{(try }e\tcode{ catch \{ nil \})?}$等价。
+如果$e$是结果类型$T\mathbin{\tcode{throw}}E$，则$e\tcode{?}$与$\tcode{try }e\tcode{ catch \{ nil \} else let }e\tcode{ \{ some }e\tcode{ \}}$等价。
 
 \pnum
 如果$e$是结果类型，则$e!$在$e$为正确值的情况下返回$e$，否则抛出$e$的错误值，即等价于$\tcode{try }e$。
@@ -576,7 +576,7 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
 \end{bnf}
 
 \pnum
-$e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类型是算数类型，$e\tcode{+!}$等价于$e+1$，$e\tcode{-!}$等价于$e-1$。
+$e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类型是算术类型，$e\tcode{+!}$等价于$e+1$，$e\tcode{-!}$等价于$e-1$。
 
 \rSec2[expr.inc-dec]{自增自减运算符}
 
@@ -586,7 +586,7 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \end{bnf}
 
 \pnum
-自增运算符$e\tcode{++}$等价于$e\ \tcode{=}\ e\tcode{+!}$，自减运算符$e\tcode{--}$等价于$e\ \tcode{=}\ e\tcode{-!}$，但优先级不同，且$e$只被求值一次。
+自增运算符$e\tcode{++}$等价于$e\ \tcode{=}\ e\tcode{+!}$，自减运算符$e\tcode{--}$等价于$e\ \tcode{=}\ e\tcode{-!}$，但$e$只被求值一次。
 
 \rSec2[expr.cast]{类型转换运算符}
 \indextext{运算符!类型转换}
