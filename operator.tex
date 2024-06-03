@@ -307,7 +307,7 @@ let mut x = () as X;
 
 \pnum
 对中缀运算符\tcode{@}而言，$e_1\mathbin{\tcode{@}}e_2\mathbin{\tcode{@}}\ldots\mathbin{\tcode{@}}e_n$将会调用
-$\tcode{opeartor infix@(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或\\$\tcode{opeartor infix@([}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{])}$，取先匹配的那一个。如果没有找到匹配的重载函数，且该运算符所处的优先级组未定义其结合性，则这是一个编译错误。否则，将会按照其结合性拆分为多次以两个参数调用的形式。若仍然无法找到匹配的重载函数，则这是一个编译错误。
+$\tcode{Trait::method(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或\\$\tcode{Trait::method([}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{])}$，取先匹配的那一个。如果没有找到匹配的重载函数，且该运算符所处的优先级组未定义其结合性，则这是一个编译错误。否则，将会按照其结合性拆分为多次以两个参数调用的形式。若仍然无法找到匹配的重载函数，则这是一个编译错误。
 
 \pnum
 表~\ref{tab:trait-infix}~列出了可重载的内建中缀运算符对应的概念。
@@ -392,4 +392,4 @@ $\tcode{opeartor infix@(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或
 \indextext{运算符!重载!\idxcode{\$}}
 
 \pnum
-\tcode{\$}表达式将被转换为对当前序列$s$调用$s\tcode{.size()}$。它只能接受一个\tcode{this}参数。当前序列必须实现\tcode{Dollar}。
+\tcode{\$}表达式将被转换为对当前序列$s$调用$s\tcode{.dollar()}$。它只能接受一个\tcode{this}参数。当前序列必须实现\tcode{Dollar}。
