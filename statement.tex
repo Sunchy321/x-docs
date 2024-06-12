@@ -53,7 +53,8 @@ if x.filter{ true }
 \end{bnf}
 
 \begin{bnf}{Binding}
-    Pattern \terminal{=} Expression \terminal{;}
+    Pattern \terminal{=} Expression \terminal{;} \br
+    Pattern \terminal{=} Expression \terminal{else} Block
 \end{bnf}
 
 \pnum
@@ -61,6 +62,9 @@ if x.filter{ true }
 
 \pnum
 \term{绑定语句}将一个绑定插入当前作用域中。该绑定必须不能失败。
+
+\pnum
+绑定语句可以带有一个\tcode{else}块，此时绑定可以失败，且失败时会执行该\tcode{else}块。该块的类型必须是\tcode{never}。
 
 \rSec1[stmt.if]{\tcode{if} 语句}
 \indextext{语句!\idxcode{if}}
