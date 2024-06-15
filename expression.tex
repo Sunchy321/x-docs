@@ -157,8 +157,7 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 
 \begin{bnf}{DictItem}
     Expression \terminal{:} Expression \br
-    \terminal{...} Expression \br
-    \terminal{...} Expression \terminal{:} \terminal{...} Expression
+    \terminal{...} Expression
 \end{bnf}
 
 \pnum
@@ -197,8 +196,7 @@ $\tcode{'(}id\tcode{)}$表示与$id$对应的符号表达式。$id$本身不能�
 字典字面量$\tcode{[}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{]}$表示一个显式写出其各元素的字典值。
 其类型为$T\tcode{[}K\tcode{]}$，其中$T$为各$v_i$的类型，$K$为各$k_i$的公共类型。
 如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素对显式插入在该位置，$e$必须是字典类型。
-如果其中包含形如$\tcode{...}k\mathbin{\tcode{:}}\tcode{...}v$的项，则视同将$k$和$v$的各元素组成键值对显式插入在该位置。$k$和$v$必须是可迭代的。如果两者产生的值不能对应，则多出的值会被忽略。
-如果如果字典字面量不包含任何表达式，则$T$和$K$是待推导的类型。
+如果字典字面量不包含任何表达式，则需写作\tcode{[:]}。此时$T$和$K$是待推导的类型。
 
 \pnum
 如果以方括号界定的字面量只包含元素展开，则其总是被识别为数组字面量。\enternote 如果需要创建一个只包含元素展开的字典字面量，请将其中一个元素改写为键值对的展开。\exitnote
