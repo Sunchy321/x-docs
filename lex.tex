@@ -44,6 +44,11 @@
 \rSec1[lex.identifier]{标识符}
 
 \begin{bnf}{Identifier}
+    NormalIdentifier \br
+    RawIdentifier
+\end{bnf}
+
+\begin{bnf}{NormalIdentifier}
     IdentifierHead IdentifierTail\bnfs
 \end{bnf}
 
@@ -57,8 +62,15 @@
     Unicode(XID_Continue)
 \end{bnf}
 
+\begin{bnf}{RawIdentifier}
+    \terminal{`} NormalIdentifier \terminal{`}
+\end{bnf}
+
 \pnum
 \term{标识符}以具有Unicode XID_Start属性的字符或\tcode{_}开始，后跟零个或数个具有Unicode XID_Continue属性的字符，但不能与关键字相同。标识符区分大小写。
+
+\pnum
+标识符可以使用反引号包围，这种标识符称为\term{原始标识符}。原始标识符与其不带引号的版本完全相同，但不会被识别为关键字。
 
 \rSec1[lex.keyword]{关键字}
 
