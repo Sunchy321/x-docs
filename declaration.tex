@@ -8,13 +8,20 @@
 \end{bnf}
 
 \begin{bnf}{BlockDecl}
+    Binding \br
     FuncDecl \br
     TypeDecl \br
     ClassDecl \br
     EnumDecl \br
     TraitDecl \br
+    ImplDecl \br
+    OperatorDecl \br
+    MacroDecl \br
     QualifierDirective
 \end{bnf}
+
+\pnum
+\term{声明}将名称插入当前作用域，或者使用特定的程序结构实现程序功能。声明在插入名称时也可能\term{定义}了该名称对应的程序项。
 
 \rSec1[decl.type]{类型声明}
 \indextext{声明!类型}
@@ -39,7 +46,7 @@
 \end{bnf}
 
 \pnum
-类型声明用于为类型创建别名。
+类型声明用于为类型创建别名。在类型声明之后，可以使用该名称代表所关联的类型。
 
 \rSec1[decl.class]{类声明}
 \indextext{声明!类}

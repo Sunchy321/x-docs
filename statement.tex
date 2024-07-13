@@ -5,7 +5,6 @@
 
 \begin{bnf}{Statement}
     Block \br
-    BindingStatement \br
     IfStatement \br
     MatchStatement \br
     WhileStatement \br
@@ -47,10 +46,6 @@ if x.filter{ true }
 
 \rSec1[stmt.bind]{绑定语句}
 \indextext{语句!绑定}
-
-\begin{bnf}{BindingStatement}
-    Binding \terminal{;}
-\end{bnf}
 
 \begin{bnf}{Binding}
     Pattern \terminal{=} Expression \terminal{;} \br
