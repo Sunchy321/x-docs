@@ -4,15 +4,44 @@
 \indextext{函数}
 
 \begin{bnf}{FuncDecl}
-    FuncQual\bnfs \terminal{func} UnqualID  Parameter ThrowQual\bnfq ReturnType\bnfq Block \br
-    FuncQual\bnfs \terminal{func} UnqualID  Parameter ThrowQual\bnfq \terminal{=>} Expression \terminal{;}
+    FuncQual\bnfs \terminal{func} FuncName Parameter ThrowQual\bnfq ReturnType\bnfq Block \br
+    FuncQual\bnfs \terminal{func} FuncName Parameter ThrowQual\bnfq \terminal{=>} Expression \terminal{;}
+\end{bnf}
+
+\begin{bnf}{FuncName}
+    UnqualID \br
+    \terminal{init} \br
+    \terminal{deinit}
 \end{bnf}
 
 \begin{bnf}{FuncQual}
     \terminal{async} \br
     \terminal{const} \br
-    \terminal{extern}
+    \terminal{extern} \br
+    \terminal{unsafe}
 \end{bnf}
+
+\begin{bnf}{ReturnType}
+    \terminal{->} Type
+\end{bnf}
+
+\pnum
+\term{函数}声明将函数、方法或闭包引入当前作用域。函数声明由关键字\tcode{func}标记，后跟函数名、参数列表、异常修饰符、返回类型和函数体。
+
+\pnum
+函数的返回类型可以省略，此时函数的返回类型为函数体的类型与函数中\tcode{return}语句参数类型的公共类型。
+如果函数包含异常修饰符，则返回类型还会继续受到异常修饰符的影响变为错误类型。参见~\ref{except.func.throw}。
+
+\pnum
+函数体为单个块或者\tcode{=>}后跟任意表达式和分号。如果采用后一种形式，则不能显式指定返回类型。
+
+\pnum
+实现中的函数可以为\term{方法}。参见~\ref{method}。
+
+\pnum
+函数中可以有另一个函数声明。此时如果内部函数使用了外部函数作用域中的值，该函数为\term{闭包}，否则为普通函数。
+
+\rSec1[param]{函数参数}
 
 \begin{bnf}{Parameter}
     \terminal{(} ParamList\bnfq \terminal{)}
@@ -39,16 +68,17 @@
 \end{bnf}
 
 \begin{bnf}{UnnamedParamDecl}
-    ParamQual\bnfq Identifier \terminal{:} Type\bnfq
+    Attribute\bnfs ParamQual\bnfq Pattern TypeNotation\bnfq
 \end{bnf}
 
 \begin{bnf}{NamedParamDecl}
-    ParamQual\bnfq \terminal{(} Identifier \terminal{)} Identifier \terminal{:} Type\bnfq
+    Attribute\bnfs ParamQual\bnfq \terminal{(} Identifier \terminal{)} Pattern TypeNotation\bnfq DefaultValue\bnfq
 \end{bnf}
 
 \begin{bnf}{ThisParamDecl}
-    \terminal{this} \br
-    \terminal{this} \terminal{:} TypeQualifier\bnfp
+    Attribute\bnfs \terminal{mut}\bnfq \terminal{this} \br
+    Attribute\bnfs \terminal{\&} \terminal{mut}\bnfq \terminal{this} \br
+    Attribute\bnfs \terminal{this} TypeNotation
 \end{bnf}
 
 \begin{bnf}{ParamQual}
@@ -58,9 +88,36 @@
     \terminal{lazy}
 \end{bnf}
 
-\begin{bnf}{ReturnType}
-    \terminal{->} Type
+\begin{bnf}{TypeNotation}
+    \terminal{:} Type
 \end{bnf}
+
+\begin{bnf}{DefaultValue}
+    \terminal{=} Expression
+\end{bnf}
+
+\pnum
+\term{参数}为调用函数时传入其内的值。
+如果函数不接受任何参数，则必须使用\tcode{()}标识而不能省略括号。
+函数参数默认是不可变的，除非由\tcode{mut}修饰。
+
+\pnum
+参数可以为\tcode{this}参数、顺序参数或具名参数，且必须按照此顺序排列，并且\tcode{this}参数不能出现超过一次。
+顺序参数和具名参数必须显式指定其类型，不能省略类型。
+具名参数可以指定默认值。如果函数调用时没有提供对应的值，则视为传入该默认值。
+
+\pnum
+函数参数可以是一个模式，但视为处于绑定模式中，其中所有的标识符都视为一个绑定。这个模式不能是可失败的。
+
+\enterexample
+\begin{codeblock}
+
+func foo((a, b): (int, bool)) {
+    // \tcode{a} is \tcode{int}, \tcode{b} is \tcode{bool}
+}
+
+\end{codeblock}
+\exitexample
 
 \rSec1[param.qual]{参数修饰符}
 \indextext{参数修饰符}

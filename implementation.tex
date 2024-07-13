@@ -129,9 +129,11 @@
 
 \pnum
 实现中可以包含函数声明，其中含有\tcode{this}参数的称为方法。\tcode{this}参数指代调用该方法的对象。
+\tcode{this}参数必须出现在参数列表的第一个位置。
 
 \pnum
-方法可以显式指定\tcode{this}参数以为其添加修饰符。\tcode{this}参数要么省略类型指示，要么包含一个仅具有修饰符的类型指示，这些修饰符就是\tcode{this}的类型。
+\tcode{this}参数可以省略类型指示，此时其类型为\tcode{self}或\tcode{self mut}。
+\tcode{this}参数也可以具有形式\tcode{\&self}或\tcode{\&mut self}，其对应的类型分别为\tcode{self\&}或\tcode{self mut\&}。
 
 \enterexample
 \begin{codeblock}
