@@ -408,9 +408,7 @@ let first3 = do! {
     AwaitExpr \br
     NullCheckExpr \br
     PrevNextExpr \br
-    IncDecExpr \br
-    CastExpr \br
-    MatchExpr
+    IncDecExpr
 \end{bnf}
 
 \rSec2[expr.index]{下标运算符}
@@ -592,37 +590,6 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \pnum
 自增运算符$e\tcode{++}$等价于$e\ \tcode{=}\ e\tcode{+!}$，自减运算符$e\tcode{--}$等价于$e\ \tcode{=}\ e\tcode{-!}$，但$e$只被求值一次。
 
-\rSec2[expr.cast]{类型转换运算符}
-\indextext{运算符!类型转换}
-
-\begin{bnf}{CastExpr}
-    SuffixExpr \terminal{as} Type \br
-    SuffixExpr \terminal{as?} Type \br
-    SuffixExpr \terminal{as!} Type
-\end{bnf}
-
-\pnum
-$e\mathbin{\tcode{as}}T$运算符用于进行显式的类型转换，结果的类型为\tcode{T}。
-
-\pnum
-$e\mathbin{\tcode{as?}}T$用于进行可能失败的类型转换，结果类型为可空类型或结果类型。
-$e\mathbin{\tcode{as!}}T$用于进行强制类型转换，其等价于$\tcode{(}e\mathbin{\tcode{as?}}T\tcode{)!}$。
-\enternote \tcode{as?}和\tcode{as!}中\tcode{as}和后面的符号之间必须没有空白，否则会被识别为两个分开的运算符。\exitnote
-
-\rSec2[expr.match]{匹配运算符}
-\indextext{运算符!匹配}
-
-\begin{bnf}{MatchExpr}
-    RangeExpr \terminal{is} Pattern \br
-    RangeExpr \terminal{!is} Pattern
-\end{bnf}
-
-\pnum
-$a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!is}} p$等价于$\tcode{!(}a \mathrel{\tcode{is}} p\tcode{)}$。表达式的类型为\tcode{bool}。
-
-\pnum
-\enternote \tcode{!is}中\tcode{!}和\tcode{is}之间必须没有空白，否则会被识别成两个分开的运算符。\exitnote
-
 \rSec1[expr.prefix]{前缀运算符}
 \indextext{运算符!前缀}
 
@@ -765,7 +732,9 @@ $a\mathbin{\tcode{??}}b$首先对$a$求值，如果其结果是$\tcode{some }e$�
 \begin{bnf}{BooleanExpr}
     RangeExpr \br
     CompareExpr \br
-    IncludeExpr
+    IncludeExpr \br
+    CastExpr \br
+    MatchExpr
 \end{bnf}
 
 \pnum
@@ -827,6 +796,37 @@ $a \mathrel{\tcode{in}} b$检测$a$是否在$b$中。$a \mathrel{\tcode{!in}} b$
 
 \pnum
 \enternote \tcode{!in}中\tcode{!}和\tcode{in}之间必须没有空白，否则会被识别成两个分开的运算符。\exitnote
+
+\rSec2[expr.cast]{类型转换运算符}
+\indextext{运算符!类型转换}
+
+\begin{bnf}{CastExpr}
+    SuffixExpr \terminal{as} Type \br
+    SuffixExpr \terminal{as?} Type \br
+    SuffixExpr \terminal{as!} Type
+\end{bnf}
+
+\pnum
+$e\mathbin{\tcode{as}}T$运算符用于进行显式的类型转换，结果的类型为\tcode{T}。
+
+\pnum
+$e\mathbin{\tcode{as?}}T$用于进行可能失败的类型转换，结果类型为可空类型或结果类型。
+$e\mathbin{\tcode{as!}}T$用于进行强制类型转换，其等价于$\tcode{(}e\mathbin{\tcode{as?}}T\tcode{)!}$。
+\enternote \tcode{as?}和\tcode{as!}中\tcode{as}和后面的符号之间必须没有空白，否则会被识别为两个分开的运算符。\exitnote
+
+\rSec2[expr.match]{匹配运算符}
+\indextext{运算符!匹配}
+
+\begin{bnf}{MatchExpr}
+    RangeExpr \terminal{is} Pattern \br
+    RangeExpr \terminal{!is} Pattern
+\end{bnf}
+
+\pnum
+$a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!is}} p$检测$a$是否不匹配模式$p$。表达式的类型为\tcode{bool}。模式中不能包含绑定模式。
+
+\pnum
+\enternote \tcode{!is}中\tcode{!}和\tcode{is}之间必须没有空白，否则会被识别成两个分开的运算符。\exitnote
 
 \rSec1[expr.logic]{逻辑运算符}
 \indextext{运算符!逻辑}
