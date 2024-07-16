@@ -214,8 +214,8 @@ $\tcode{\{}K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n\tcode{\}}$�
 \indextext{类型!函数}
 
 \begin{bnf}{FuncType}
-    ParameterInType ThrowQual\bnfq ReturnType \br
-    Type ThrowQual\bnfq ReturnType
+    ParameterInType FuncTypeQual\bnfs ReturnType \br
+    Type FuncTypeQual\bnfs ReturnType
 \end{bnf}
 
 \begin{bnf}{ParameterInType}
@@ -256,8 +256,25 @@ $\tcode{\{}K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n\tcode{\}}$�
     \terminal{this} \terminal{:} Type
 \end{bnf}
 
+\begin{bnf}{FuncTypeQual}
+    ThrowQual \br
+    \terminal{async} \br
+    \terminal{unsafe} \br
+    \terminal{mut} \br
+    \terminal{once}
+\end{bnf}
+
 \pnum
 $\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{) -> }R$称作\term{函数类型}。函数类型标识能以函数方式调用的值。
+如果函数只有一个位置参数，则可以省略括号。此时参数类型后跟的\tcode{throw}总是被识别为\tcode{throw}修饰符而不会和前面的类型结合成为一个错误类型。
+
+\pnum
+函数类型可以包含显式指定类型的\tcode{this}参数。在这种情况下，函数可以在动态成员访问表达式中作为方法被调用。
+
+\pnum
+如果函数类型包含\tcode{once}修饰符，则它只能调用一次，随后值会被消耗，它实现了\tcode{core::ops::FunctorOnce}。
+如果函数类型包含\tcode{mut}修饰符，则对它的调用将会更改其值，它实现了\tcode{core::ops::FunctorMut}。
+如果函数类型不包含这两种修饰符，则对它的调用不会更改其值，它实现了\tcode{core::ops::Functor}。函数均具有此类函数类型。
 
 \rSec2[type.opaque]{不透明类型}
 \indextext{类型!不透明}
