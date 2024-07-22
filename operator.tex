@@ -244,7 +244,14 @@ let mut x = () as X;
 \indextext{运算符!重载!下标}
 
 \pnum
-下标运算符有两个对应的概念方法：\tcode{IndexMut::indexMut}和\tcode{Index::index}，其中前者对应可变的情况。两个概念都需要一个函数类型的泛型参数。
+下标运算符对应四个概念方法：\tcode{Index::index}、\tcode{IndexAssign::indexAssign}、\tcode{IndexRef::indexRef}和\tcode{IndexRefMut::indexRefMut}。这四个概念都需要一个函数类型的泛型参数。
+
+\pnum
+对表达式\tcode{array[key]}（不作为赋值的左操作数），它等价于\tcode{*array.indexRef(key)}和\tcode{array.index(key)}中先成立的一个。
+
+\pnum
+对表达式\tcode{array[key] = value}，它等价于\tcode{*array.indexRefMut(key) = value}和\tcode{array.indexAssign(key, value)}中先成立的一个。
+
 
 \rSec2[op.over.call]{函数调用运算符}
 \indextext{运算符!重载!函数调用}
