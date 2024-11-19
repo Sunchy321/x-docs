@@ -46,6 +46,7 @@ $$ \mathcal{V} = \{ \langle v, T, Q \rangle \mid T \in \mathcal{T}, v \in T, Q \
     \terminal{float} \br
     \terminal{float} \terminal{<} Expression \terminal{>} \br
     \terminal{char} \br
+    \terminal{string} \br
     SymbolType
 \end{bnf}
 
@@ -90,7 +91,12 @@ $\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tco
 $$\tcode{char} \coloneqq \left\{ \textnormal{Any UTF-32 Code Unit} \right\}$$
 
 \pnum
-\tcode{char}是字符类型，其表示一个UTF-32码元。
+\tcode{char}表示一个UTF-32码元。
+
+$$\tcode{string} \coloneqq \left\{ \textnormal{Any UTF-8 String} \right\} $$
+
+\pnum
+\tcode{string}表示任意长度的UTF-8字符串，包括空字符串。
 
 \rSec3[type.symbol]{符号类型}
 \indextext{类型!符号}
@@ -140,6 +146,9 @@ $$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil
 
 \pnum
 $T\tcode{?}$为\term{可空类型}。$T\tcode{?}$包含$T$的所有值（使用\tcode{some}标识）和空值\tcode{nil}。
+
+\pnum
+可空类型在核心库中有其对应的内建类型定义。参见~\ref{core.type}。
 
 \rSec3[type.array]{数组类型}
 \indextext{类型!数组}
