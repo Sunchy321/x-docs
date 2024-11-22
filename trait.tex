@@ -1,7 +1,7 @@
 %!TEX root = x.tex
 
-\rSec0[trait]{概念}
-\indextext{概念}
+\rSec0[trait]{特征}
+\indextext{特征}
 
 \begin{bnf}{TraitDecl}
     TraitQual\bnfs \terminal{trait} Identifier TraitBody
@@ -16,14 +16,27 @@
 \end{bnf}
 
 \begin{bnf}{TraitMember}
-    ClassMember \br
-    TypeConstraint
+    TypeConstraint \br
+    ConstConstraint \br
+    FuncConstraint
 \end{bnf}
 
 \begin{bnf}{TypeConstraint}
     \terminal{type} Identifier \terminal{;} \br
-    \terminal{type} Identifier \terminal{:} Type \terminal{;}
+    \terminal{type} Identifier \terminal{:} Type \terminal{;} \br
+    \terminal{type} Identifier \terminal{=} Type \terminal{;}
+\end{bnf}
+
+\begin{bnf}{ConstConstraint}
+    \terminal{const} Identifier \terminal{;} \br
+    \terminal{const} Identifier \terminal{=} Expression \terminal{;}
+\end{bnf}
+
+\begin{bnf}{FuncConstraint}
+    FuncQual\bnfs \terminal{func} FuncName Parameter ThrowQual\bnfq ReturnType \terminal{;} \br
+    FuncDecl
 \end{bnf}
 
 \pnum
-\term{概念}对类型进行约束，也可以为满足条件的类型提供额外的功能。
+\term{特征}描述了类型可以满足的抽象接口，包括类型约束、常量约束和函数约束。
+如果这些约束提供了一个具体的类型、值或函数实现，则它会被用作实现该

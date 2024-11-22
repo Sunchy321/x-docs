@@ -85,7 +85,7 @@
 \end{bnf}
 
 \pnum
-用户可以声明自己的运算符。自定义运算符需要指定一个或多个概念方法，实现此概念的类型可以使用这个运算符，且等价于调用该方法。
+用户可以声明自己的运算符。自定义运算符需要指定一个或多个特征方法，实现此特征的类型可以使用这个运算符，且等价于调用该方法。
 
 \pnum
 自定义的运算符不能与内建的运算符相同，也不能是\tcode{//}、\tcode{/*}、\tcode{->}、\tcode{=>}或\tcode{...}。如果自定义的运算符是一个标识符，则它不能在任何作用域中与另一个标识符相同，否则这是一个编译错误。自定义的运算符也不能是\tcode{prefix}、\tcode{suffix}或\tcode{infix}。
@@ -191,7 +191,7 @@ a ** (&&b); // 可以
 \indextext{运算符!重载}
 
 \pnum
-运算符可以通过实现其对应概念的方式重载。如果一个类型为一个运算符实现了多个概念，则将会使用第一个可使用的概念。
+运算符可以通过实现其对应特征的方式重载。如果一个类型为一个运算符实现了多个特征，则将会使用第一个可使用的特征。
 
 \enterexample
 \begin{codeblock}
@@ -216,17 +216,17 @@ let mut x = () as X;
 \exitexample
 
 \pnum
-可重载的内建运算符也都有其对应的概念方法。所有概念方法都位于模块\tcode{core.ops}中。
+可重载的内建运算符也都有其对应的特征方法。所有特征方法都位于模块\tcode{core.ops}中。
 
 \rSec2[op.over.suffix]{后缀运算符}
 \indextext{运算符!重载!后缀}
 
 \pnum
-表~\ref{tab:trait-suffix}~列出了可重载的内建后缀运算符对应的概念。
+表~\ref{tab:trait-suffix}~列出了可重载的内建后缀运算符对应的特征。
 
-\begin{floattable}{后缀运算符概念}{tab:trait-suffix}{ll}
+\begin{floattable}{后缀运算符特征}{tab:trait-suffix}{ll}
 \topline
-运算符 & 概念 \\
+运算符 & 特征 \\
 \capsep
 \tcode{[]} & \tcode{IndexMut::indexMut}, \tcode{Index::index} \\
 \tcode{()} & \tcode{FunctorMut::callMut}, \tcode{Functor::call}, \tcode{FunctorOnce::callOnce} \\
@@ -244,7 +244,7 @@ let mut x = () as X;
 \indextext{运算符!重载!下标}
 
 \pnum
-下标运算符对应四个概念方法：\tcode{Index::index}、\tcode{IndexAssign::indexAssign}、\tcode{IndexRef::indexRef}和\tcode{IndexRefMut::indexRefMut}。这四个概念都需要一个函数类型的泛型参数。
+下标运算符对应四个特征方法：\tcode{Index::index}、\tcode{IndexAssign::indexAssign}、\tcode{IndexRef::indexRef}和\tcode{IndexRefMut::indexRefMut}。这四个特征都需要一个函数类型的泛型参数。
 
 \pnum
 对表达式\tcode{array[key]}（不作为赋值的左操作数），它等价于\tcode{*array.indexRef(key)}和\tcode{array.index(key)}中先成立的一个。
@@ -257,7 +257,7 @@ let mut x = () as X;
 \indextext{运算符!重载!函数调用}
 
 \pnum
-函数调用运算符有三个对应的概念方法：\tcode{FunctorMut::callMut}、\tcode{Functor::call}和\tcode{FunctorOnce::callOnce}，分别对应可变、不可变和只能调用一次的情况。这三个概念都需要一个函数类型的泛型参数。
+函数调用运算符有三个对应的特征方法：\tcode{FunctorMut::callMut}、\tcode{Functor::call}和\tcode{FunctorOnce::callOnce}，分别对应可变、不可变和只能调用一次的情况。这三个特征都需要一个函数类型的泛型参数。
 
 \rSec2[op.over.null]{空值检测运算符}
 \indextext{运算符!重载!空值检测}
@@ -290,11 +290,11 @@ let mut x = () as X;
 \indextext{运算符!重载!前缀}
 
 \pnum
-表~\ref{tab:trait-prefix}~列出了可重载的内建前缀运算符对应的概念。
+表~\ref{tab:trait-prefix}~列出了可重载的内建前缀运算符对应的特征。
 
-\begin{floattable}{前缀运算符概念}{tab:trait-prefix}{ll}
+\begin{floattable}{前缀运算符特征}{tab:trait-prefix}{ll}
 \topline
-运算符 & 概念 \\
+运算符 & 特征 \\
 \capsep
 \tcode{+} & \tcode{Positive::positive} \\
 \tcode{-} & \tcode{Negative::negative} \\
@@ -317,11 +317,11 @@ let mut x = () as X;
 $\tcode{Trait::method(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或\\$\tcode{Trait::method([}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{])}$，取先匹配的那一个。如果没有找到匹配的重载函数，且该运算符所处的优先级组未定义其结合性，则这是一个编译错误。否则，将会按照其结合性拆分为多次以两个参数调用的形式。若仍然无法找到匹配的重载函数，则这是一个编译错误。
 
 \pnum
-表~\ref{tab:trait-infix}~列出了可重载的内建中缀运算符对应的概念。
+表~\ref{tab:trait-infix}~列出了可重载的内建中缀运算符对应的特征。
 
-\begin{floattable}{中缀运算符概念}{tab:trait-infix}{ll}
+\begin{floattable}{中缀运算符特征}{tab:trait-infix}{ll}
 \topline
-运算符 & 概念 \\
+运算符 & 特征 \\
 \capsep
 \tcode{*} & \tcode{Multiply::multiply} \\
 \tcode{/} & \tcode{Divide::divide} \\
