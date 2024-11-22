@@ -4,11 +4,16 @@
 \indextext{特征}
 
 \begin{bnf}{TraitDecl}
-    TraitQual\bnfs \terminal{trait} Identifier TraitBody
+    TraitQual\bnfs \terminal{trait} Identifier SuperTrait\bnfq TraitBody
 \end{bnf}
 
 \begin{bnf}{TraitQual}
     \terminal{const}
+\end{bnf}
+
+\begin{bnf}{SuperTrait}
+    \terminal{:} EntityID \br
+    SuperTrait \terminal{,} EntityID
 \end{bnf}
 
 \begin{bnf}{TraitBody}
@@ -18,7 +23,8 @@
 \begin{bnf}{TraitMember}
     TypeConstraint \br
     ConstConstraint \br
-    FuncConstraint
+    FuncConstraint \br
+    PropConstraint
 \end{bnf}
 
 \begin{bnf}{TypeConstraint}
@@ -37,6 +43,15 @@
     FuncDecl
 \end{bnf}
 
+\begin{bnf}{PropConstraint}
+    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq PropertyBody \terminal{;} \br
+    PropertyDecl
+\end{bnf}
+
 \pnum
-\term{特征}描述了类型可以满足的抽象接口，包括类型约束、常量约束和函数约束。
-如果这些约束提供了一个具体的类型、值或函数实现，则它会被用作实现该
+\term{特征}描述了类型可以满足的抽象接口，包括类型约束、常量约束、函数约束和属性约束。
+如果这些约束提供了一个具体的类型、值或函数实现，则它会被用作该约束的默认实现。
+如果一个约束没有提供默认实现，则实现该特征的类型必须提供一个实现。
+
+\pnum
+特征可以具有一个或数个\term{父特征}。实现特征的类型必须实现其所有父特征。

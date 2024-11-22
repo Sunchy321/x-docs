@@ -26,30 +26,11 @@
 \pnum
 \term{实现}用于为类型添加额外的特性。实现可以显式指定以令类型满足某个特征。
 
-% \rSec1[impl.member]{字段}
-% \indextext{类!字段}
-
-% \begin{bnf}{FieldDecl}
-%     FieldQual\bnfs BindKeyword Identifier TypeNotation Initializer\bnfq \terminal{;}
-%     FieldQual\bnfs BindKeyword Identifier Initializer \terminal{;}
-% \end{bnf}
-
-% \begin{bnf}{TypeNotation}
-%     \terminal{:} Type
-% \end{bnf}
-
-% \begin{bnf}{Initializer}
-%     \terminal{=} Expression
-% \end{bnf}
-
-% \pnum
-% 类中的字段表示类的内部状态，其默认访问级别为\tcode{private}。具有\tcode{mut}修饰的是可变字段。类字段可以显式指定类型，也可以通过初始值推导类型。
-
 \rSec1[impl.prop]{属性}
 \indextext{实现!属性}
 
 \begin{bnf}{PropertyDecl}
-    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq Initializer\bnfq PropertyBody \terminal{;} \br
+    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq PropertyBody \terminal{;} \br
     PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq \terminal{=>} Expression \terminal{;}
 \end{bnf}
 
