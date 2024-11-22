@@ -322,6 +322,7 @@ let l: U = j; // 错误，\tcode{T}和\tcode{U}之间没有隐式转换
 
 \pnum
 $\tcode{impl}\ T$标识一个静态待推导类型，但保证该类型为$T$的子类型。
+它可以出现在具有初始化值的绑定的类型中或函数返回值处。
 \tcode{impl _}代表一个基础类型待推导的\tcode{impl}类型。
 
 \pnum
@@ -337,8 +338,8 @@ type B { }
 impl A : T { }
 impl B : T { }
 
-let x: some T = A { }; // \tcode{x}的类型是\tcode{A}
-let mut y: some T = B { }; // \tcode{y}的类型是\tcode{B}
+let x: impl T = A { }; // \tcode{x}的类型是\tcode{A}
+let mut y: impl T = B { }; // \tcode{y}的类型是\tcode{B}
 
 y = x; // 错误，\tcode{B}不能赋给\tcode{A}
 

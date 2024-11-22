@@ -24,7 +24,17 @@
 \end{bnf}
 
 \pnum
-\term{实现}用于为类型添加额外的特性。实现可以显式指定以令类型满足某个特征。
+\term{实现}用于为类型添加额外的特性。实现可以显式指定以令类型满足某个特征，也可以不指定特征而为类型添加任意特性。
+
+\pnum
+不指定特征的实现称为\term{固有实现}。
+一个类型可以拥有多个固有实现，但必须与该类型定义在相同的模块中。
+
+\pnum
+指定了特征的实现称为\term{特征实现}。
+一个类型只能拥有一个特征的一个实现，但不要求该实现必须在类型或特征定义所在的模块中。
+该实现必须为特征中所有未提供默认实现的项提供实现。实现可以替换特征中已存在默认实现的项的实现。
+特征实现可以包含未在特征中定义的项，但是这些项不允许包含可见性修饰符且可见性总为\tcode{private}。
 
 \rSec1[impl.prop]{属性}
 \indextext{实现!属性}
@@ -113,8 +123,17 @@
 \tcode{this}参数必须出现在参数列表的第一个位置。
 
 \pnum
-\tcode{this}参数可以省略类型指示，此时其类型为\tcode{self}或\tcode{self mut}。
-\tcode{this}参数也可以具有形式\tcode{\&self}或\tcode{\&mut self}，其对应的类型分别为\tcode{self\&}或\tcode{self mut\&}。
+\tcode{this}参数可以省略类型指示并具有特殊的形式，参见表~\ref{tab:this-param}。
+
+\begin{floattable}{\tcode{this}参数的形式}{tab:this-param}{c|c}
+    \topline
+    \lhdr{形式} & \rhdr{类型} \\
+    \capsep
+    \tcode{this} & \tcode{self} \\
+    \tcode{mut this} & \tcode{self mut} \\
+    \tcode{\&self} & \tcode{self\&} \\
+    \tcode{\&mut self} & \tcode{self mut\&} \\
+\end{floattable}
 
 \enterexample
 \begin{codeblock}
@@ -139,7 +158,14 @@ impl A {
 \indextext{实现!析构器}
 
 \pnum
-析构器是名称为关键字\tcode{deinit}的方法。析构器不接受任何非\tcode{this}参数且不返回值。析构器不能抛出异常。只能为不透明类型的实现提供析构器。
+析构器是名称为关键字\tcode{deinit}的方法。
+析构器不接受任何非\tcode{this}参数且不返回值。析构器不能抛出异常。
+只能为不透明类型的实现提供析构器。
+
+\pnum
+析构器对应的特征为\tcode{core::Deinit}。
+不能在\tcode{core::Deinit}之外的特征中包含析构器。
+不能在\tcode{core::Deinit}之外的实现中包含析构器。
 
 \pnum
 当一个对象被销毁时，将会调用析构器。
