@@ -91,7 +91,7 @@ $\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tco
 $$\tcode{char} \coloneqq \left\{ \textnormal{Any UTF-32 Code Unit} \right\}$$
 
 \pnum
-\tcode{char}表示一个UTF-32码元。
+\tcode{char}表示一个Unicode标量值。值不在Unicode标量值范围内的\tcode{char}（例如，其值为代理项）是未定义的。
 
 $$\tcode{string} \coloneqq \left\{ \textnormal{Any UTF-8 String} \right\} $$
 
@@ -148,7 +148,7 @@ $$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil
 $T\tcode{?}$为\term{可空类型}。$T\tcode{?}$包含$T$的所有值（使用\tcode{some}标识）和空值\tcode{nil}。
 
 \pnum
-可空类型在核心库中有其对应的内建类型定义。参见~\ref{core.type}。
+可空类型在核心库中对应\tcode{core::Optional}。参见~\ref{core.type}。
 
 \rSec3[type.array]{数组类型}
 \indextext{类型!数组}
@@ -158,6 +158,9 @@ $$ T\tcode{[]} \coloneqq \bigcup^\infty_{i=1} T^i $$
 \pnum
 $T\tcode{[]}$为\term{数组类型}，代表有限个类型$T$的值的序列。
 
+\pnum
+数组类型在核心库中对应\tcode{core::Array}。参见~\ref{core.type}。
+
 \rSec3[type.dict]{字典类型}
 \indextext{类型!字典}
 
@@ -165,6 +168,9 @@ $$ T\tcode{[}K\tcode{]} \coloneqq T^K $$
 
 \pnum
 $T\tcode{[}K\tcode{]}$为\term{字典类型}，代表键类型$K$到值类型$T$的映射。
+
+\pnum
+字典类型在核心库中对应\tcode{core::Dictionary}。参见~\ref{core.type}。
 
 \rSec3[type.tuple]{元组类型}
 \indextext{类型!元组}
