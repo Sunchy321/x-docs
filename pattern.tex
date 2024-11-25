@@ -77,16 +77,16 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 数组模式匹配序列中的元素。其中\tcode{...}项（称作\term{任意项模式}）只能出现至多一次，否则这是一个编译错误。$\mathcal{v}$必须实现\tcode{Sequence}，否则这是一个编译错误。
 
 \begin{enumerate}
-    \item 如果模式不包含任意项，且$\mathcal{v}$\tcode{.size}与模式中项的数量不相等，则匹配失败。
-    \item 如果模式包含任意项，且$\mathcal{v}$\tcode{.size}小于模式中非任意项的数量，则匹配失败。
+    \item 如果模式不包含任意项，且\tcode{$\mathcal{v}$.size}与模式中项的数量不相等，则匹配失败。
+    \item 如果模式包含任意项，且\tcode{$\mathcal{v}$`'.size}小于模式中非任意项的数量，则匹配失败。
 \end{enumerate}
 
 \pnum
 在那之后，将按如下规则依次对$\mathcal{v}$的元素进行匹配。如果每个匹配都成功，则整个模式$\mathcal{p}$匹配$\mathcal{v}$。
 
 \begin{enumerate}
-    \item 对任意项模式之前的模式（如果不存在任意项则对每个子模式），$\mathcal{p}_i$匹配$\mathcal{v}$\tcode{[}$i$\tcode{]}，其中$i$是子模式的索引（从0开始）。
-    \item 对任意项模式之后的模式，$\mathcal{p}_r$匹配$\mathcal{v}$\tcode{[\$-}$r$\tcode{]}，其中$r$是子模式从后向前数的索引（从0开始）。
+    \item 对任意项模式之前的模式（如果不存在任意项则对每个子模式），$\mathcal{p}_i$匹配\tcode{$\mathcal{v}$[$i$]}，其中$i$是子模式的索引（从0开始）。
+    \item 对任意项模式之后的模式，$\mathcal{p}_r$匹配\tcode{$\mathcal{v}$[\$-$r$]}，其中$r$是子模式从后向前数的索引（从0开始）。
 \end{enumerate}
 
 \pnum
@@ -118,7 +118,7 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \end{bnf}
 
 \pnum
-\term{结构模式}对结构进行匹配。如果对于每个对$(k, \mathcal{p}_k)$而言，$\mathcal{v}$\tcode{.}$k$匹配$\mathcal{p}_k$都成立，则整个模式匹配成功。
+\term{结构模式}对结构进行匹配。如果对于每个对$(k, \mathcal{p}_k)$而言，\tcode{$\mathcal{v}$.$k$}匹配$\mathcal{p}_k$都成立，则整个模式匹配成功。
 
 \pnum
 与数组和元组匹配不同，结构匹配是开放的，即$\mathcal{v}$可以包含未在模式中列出的项。
@@ -232,7 +232,7 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \end{bnf}
 
 \pnum
-\term{包含断言}要求值包含在某个集合$\mathcal{e}$中。如果$\mathcal{v}$\tcode{ !in }$\mathcal{e}$，则匹配失败。
+\term{包含断言}要求值包含在某个集合$\mathcal{e}$中。如果\tcode{$\mathcal{v}$ !in $\mathcal{e}$}，则匹配失败。
 
 \rSec1[pattern.cond]{条件断言}
 \indextext{模式匹配!条件断言}

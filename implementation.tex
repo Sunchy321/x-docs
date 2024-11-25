@@ -85,7 +85,7 @@
 如果\tcode{set}访问器不显式写出参数，则视为其具有lambda参数\tcode{\$value}。如果\tcode{willSet}或\tcode{didSet}不显式写出参数，则视为其具有lambda参数\tcode{\$oldValue}和\tcode{\$newValue}。
 
 \pnum
-如果属性以直接后跟$\mathrel{\tcode{=>}}e$的方式声明，则视作该属性具有访问器$\tcode{get} \mathrel{\tcode{=>}} e$。
+如果属性以直接后跟\tcode{=> $e$}的方式声明，则视作该属性具有访问器\tcode{get => $e$}。
 
 \pnum
 未使用\tcode{mut}声明的属性不能包含\tcode{set}、\tcode{willSet}和\tcode{didSet}访问器。

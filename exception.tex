@@ -40,7 +40,7 @@
 \end{bnf}
 
 \pnum
-\tcode{try}表达式可以解构结果类型$T\tcode{ throw }E$。如果其子表达式为正确值$e$，则整个表达式的值就为$e$。否则，将错误值与每个\tcode{catch}子句的模式进行匹配。如果找到了匹配的块，则整个表达式的值就为该块的值。如果没有找到匹配的块，则异常会继续向上抛出，等价于一个隐含的\tcode{catch \{ throw \}}。
+\tcode{try}表达式可以解构结果类型\tcode{$T$ throw $E$}。如果其子表达式为正确值$e$，则整个表达式的值就为$e$。否则，将错误值与每个\tcode{catch}子句的模式进行匹配。如果找到了匹配的块，则整个表达式的值就为该块的值。如果没有找到匹配的块，则异常会继续向上抛出，等价于一个隐含的\tcode{catch \{ throw \}}。
 
 \pnum
 \tcode{try}表达式也可以包含一个\tcode{else}块。在这种情况下，\tcode{else}块的值将取代子表达式成为正确时整个表达式的值。匹配\tcode{else}块模式的是子表达式的正确值。
@@ -67,7 +67,7 @@
 \tcode{throw}修饰符显式指定了函数会产生什么类型的异常。\tcode{throw}后面的括号标记了可能抛出的异常类型。如果括号内部为空，则代表该函数不抛出任何异常，其异常类型为\tcode{never}。如果括号被省略，将会自动推导函数抛出的异常类型。这些类型必须实现了\tcode{ErrorCode}。
 
 \pnum
-如果函数指定了\tcode{throw}修饰符，且修饰符指定或推导的类型为$E$，其显式指定或推导的返回值为$R$，则该函数实际的返回值为$R\tcode{ throw }E$。
+如果函数指定了\tcode{throw}修饰符，且修饰符指定或推导的类型为$E$，其显式指定或推导的返回值为$R$，则该函数实际的返回值为\tcode{$R$ throw $E$}。
 
 \rSec1[except.panic]{\tcode{panic}}
 \indextext{异常处理!\idxcode{panic}}

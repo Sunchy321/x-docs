@@ -55,10 +55,10 @@ lambda表达式的块或表达式以及函数调用表达式的lambda块具有la
 序列作用域限制\tcode{\$}的使用，参见~\ref{expr.dollar}。序列作用域有一个关联的当前序列值，无论它是否实现\tcode{Sequence}。
 
 \pnum
-下标运算符$s\tcode{[}\ldots\tcode{]}$的两个方括号之间具有序列作用域。其当前序列为$s$。
+下标运算符\tcode{$s$[$\ldots$]}的两个方括号之间具有序列作用域。其当前序列为$s$。
 
 \pnum
-函数调用表达式$s\tcode{(}\ldots\tcode{)}$的括号之间具有序列作用域。如果$s$形如$o\tcode{.}f$，且$f$是一个方法，则其当前序列为$o$，否则当前序列为$s$。\enternote 此处只能进行一次拆分，即$a\tcode{.}b\tcode{.}c$的当前序列不可能为$a$。\exitnote
+函数调用表达式\tcode{$s$($\ldots$)}的括号之间具有序列作用域。如果$s$形如\tcode{$o$.$f$}，且$f$是一个方法，则其当前序列为$o$，否则当前序列为$s$。\enternote 此处只能进行一次拆分，即\tcode{$a$.$b$.$c$}的当前序列不可能为$a$。\exitnote
 
 \pnum
 如果函数调用表达式带有一个lambda块，则这整个块也具有序列作用域，其当前序列确定方法同上。

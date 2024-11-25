@@ -76,14 +76,14 @@ $$ 0 \le h - l \le M $$
 \tcode{uint}是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$。
 
 \pnum
-$\tcode{int<}w\tcode{>}$是$\tcode{int}_{l,h}$的别名，但满足$l\ge-2^{w-1}$且$h\le2^{w-1}-1$。$\tcode{uint<}w\tcode{>}$是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$且$h\le2^w-1$。其中$w$可以取8、16、32、64或128。它们称作\tcode{定长整数类型}，表示长度固定的整数。只能在定长整数类型上进行位运算。
+\tcode{int<$w$>}是$\tcode{int}_{l,h}$的别名，但满足$l\ge-2^{w-1}$且$h\le2^{w-1}-1$。\tcode{uint<$w$>}是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$且$h\le2^w-1$。其中$w$可以取8、16、32、64或128。它们称作\tcode{定长整数类型}，表示长度固定的整数。只能在定长整数类型上进行位运算。
 
 $$ \tcode{float<}s\tcode{>}^\ast \subset \mathcal{R} $$
 $$ \tcode{float<}s\tcode{>}^\dagger \subset \{ +\infty, -\infty, \mathrm{NaN} \} $$
 $$ \tcode{float<}s\tcode{>} \coloneqq \tcode{float<}s\tcode{>}^\ast \cup \tcode{float<}s\tcode{>}^\dagger $$
 
 \pnum
-$\tcode{float<}s\tcode{>}$称作\term{浮点类型}。其中$s$为32或64。\tcode{float}为\tcode{float<64>}的别名。
+\tcode{float<$s$>}称作\term{浮点类型}。其中$s$为32或64。\tcode{float}为\tcode{float<64>}的别名。
 
 \pnum
 整数类型、定长整数类型和浮点类型称为\term{算术类型}。
@@ -145,7 +145,7 @@ $$ \tcode{Symbol} \coloneqq \bigcup_{\tcode{'}s} \left\{  \tcode{'}s \right\} $$
 $$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil} \} $$
 
 \pnum
-$T\tcode{?}$为\term{可空类型}。$T\tcode{?}$包含$T$的所有值（使用\tcode{some}标识）和空值\tcode{nil}。
+\tcode{$T$?}为\term{可空类型}。\tcode{$T$?}包含$T$的所有值（使用\tcode{some}标识）和空值\tcode{nil}。
 
 \pnum
 可空类型在核心库中对应\tcode{core::Optional}。参见~\ref{core.type}。
@@ -156,7 +156,7 @@ $T\tcode{?}$为\term{可空类型}。$T\tcode{?}$包含$T$的所有值（使用\
 $$ T\tcode{[]} \coloneqq \bigcup^\infty_{i=1} T^i $$
 
 \pnum
-$T\tcode{[]}$为\term{数组类型}，代表有限个类型$T$的值的序列。
+\tcode{$T$[]}为\term{数组类型}，代表有限个类型$T$的值的序列。
 
 \pnum
 数组类型在核心库中对应\tcode{core::Array}。参见~\ref{core.type}。
@@ -167,7 +167,7 @@ $T\tcode{[]}$为\term{数组类型}，代表有限个类型$T$的值的序列。
 $$ T\tcode{[}K\tcode{]} \coloneqq T^K $$
 
 \pnum
-$T\tcode{[}K\tcode{]}$为\term{字典类型}，代表键类型$K$到值类型$T$的映射。
+\tcode{$T$[$K$]}为\term{字典类型}，代表键类型$K$到值类型$T$的映射。
 
 \pnum
 字典类型在核心库中对应\tcode{core::Dictionary}。参见~\ref{core.type}。
@@ -193,10 +193,10 @@ $$ \tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{,}\tcode{)} \coloneqq \prod^n
 $$ \tcode{()} \coloneqq \tcode{void} $$
 
 \pnum
-$\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{)}$称作\term{元组类型}，代表有限个值的序列。
+\tcode{($T_1$, $\ldots$, $T_n$)}称作\term{元组类型}，代表有限个值的序列。
 
 \pnum
-特别地，只有一个元素的元组需表示为$\tcode{(}T\tcode{,)}$。没有元素的元组与\tcode{void}等价。
+特别地，只有一个元素的元组需表示为\tcode{($T$,)}。没有元素的元组与\tcode{void}等价。
 
 \rSec3[type.struct]{结构类型}
 \indextext{类型!结构}
@@ -217,7 +217,7 @@ $\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{)}$称作\term{元组类型}，
 $$ \tcode{\{} K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n \tcode{\}} \coloneqq \prod^n_{i=1} T_i $$
 
 \pnum
-$\tcode{\{}K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n\tcode{\}}$称作\term{结构类型}。结构类型可以使用标识符访问其成员。
+\tcode{\{$K_1$:$T_1$, $\ldots$, $K_n$:$T_n$\}}称作\term{结构类型}。结构类型可以使用标识符访问其成员。
 
 \rSec3[type.ref]{引用类型}
 \indextext{类型!引用}
@@ -280,7 +280,7 @@ $\tcode{\{}K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n\tcode{\}}$�
 \end{bnf}
 
 \pnum
-$\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{) -> }R$称作\term{函数类型}。函数类型标识能以函数方式调用的值。
+\tcode{($T_1$, $\ldots$, $T_n$) -> $R$}称作\term{函数类型}。函数类型标识能以函数方式调用的值。
 如果函数只有一个位置参数，则可以省略括号。此时参数类型后跟的\tcode{throw}总是被识别为\tcode{throw}修饰符而不会和前面的类型结合成为一个错误类型。
 
 \pnum
@@ -327,7 +327,7 @@ let l: U = j; // 错误，\tcode{T}和\tcode{U}之间没有隐式转换
 \end{bnf}
 
 \pnum
-$\tcode{impl}\ T$标识一个静态待推导类型，但保证该类型为$T$的子类型。
+\tcode{impl $T$}标识一个静态待推导类型，但保证该类型为$T$的子类型。
 它可以出现在具有初始化值的绑定的类型中或函数返回值处。
 \tcode{impl _}代表一个基础类型待推导的\tcode{impl}类型。
 
@@ -362,9 +362,9 @@ y = x; // 错误，\tcode{B}不能赋给\tcode{A}
 \end{bnf}
 
 \pnum
-$\tcode{any}\ T$对$T$的子类型进行包装，保证在运行时可以接受任何为$T$的子类型的值。
+\tcode{any $T$}对$T$的子类型进行包装，保证在运行时可以接受任何为$T$的子类型的值。
 \tcode{any _}代表一个基础类型待推导的\tcode{any}类型。
-$\tcode{any}$表示对任意类型的包装。
+\tcode{any}表示对任意类型的包装。
 
 \enterexample
 \begin{codeblock}
@@ -392,7 +392,7 @@ y = x; // 正确，\tcode{any T}之间可以互相赋值
 \end{bnf}
 
 \pnum
-结果类型$T\tcode{ throw }E$标识一个可能产生错误的值，其中$T$是正常的返回值类型，$E$是错误类型，且必须实现\tcode{ErrorCode}。
+结果类型\tcode{$T$ throw $E$}标识一个可能产生错误的值，其中$T$是正常的返回值类型，$E$是错误类型，且必须实现\tcode{ErrorCode}。
 
 \rSec2[type.named]{具名类型}
 
@@ -458,7 +458,7 @@ T\tcode{[}K\tcode{]} &\preceq U\tcode{[}L\tcode{]} \mathrel{\mathrm{if}} T \prec
 \end{equation*}
 
 \pnum
-任意类型是其对应可空类型的子类型。如果$T_i$是$U_i$的子类型，则$T_0\tcode{[]}$、$T_0\tcode{[}T_1\tcode{]}$、$\tcode{(}T_1\tcode{,} \ldots\tcode{,} T_n\tcode{)}$分别是$U_0\tcode{[]}$、$U_0\tcode{[}U_1\tcode{]}$、$\tcode{(}U_1\tcode{,} \ldots\tcode{,} U_n\tcode{)}$的子类型。\enternote 这意味着数组、字典和元组的元素类型是协变的。 \exitnote
+任意类型是其对应可空类型的子类型。如果$T_i$是$U_i$的子类型，则\tcode{$T_0$[]}、\tcode{$T_0$[$T_1$]}、\tcode{($T_1$, $\ldots$, $T_n$)}分别是\tcode{$U_0$[]}、\tcode{$U_0$[$U_1$]}、\tcode{($U_1$, $\ldots$, $U_n$)}的子类型。\enternote 这意味着数组、字典和元组的元素类型是协变的。 \exitnote
 
 \pnum
 对两个结构类型$T$和$U$而言，如果$U$的每个成员都有对应的$T$的成员且类型是该成员的子类型，则$T$是$U$的子类型。

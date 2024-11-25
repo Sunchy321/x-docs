@@ -141,8 +141,8 @@ if x.filter{ true }
 \end{bnf}
 
 \pnum
-\term{\tcode{for}语句}进行明确的范围循环。形如$\mathrel{\tcode{for}} p\mathrel{\tcode{:}} e\ B$的\tcode{for}语句需满足：$e$实现了\tcode{Sequence}且
-$\tcode{typeof(}e\tcode{).Item}$匹配$p$不会失败，否则这是一个编译错误。$p$中注入的变量在整个\tcode{for}语句的范围内生效。
+\term{\tcode{for}语句}进行明确的范围循环。形如\tcode{for $p$ $e$ : $B$}的\tcode{for}语句需满足：$e$实现了\tcode{Sequence}且
+\tcode{typeof($e$).Item}匹配$p$不会失败，否则这是一个编译错误。$p$中注入的变量在整个\tcode{for}语句的范围内生效。
 
 \pnum
 如果\tcode{for}语句包含一个\tcode{else}块，则在循环结束时执行该块，并将该块的值作为整个语句的值。

@@ -69,7 +69,7 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \end{bnf}
 
 \pnum
-表达式$\tcode{(}e\tcode{)}$等价于$e$，括号只作分组用途。\enternote 注意括号表达式不是一元元组。\exitnote
+表达式\tcode{($e$)}等价于$e$，括号只作分组用途。\enternote 注意括号表达式不是一元元组。\exitnote
 
 \rSec2[expr.lit]{字面量表达式}
 \indextext{表达式!字面量}
@@ -164,38 +164,38 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 字面量本身是基本表达式。整数字面量、浮点字面量、字符串字面量和布尔字面量的值分别参见\ref{literal.integer}、\ref{literal.floating}、\ref{literal.string}和\ref{literal.boolean}节的定义。
 
 \pnum
-$\tcode{'(}id\tcode{)}$表示与$id$对应的符号表达式。$id$本身不能是符号字面量。
+\tcode{'($id$)}表示与$id$对应的符号表达式。$id$本身不能是符号字面量。
 
 \pnum
-\tcode{nil}的类型为$T\tcode{?}$，其中$T$为待推导的类型参数。
+\tcode{nil}的类型为\tcode{$T$?}，其中$T$为待推导的类型参数。
 
 \pnum
-数组字面量$\tcode{[}e_1\tcode{,}\ldots\tcode{,}e_n\tcode{]}$表示一个显式写出其各元素的数组值。
-其类型为$T\tcode{[]}$，其中$T$为各表达式的公共类型。
-如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须可迭代。
+数组字面量\tcode{[$e_1$, $\ldots$, $e_n$]}表示一个显式写出其各元素的数组值。
+其类型为\tcode{$T$[]}，其中$T$为各表达式的公共类型。
+如果其中包含形如\tcode{...$e$}的项，则视同将$e$的各元素显式插入在该位置。$e$必须可迭代。
 如果数组字面量不包含任何成员，则$T$是一个待推导的类型。
 
 \pnum
-元组字面量$\tcode{(}e_1\tcode{,}\ldots\tcode{,}e_n\tcode{)}$表示一个显式写出其各元素的元组值。
-其类型为$\tcode{(}T_1\tcode{,}\ldots\tcode{,}T_n\tcode{)}$，其中$T_i$为$e_i$的类型。
-如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素显式插入在该位置。$e$必须也是一个元组。
-特别的，$\tcode{(}e\tcode{,)}$表示一元元组，此时逗号不能省略。\tcode{()}的类型为\tcode{void}，是\tcode{void}的唯一值。
+元组字面量\tcode{($e_1$, $\ldots$, $e_n$)}表示一个显式写出其各元素的元组值。
+其类型为\tcode{($T_1$, $\ldots$, $T_n$)}，其中$T_i$为$e_i$的类型。
+如果其中包含形如\tcode{...$e$}的项，则视同将$e$的各元素显式插入在该位置。$e$必须也是一个元组。
+特别的，\tcode{($e$,)}表示一元元组，此时逗号不能省略。\tcode{()}的类型为\tcode{void}，是\tcode{void}的唯一值。
 
 \pnum
-结构字面量$\tcode{\{}k_1\tcode{:}e_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}e_n\tcode{\}}$表示一个显式写出其各元素的结构值。
-其类型为$\tcode{\{}k_1\tcode{:}T_1\tcode{,}\ldots\tcode{,}x_n\tcode{:}T_n\tcode{\}}$，其中$T_i$为$e_i$的类型。
-如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各成员以相同标签显式插入在该位置。$e$必须是结构类型。
+结构字面量\tcode{\{$k_1$:$e_1$, $\ldots$, $x_n$:$e_n$\}}表示一个显式写出其各元素的结构值。
+其类型为\tcode{\{$k_1$:$T_1$, $\ldots$, $x_n$:$T_n$\}}，其中$T_i$为$e_i$的类型。
+如果其中包含形如\tcode{...$e$}的项，则视同将$e$的各成员以相同标签显式插入在该位置。$e$必须是结构类型。
 如果其中包含形如$e$的项，且$e$是一个标识符，则视同$e\mathbin{\tcode{:}}e$。
 \enternote 结构字面量必须至少包含一个键值对。\tcode{\{\}}将被解析为一个块。\exitnote
 
 \pnum
 形如\tcode{\{\}}的表达式总是被视为一个空的结构字面量而不是块。\enternote 如果需要创建一个空的块，请使用\tcode{do! \{\}}。\exitnote
-形如$\tcode{\{}e\tcode{\}}$的表达式总是被视为一个块而不是结构字面量。\enternote 如果需要创建结构字面量，请显式写为$\tcode{\{}e\tcode{:}e\tcode{\}}$。\exitnote
+形如\tcode{\{$e$\}}的表达式总是被视为一个块而不是结构字面量。\enternote 如果需要创建结构字面量，请显式写为\tcode{\{$e$:$e$\}}。\exitnote
 
 \pnum
-字典字面量$\tcode{[}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{]}$表示一个显式写出其各元素的字典值。
-其类型为$T\tcode{[}K\tcode{]}$，其中$T$为各$v_i$的类型，$K$为各$k_i$的公共类型。
-如果其中包含形如$\tcode{...}e$的项，则视同将$e$的各元素对显式插入在该位置，$e$必须是字典类型。
+字典字面量\tcode{[$k_1$:$v_1$, $k_2$:$v_2$, $\ldots$, $k_n$:$v_n$]}表示一个显式写出其各元素的字典值。
+其类型为\tcode{$T$[$K$]}，其中$T$为各$v_i$的公共类型，$K$为各$k_i$的公共类型。
+如果其中包含形如\tcode{...$e$}的项，则视同将$e$的各元素对显式插入在该位置，$e$必须是字典类型。
 如果字典字面量不包含任何表达式，则需写作\tcode{[:]}。此时$T$和$K$是待推导的类型。
 
 \pnum
@@ -246,14 +246,14 @@ let a = (int[])[1, 2, 3]; // 可以
 \exitexample
 
 \pnum
-$T\tcode{(}a_1\tcode{,}\ldots\tcode{,}a_n\tcode{)}$以参数给定的参数创建$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有lambda块。如果这个对象的初始化器只接受这一个参数，也可以省略括号。
+\tcode{$T$($a_1$, $\ldots$, $a_n$)}以参数给定的参数创建$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有lambda块。如果这个对象的初始化器只接受这一个参数，也可以省略括号。
 
 \pnum
-$T\tcode{[}v_1\tcode{,}\ldots\tcode{,}v_n\tcode{]}$以对应的数组字面量为参数创建$T$的对象。
-$T\tcode{[}k_1\tcode{:} v_1\tcode{,} k_2\tcode{:} v_2\tcode{,} \ldots\tcode{,} k_n\tcode{:} v_n\tcode{]}$以对应的字典字面量创建$T$的对象。
+\tcode{$T$[$v_1$, $\ldots$, $v_n$]}以对应的数组字面量为参数创建$T$的对象。
+\tcode{$T$[$k_1$:$v_1$, $k_2$:$v_2$, $\ldots$, $k_n$:$v_n$]}以对应的字典字面量创建$T$的对象。
 
 \pnum
-$T\tcode{\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\}}$以结构方式创建$T$的对象。
+\tcode{$T$\{$k_1$:$v_1$, $\ldots$, $k_n$:$v_n$\}}以结构方式创建$T$的对象。
 
 \pnum
 如果$T$是结构类型，则每个$kv$对都会用来初始化对应的成员。如果$v$不能隐式转换到成员的类型，则这是一个编译错误。如果有成员未被显式指定初始值，且其不是可空类型，则这是一个编译错误；如果是可空类型，则其初始值为\tcode{nil}。
@@ -262,15 +262,15 @@ $T\tcode{\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\}}$以
 如果$T$是类类型，则选择以下方式中第一个成功的：
 
 \begin{itemize}
-    \item 以具名参数初始化，等价于$T\tcode{(}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{)}$；
-    \item 以单个结构字面量的方式初始化，等价于$T\tcode{(\{}k_1\tcode{:}v_1\tcode{,}\ldots\tcode{,}k_n\tcode{:}v_n\tcode{\})}$。
+    \item 以具名参数初始化，等价于\tcode{$T$($k_1$:$v_1$, $\ldots$, $k_n$:$v_n$)}；
+    \item 以单个结构字面量的方式初始化，等价于\tcode{$T$(\{$k_1$:$v_1$, $\ldots$, $k_n$:$v_n$\})}。
 \end{itemize}
 
 \pnum
-$T\tcode{\{\}}$、$T\tcode{\{}e\tcode{\}}$和$T\tcode{[...}e\tcode{]}$的语法歧义将按与普通字面量类似的规则解决（见上）。
+\tcode{$T$\{\}}、\tcode{$T$\{$e$\}}和\tcode{$T$[...$e$]}的语法歧义将按与普通字面量类似的规则解决（见上）。
 
 \pnum
-如果使用了内建的初始化方式或者采用了不抛出异常的初始化器，则结果类型为$T$；否则，结果类型为$T\mathbin{\tcode{throw}}E$，其中$E$为抛出的异常类型。
+如果使用了内建的初始化方式或者采用了不抛出异常的初始化器，则结果类型为$T$；否则，结果类型为\tcode{$T$ throw $E$}，其中$E$为抛出的异常类型。
 
 \rSec2[expr.enum]{匿名静态成员表达式}
 
@@ -296,8 +296,8 @@ $T\tcode{\{\}}$、$T\tcode{\{}e\tcode{\}}$和$T\tcode{[...}e\tcode{]}$的语法�
 
 \pnum
 表达式\tcode{\$}只能在序列作用域（\ref{scope.sequence}）中使用。
-如果当前序列为$s$，则\tcode{\$}等价于$s\tcode{.opeartor\$()}$。
-如果$s$实现了\tcode{Sequence}（例如内建数组$T\tcode{[]}$），其值为$s\tcode{.size}$。
+如果当前序列为$s$，则\tcode{\$}等价于\tcode{$s$.opeartor\$()}。
+如果$s$实现了\tcode{Sequence}（例如内建数组\tcode{$T$[]}），其值为\tcode{$s$.size}。
 在其他位置使用\tcode{\$}是一个编译错误。
 
 \rSec2[expr.stmt]{语句表达式}
@@ -356,7 +356,7 @@ $T\tcode{\{\}}$、$T\tcode{\{}e\tcode{\}}$和$T\tcode{[...}e\tcode{]}$的语法�
 \end{bnf}
 
 \pnum
-$\tcode{\$}$后跟数字$i$指代第$i$个参数。$\tcode{\$}$后跟标识符$n$指代具名参数$n$。
+\tcode{\$}后跟数字$i$指代第$i$个参数。\tcode{\$}后跟标识符$n$指代具名参数$n$。
 
 \rSec3[expr.do]{\tcode{do}表达式}
 \indextext{表达式!\idxcode{do}}
@@ -422,11 +422,11 @@ let first3 = do! {
 下标运算符用于对数组或字典进行访问。用户自定义的下标运算符可以接受多于一个参数。
 
 \pnum
-对数组$T\tcode{[]}$而言，$a\tcode{[}i\tcode{]}$表示数组$a$的第$i$个元素。如果$i$超出可索引的范围，则会\tcode{panic}。结果类型是$T\tcode{\&}$。
+对数组\tcode{$T$[]}而言，\tcode{$a$[$i$]}表示数组$a$的第$i$个元素。如果$i$超出可索引的范围，则会\tcode{panic}。结果类型是$T$。
 
 \pnum
-对字典$T\tcode{[}K\tcode{]}$而言，$d\tcode{[}k\tcode{]}$表示字典$d$的键$k$对应的值。如果字典中没有这个键，则会返回\tcode{nil}。结果类型是$T\tcode{?}$。
-此外，在赋值语境下，$d\tcode{[}k\tcode{] = }e$表示将键$k$对应的值设为$e$。如果字典中没有这个键，则会插入一个新的键值对。$e$的类型需要为$T$。
+对字典\tcode{$T$[$K$]}而言，\tcode{$d$[$k$]}表示字典$d$的键$k$对应的值。如果字典中没有这个键，则会返回\tcode{nil}。结果类型是\tcode{$T$?}。
+此外，在赋值语境下，\tcode{$d$[$k$] = $e$}表示将键$k$对应的值设为$e$。如果字典中没有这个键，则会插入一个新的键值对。$e$的类型需要为$T$。
 
 \pnum
 下标运算可以在可变和不可变的情况下具有不同的重载语义。参见~\ref{op.over.index}。
@@ -463,7 +463,7 @@ let first3 = do! {
 函数调用运算符用于调用函数。括号内的项作为参数传递给函数。
 
 \pnum
-如果函数调用运算符的左操作数形如$o\tcode{.}f$，其中$f$是一个名称且不是$o$的成员名称，则这称作\term{方法调用}。此时，$o$将作为$f$的\tcode{this}参数传递给函数$f$。
+如果函数调用运算符的左操作数形如\tcode{$o$.$f$}，其中$f$是一个名称且不是$o$的成员名称，则这称作\term{方法调用}。此时，$o$将作为$f$的\tcode{this}参数传递给函数$f$。
 
 \pnum
 函数调用运算符可以后跟一个块。这个块将作为一个匿名lambda块，创建一个lambda表达式并作为函数的最后一个位置参数传递给函数。若此时函数没有任何其他参数，则函数调用的小括号可以省略。
@@ -481,13 +481,13 @@ let first3 = do! {
 \end{bnf}
 
 \pnum
-成员访问运算符用于访问对象的成员。$o\tcode{.}m$表示对象$o$的成员$m$。如果$o$没有成员$m$，若它后跟一个函数调用运算符，则作为方法调用处理；否则这是一个编译错误。
+成员访问运算符用于访问对象的成员。\tcode{$o$.$m$}表示对象$o$的成员$m$。如果$o$没有成员$m$，若它后跟一个函数调用运算符，则作为方法调用处理；否则这是一个编译错误。
 
 \pnum
-$o\tcode{.}i$用于元组成员的访问，表示$o$的第$i$个元素。$i$必须是一个不包含前缀或后缀的十进制字面量。如果$i$大于元组的长度，这是一个编译错误。
+\tcode{$o$.$i$}用于元组成员的访问，表示$o$的第$i$个元素。$i$必须是一个不包含前缀或后缀的十进制字面量。如果$i$大于等于元组的长度，这是一个编译错误。
 
 \pnum
-$o\tcode{.(}e\tcode{)}$首先对$e$求值。如果得到一个\tcode{symbol}类型的值，则对$o$进行成员访问。如果得到一个整数类型的值，则对$o$进行元组成员访问。此时$o$必须是一个常量表达式。否则，$o$必须是一个带有\tcode{this}参数的函数类型，且其必须后跟一个函数调用运算符，此时将视为对$e$调用方法$o$。
+\tcode{$o$.($e$)}首先对$e$求值。如果得到一个\tcode{symbol}类型的值，则对$o$进行成员访问。如果得到一个整数类型的值，则对$o$进行元组成员访问。此时$o$必须是一个常量表达式。否则，$o$必须是一个带有\tcode{this}参数的函数类型，且其必须后跟一个函数调用运算符，此时将视为对$e$调用方法$o$。
 
 \enterexample
 \begin{codeblock}
@@ -519,7 +519,7 @@ let f: (this: int) -> int = int::test;
 \end{bnf}
 
 \pnum
-\tcode{await}运算符用于等待一个异步表达式的结果。$e\tcode{.await}$挂起当前计算，直到$e$的值可用。如果$e$的类型是$\tcode{Future<}T\tcode{>}$，则$e\tcode{.await}$的类型是$T$。只能在具有\tcode{async}修饰的函数作用域中使用\tcode{await}运算符。
+\tcode{await}运算符用于等待一个异步表达式的结果。\tcode{$e$.await}挂起当前计算，直到$e$的值可用。如果$e$的类型是\tcode{Future<$T$>}，则\tcode{$e$.await}的类型是$T$。只能在具有\tcode{async}修饰的函数作用域中使用\tcode{await}运算符。
 
 \rSec2[expr.null]{空值检测运算符}
 \indextext{运算符!空值检测}
@@ -530,7 +530,7 @@ let f: (this: int) -> int = int::test;
 \end{bnf}
 
 \pnum
-$e\tcode{?}$对$e$进行空值检测。如果$e$的值不为\tcode{nil}，则$e\tcode{?}$的值为$e$；否则，该表达式直到空值检测运算符为止的整个表达式的值为\tcode{nil}。$e$的类型必须是$T\tcode{?}$。即使空值检测运算符检测为空，表达式的其它部分仍然会被求值。
+\tcode{$e$?}对$e$进行空值检测。如果$e$的值不为\tcode{nil}，则\tcode{$e$?}的值为$e$；否则，该表达式直到空值检测运算符为止的整个表达式的值为\tcode{nil}。$e$的类型必须是\tcode{$T$?}。即使空值检测运算符检测为空，表达式的其它部分仍然会被求值。
 
 \enterexample
 \begin{codeblock}
@@ -557,17 +557,17 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
 \exitexample
 
 \pnum
-后缀\tcode{!}将可空类型转换为非可空类型。对表达式而言，如果$e\tcode{!}$不为\tcode{nil}，则结果为$e$；否则\tcode{panic}。参见~\ref{except.panic}。
+后缀\tcode{!}将可空类型转换为非可空类型。对表达式而言，如果\tcode{$e$!}不为\tcode{nil}，则结果为$e$；否则\tcode{panic}。参见~\ref{except.panic}。
 
 \pnum
-如果空值检测运算符的操作数类型是$T\tcode{?}$，则整个表达式的类型为$T$。
+如果空值检测运算符的操作数类型是\tcode{$T$?}，则整个表达式的类型为$T$。
 如果空值检测运算符的左操作数不是可空类型（且并未重载空值检测运算符），则空值检测运算符将被忽略。编译器可以为此提出一个警告。
 
 \pnum
-如果$e$是结果类型$T\mathbin{\tcode{throw}}E$，则$e\tcode{?}$与$\tcode{try }e\tcode{ catch \{ nil \} else let }e\tcode{ \{ some }e\tcode{ \}}$等价。
+如果$e$是结果类型\tcode{$T$ throw $E$}，则\tcode{$e$?}与\tcode{try $e$ catch \{ nil \} else let $v$ \{ some $v$ \}}等价。
 
 \pnum
-如果$e$是结果类型，则$e!$在$e$为正确值的情况下返回$e$，否则抛出$e$的错误值，即等价于$\tcode{try }e$。
+如果$e$是结果类型，则$e!$在$e$为正确值的情况下返回$e$，否则抛出$e$的错误值，即等价于\tcode{try $e$}。
 
 \rSec2[expr.prev-next]{前驱后继运算符}
 \indextext{运算符!前驱后继}
@@ -578,7 +578,7 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
 \end{bnf}
 
 \pnum
-$e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类型是算术类型，$e\tcode{+!}$等价于$e+1$，$e\tcode{-!}$等价于$e-1$。
+\tcode{$e$+!}和\tcode{$e$-!}分别表示$e$的后继和前驱。如果$e$的类型是算术类型，\tcode{$e$+!}等价于$e+1$，\tcode{$e$-!}等价于$e-1$。
 
 \rSec2[expr.inc-dec]{自增自减运算符}
 
@@ -588,7 +588,7 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \end{bnf}
 
 \pnum
-自增运算符$e\tcode{++}$等价于$e\ \tcode{=}\ e\tcode{+!}$，自减运算符$e\tcode{--}$等价于$e\ \tcode{=}\ e\tcode{-!}$，但$e$只被求值一次。
+自增运算符\tcode{$e$++}等价于\tcode{$e$ = $e$+!}，自减运算符\tcode{$e$--}等价于\tcode{$e$ = $e$-!}，但$e$只被求值一次。
 
 \rSec1[expr.prefix]{前缀运算符}
 \indextext{运算符!前缀}
@@ -628,7 +628,7 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \end{bnf}
 
 \pnum
-\tcode{some}运算符用于将一个值转换为可空值。如果操作数的类型为$T$，则结果的类型为$T\tcode{?}$。
+\tcode{some}运算符用于将一个值转换为可空值。如果操作数的类型为$T$，则结果的类型为\tcode{$T$?}。
 
 \rSec1[expr.mul]{乘法运算符}
 \indextext{运算符!乘法}
@@ -707,11 +707,11 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 
 \begin{itemize}
     \item 两个操作数都是\tcode{string}；
-    \item 一个操作数满足$\tcode{Sequence<}T\tcode{>}$，另一个是$T$；
-    \item 两个操作数都满足$\tcode{Sequence<}T\tcode{>}$。
+    \item 一个操作数满足\tcode{Sequence<$T$>}，另一个是$T$；
+    \item 两个操作数都满足\tcode{Sequence<$T$>}。
 \end{itemize}
 
-对第一种情况，结果等于将两个字符串左右连接得到的结果；对第二种情况，$x\ \tcode{\~}\ y$等于$\tcode{[}x\tcode{,}\ \tcode{...}y\tcode{]}$或$\tcode{[...}x\tcode{,}\ y\tcode{]}$，取决于哪个操作数是序列；对第三种情况，$x\ \tcode{\~}\ y$等于$\tcode{[...}x\tcode{,}\ \tcode{...}y\tcode{]}$。
+对第一种情况，结果等于将两个字符串左右连接得到的结果；对第二种情况，\tcode{$x$ \~ $y$}等于\tcode{[$x$, ...$y$]}或\tcode{[...$x$, $y$]}，取决于哪个操作数是序列；对第三种情况，\tcode{$x$ \~ $y$}等于\tcode{[\dots$x$, ...$y$]}。
 
 \rSec1[expr.null-coal]{空值合并运算符}
 \indextext{运算符!空值合并}
@@ -722,7 +722,7 @@ $e\tcode{+!}$和$e\tcode{-!}$分别表示$e$的后继和前驱。如果$e$的类
 \end{bnf}
 
 \pnum
-$a\mathbin{\tcode{??}}b$首先对$a$求值，如果其结果是$\tcode{some }e$，则表达式的值为$e$，且$b$不会被求值；否则表达式的值为$b$。如果$a$的类型为$A\tcode{?}$，$b$的类型为$B$，则表达式的类型为$A$和$B$的公共类型。
+\tcode{$a$ ?? $b$}首先对$a$求值，如果其结果是\tcode{some $e$}，则表达式的值为$e$，且$b$不会被求值；否则表达式的值为$b$。如果$a$的类型为\tcode{$A$?}，$b$的类型为$B$，则表达式的类型为$A$和$B$的公共类型。
 
 \pnum
 \tcode{??}是右结合的。
@@ -781,7 +781,7 @@ a\ \tcode{>=}\ b &\iff a\ \tcode{cmp}\ b = \tcode{.greater}\ \mathrm{or} \ \tcod
 $a\ \tcode{cmp}\ b$比较两个表达式，其结果类型为\tcode{Order}。其余比较运算符的结果类型为\tcode{bool}。
 
 \pnum
-\tcode{<}、\tcode{<=}和\tcode{==}可以连续使用。$a\ \tcode{<}\ b\ \tcode{<=}\ c$等价于$a\ \tcode{<}\ b\ \tcode{\&}\ b\ \tcode{<=}\ c$。\tcode{>}、\tcode{>=}和\tcode{==}也可以用类似方式混合。以其他方式在一个表达式中使用超过一个比较运算符是一个编译错误。
+\tcode{<}、\tcode{<=}和\tcode{==}可以连续使用。\tcode{$a$ < $b$ <= $c$}等价于\tcode{$a$ < $b$ \& $b$ <= $c$}。\tcode{>}、\tcode{>=}和\tcode{==}也可以用类似方式混合。以其他方式在一个表达式中使用超过一个比较运算符是一个编译错误。
 
 \rSec2[expr.include]{包含运算符}
 \indextext{运算符!包含}
@@ -792,7 +792,7 @@ $a\ \tcode{cmp}\ b$比较两个表达式，其结果类型为\tcode{Order}。其
 \end{bnf}
 
 \pnum
-$a \mathrel{\tcode{in}} b$检测$a$是否在$b$中。$a \mathrel{\tcode{!in}} b$等价于$\tcode{!(}a \mathrel{\tcode{in}} b\tcode{)}$。表达式的类型为\tcode{bool}。
+\tcode{$a$ in $b$}检测$a$是否在$b$中。\tcode{$a$ !in $b$}等价于\tcode{!($a$ in $b$)}。表达式的类型为\tcode{bool}。
 
 \pnum
 \enternote \tcode{!in}中\tcode{!}和\tcode{in}之间必须没有空白，否则会被识别成两个分开的运算符。\exitnote
@@ -807,11 +807,11 @@ $a \mathrel{\tcode{in}} b$检测$a$是否在$b$中。$a \mathrel{\tcode{!in}} b$
 \end{bnf}
 
 \pnum
-$e\mathbin{\tcode{as}}T$运算符用于进行显式的类型转换，结果的类型为\tcode{T}。
+\tcode{$e$ as $T$}运算符用于进行显式的类型转换，结果的类型为\tcode{T}。
 
 \pnum
-$e\mathbin{\tcode{as?}}T$用于进行可能失败的类型转换，结果类型为可空类型或结果类型。
-$e\mathbin{\tcode{as!}}T$用于进行强制类型转换，其等价于$\tcode{(}e\mathbin{\tcode{as?}}T\tcode{)!}$。
+\tcode{$e$ as? $T$}用于进行可能失败的类型转换，结果类型为可空类型或结果类型。
+\tcode{$e$ as! $T$}用于进行强制类型转换，其等价于\tcode{($e$ as? $T$)!}。
 \enternote \tcode{as?}和\tcode{as!}中\tcode{as}和后面的符号之间必须没有空白，否则会被识别为两个分开的运算符。\exitnote
 
 \rSec2[expr.match]{匹配运算符}

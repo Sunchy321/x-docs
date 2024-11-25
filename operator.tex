@@ -272,7 +272,7 @@ let mut x = () as X;
 对重载了的后缀\tcode{?}的求值将会连续调用\tcode{Failable::chain}直到得到一个可空类型，然后对其进行内建的后缀\tcode{?}运算符求值。
 
 \pnum
-\tcode{Failable::unwrap}需要返回一个\tcode{ControlFlow}类型。如果返回$\tcode{.Return(}e\tcode{)}$，则将这个值作为后缀\tcode{!}的值；如果返回$\tcode{.Throw(}e\tcode{)}$，则将这个值作为异常抛出。
+\tcode{Failable::unwrap}需要返回一个\tcode{ControlFlow}类型。如果返回\tcode{.Return($e$)}，则将这个值作为后缀\tcode{!}的值；如果返回\tcode{.Throw($e$)}，则将这个值作为异常抛出。
 
 \pnum
 \tcode{Failable::unwrap}有一个内建实现，它对自身调用一次\tcode{Failable::chain}之后在其上调用\tcode{Failable::unwrap}。
@@ -313,8 +313,8 @@ let mut x = () as X;
 \indextext{运算符!重载!中缀}
 
 \pnum
-对中缀运算符\tcode{@}而言，$e_1\mathbin{\tcode{@}}e_2\mathbin{\tcode{@}}\ldots\mathbin{\tcode{@}}e_n$将会调用
-$\tcode{Trait::method(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或\\$\tcode{Trait::method([}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{])}$，取先匹配的那一个。如果没有找到匹配的重载函数，且该运算符所处的优先级组未定义其结合性，则这是一个编译错误。否则，将会按照其结合性拆分为多次以两个参数调用的形式。若仍然无法找到匹配的重载函数，则这是一个编译错误。
+对中缀运算符\tcode{@}而言，\tcode{$e_1$ @ $e_2$ @ $\ldots$ @ $e_n$}将会调用
+\tcode{Trait::method($e_1$, $e_2$, $\ldots$, $e_n$)}或\tcode{Trait::method([$e_1$, $e_2$, $\ldots$, $e_n$])}，取先匹配的那一个。如果没有找到匹配的重载函数，且该运算符所处的优先级组未定义其结合性，则这是一个编译错误。否则，将会按照其结合性拆分为多次以两个参数调用的形式。若仍然无法找到匹配的重载函数，则这是一个编译错误。
 
 \pnum
 表~\ref{tab:trait-infix}~列出了可重载的内建中缀运算符对应的特征。
@@ -375,7 +375,7 @@ $\tcode{Trait::method(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或\\
 \indextext{运算符!重载!包含}
 
 \pnum
-\tcode{in}运算符与\tcode{Include::include}关联。与其他二元运算符相反的是，$a\mathbin{\tcode{in}}b$将被翻译为$b\tcode{.include(}a\tcode{)}$。
+\tcode{in}运算符与\tcode{Include::include}关联。与其他二元运算符相反的是，$a\mathbin{\tcode{in}}b$将被翻译为\tcode{$b$.include($a$)}。
 
 \pnum
 \tcode{!in}的语义总是保持与\tcode{in}相反。它不能被重载。
@@ -399,4 +399,4 @@ $\tcode{Trait::method(}e_1\tcode{,}e_2\tcode{,}\ldots\tcode{,}e_n\tcode{)}$或\\
 \indextext{运算符!重载!\idxcode{\$}}
 
 \pnum
-\tcode{\$}表达式将被转换为对当前序列$s$调用$s\tcode{.dollar()}$。它只能接受一个\tcode{this}参数。当前序列必须实现\tcode{Dollar}。
+\tcode{\$}表达式将被转换为对当前序列$s$调用\tcode{$s$.dollar()}。它只能接受一个\tcode{this}参数。当前序列必须实现\tcode{Dollar}。
