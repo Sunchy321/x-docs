@@ -12,6 +12,7 @@
     ExprPattern \br
     BindPattern \br
     SomePattern \br
+    EnumPattern \br
     ArrayPattern \br
     TuplePattern \br
     StructPattern \br
@@ -50,6 +51,9 @@
 \pnum
 $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathcal{e}$当且仅当$\mathcal{v}\mathrel{\tcode{==}}\mathcal{e}$。
 
+\pnum
+\enternote 表达式模式的语法可能与其他模式产生歧义。此时总是优先解析为其他模式。 \exitnote
+
 \rSec1[pattern.some]{\tcode{some}模式}
 \indextext{模式匹配!\idxcode{some}}
 
@@ -59,6 +63,26 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 
 \pnum
 \tcode{some}模式匹配可空类型。如果该值为非空，则匹配成功。
+
+\rSec1[pattern.enum]{枚举模式}
+\indextext{模式匹配!枚举}
+
+\begin{bnf}{EnumPattern}
+    EntityID EnumPatternPayload\bnfq \br
+    \terminal{.} Identifier EnumPatternPayload\bnfq
+\end{bnf}
+
+\begin{bnf}{EnumPatternPayload}
+    ArrayPattern \br
+    TuplePattern \br
+    StructPattern
+\end{bnf}
+
+\pnum
+枚举模式匹配枚举项。如果$\mathcal{v}$是$\mathcal{p}$中的枚举项，且其载荷匹配$\mathcal{p}$中的载荷模式（如果有），则匹配成功。
+
+\pnum
+枚举模式中的枚举符可以使用匿名枚举符，此时会进行静态推导。
 
 \rSec1[pattern.array]{数组模式}
 \indextext{模式匹配!数组}
@@ -90,7 +114,7 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \end{enumerate}
 
 \pnum
-如果任意项包含一个绑定，则该任意项匹配到的元素将被绑定到相应的标识符上。
+如果任意项包含一个绑定，则该任意项匹配到的所有元素将被绑定到相应的标识符上。该标识符将具有与$\mathcal{v}$相同的类型。
 
 \rSec1[pattern.tuple]{元组模式}
 \indextext{模式匹配!元组}
@@ -100,7 +124,10 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \end{bnf}
 
 \pnum
-与数组模式类似，\term{元组模式}匹配元组。
+与数组模式类似，\term{元组模式}匹配元组。但匹配能否成功都是能在编译期决定的。
+
+\pnum
+如果元组模式的任意项包含绑定，则该绑定对应的值将具有对应的元组类型。
 
 \rSec1[pattern.struct]{结构模式}
 \indextext{模式匹配!结构}
@@ -121,7 +148,10 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \term{结构模式}对结构进行匹配。如果对于每个对$(k, \mathcal{p}_k)$而言，\tcode{$\mathcal{v}$.$k$}匹配$\mathcal{p}_k$都成立，则整个模式匹配成功。
 
 \pnum
-与数组和元组匹配不同，结构匹配是开放的，即$\mathcal{v}$可以包含未在模式中列出的项。
+如果结构模式中存在没有匹配的字段，且不包含任意项模式，则这是一个编译错误。
+
+\pnum
+结构模式的任意项匹配所有未被其他项匹配的字段。如果该模式被绑定到一个标识符，则其对应的值为这些剩余字段的集合。
 
 \rSec1[pattern.bind]{绑定模式}
 \indextext{模式匹配!绑定}
