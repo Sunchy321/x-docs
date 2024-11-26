@@ -138,6 +138,10 @@ func foo((a, b): (int, bool)) {
 \tcode{ref}修饰的参数以引用方式传递，调用处实参的值会受影响。除非使用\tcode{mut}修饰，否则参数是只读的。
 
 \pnum
+类型为$T$的\tcode{ref}参数实际上是类型为\tcode{$T$\&}（或\tcode{$T$ mut\&}）的引用参数的语法糖。
+在函数内部使用该参数时，将会自动对参数进行解引用。
+
+\pnum
 \tcode{this}参数总是以引用方式传递，即使没有显式指定。
 
 \rSec2[param.qual.lazy]{\tcode{lazy}}
@@ -145,6 +149,13 @@ func foo((a, b): (int, bool)) {
 
 \pnum
 \tcode{lazy}修饰的参数是惰性求值的，只有在函数内部使用时才会计算实参的值。
+
+\pnum
+类型为$T$的\tcode{lazy}参数实际上是类型为\tcode{() once -> $T$}的闭包参数的语法糖。
+在函数内部首次读取该参数时，将会调用该闭包并将结果缓存，之后再次读取时直接使用缓存的值。
+
+\pnum
+\tcode{lazy}不能与\tcode{mut}修饰符一起使用。
 
 \rSec1[func.async]{异步函数}
 
