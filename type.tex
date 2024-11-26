@@ -79,16 +79,17 @@ $$ 0 \le h - l \le M $$
 \tcode{int<$w$>}是$\tcode{int}_{l,h}$的别名，但满足$l\ge-2^{w-1}$且$h\le2^{w-1}-1$。\tcode{uint<$w$>}是$\tcode{int}_{l,h}$的别名，但满足$l\ge0$且$h\le2^w-1$。其中$w$可以取8、16、32、64或128。它们称作\tcode{定长整数类型}，表示长度固定的整数。只能在定长整数类型上进行位运算。
 
 $$ \tcode{float<}s\tcode{>}^\ast \subset \mathcal{R} $$
-$$ \tcode{float<}s\tcode{>}^\dagger \subset \{ +\infty, -\infty, \mathrm{NaN} \} $$
+$$ \tcode{float<}s\tcode{>}^\dagger \subset \{ +\infty, -\infty, \mathrm{NaN}s \} $$
 $$ \tcode{float<}s\tcode{>} \coloneqq \tcode{float<}s\tcode{>}^\ast \cup \tcode{float<}s\tcode{>}^\dagger $$
 
 \pnum
-\tcode{float<$s$>}称作\term{浮点类型}。其中$s$为32或64。\tcode{float}为\tcode{float<64>}的别名。
+\tcode{float<$s$>}称作\term{浮点类型}，其中$s$可以取实现定义的值（典型值为16、32、64或128）。
+\tcode{float}为\tcode{float<64>}的别名。
 
 \pnum
 整数类型、定长整数类型和浮点类型称为\term{算术类型}。
 
-$$\tcode{char} \coloneqq \left\{ \textnormal{Any UTF-32 Code Unit} \right\}$$
+$$\tcode{char} \coloneqq \left\{ \textnormal{Any Unicode scalar value} \right\}$$
 
 \pnum
 \tcode{char}表示一个Unicode标量值。值不在Unicode标量值范围内的\tcode{char}（例如，其值为代理项）是未定义的。
@@ -145,7 +146,8 @@ $$ \tcode{Symbol} \coloneqq \bigcup_{\tcode{'}s} \left\{  \tcode{'}s \right\} $$
 $$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil} \} $$
 
 \pnum
-\tcode{$T$?}为\term{可空类型}。\tcode{$T$?}包含$T$的所有值（使用\tcode{some}标识）和空值\tcode{nil}。
+\tcode{$T$?}为\term{可空类型}。
+\tcode{$T$?}要么包含一个$T$的值（使用\tcode{some}标识），要么不包含任何值（使用\tcode{nil}标识）。
 
 \pnum
 可空类型在核心库中对应\tcode{core::Optional}。参见~\ref{core.type}。

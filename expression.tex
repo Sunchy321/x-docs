@@ -538,7 +538,7 @@ let a: int? = nil;
 
 a + 1 // 编译错误，不存在接受\tcode{int?}和\tcode{int}的加法运算符
 a? + 1 // \tcode{nil}
-(a + 1)? // \tcode{nil}，多余的运算符
+(a? + 1)? // \tcode{nil}，多余的运算符
 a? + 1 ?? 1 // $1$，\tcode{?}不会越过\tcode{??}运算符
 (a? + 1) ?? 1 // 同上，但是更清晰
 a? + 1 == b // 等号也会停止传播，等价于\tcode{(a? + 1) == b}
@@ -711,7 +711,7 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
     \item 两个操作数都满足\tcode{Sequence<$T$>}。
 \end{itemize}
 
-对第一种情况，结果等于将两个字符串左右连接得到的结果；对第二种情况，\tcode{$x$ \~ $y$}等于\tcode{[$x$, ...$y$]}或\tcode{[...$x$, $y$]}，取决于哪个操作数是序列；对第三种情况，\tcode{$x$ \~ $y$}等于\tcode{[\dots$x$, ...$y$]}。
+对第一种情况，结果等于将两个字符串左右连接得到的结果；对第二种情况，\tcode{$x$ \~ $y$}等于\tcode{[$x$, ...$y$]}或\tcode{[...$x$, $y$]}，取决于哪个操作数是序列；对第三种情况，\tcode{$x$ \~ $y$}等于\tcode{[...$x$, ...$y$]}。
 
 \rSec1[expr.null-coal]{空值合并运算符}
 \indextext{运算符!空值合并}
@@ -812,6 +812,8 @@ $a\ \tcode{cmp}\ b$比较两个表达式，其结果类型为\tcode{Order}。其
 \pnum
 \tcode{$e$ as? $T$}用于进行可能失败的类型转换，结果类型为可空类型或结果类型。
 \tcode{$e$ as! $T$}用于进行强制类型转换，其等价于\tcode{($e$ as? $T$)!}。
+
+\pnum
 \enternote \tcode{as?}和\tcode{as!}中\tcode{as}和后面的符号之间必须没有空白，否则会被识别为两个分开的运算符。\exitnote
 
 \rSec2[expr.match]{匹配运算符}
