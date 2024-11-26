@@ -3,12 +3,44 @@
 \rSec0[module]{模块}
 \indextext{模块}
 
+\pnum
+\X{}将程序视为若干个\term{模块}的组织。模块可以是一个文件、一个目录或者一整个库；模块也可以在代码中定义。
+
+\pnum
+模块可以拥有\term{子模块}。子模块可以通过目录结构自然生成，也可以在代码中指定。
+
+\pnum
+对模块外部而言，模块的文件结构是不透明的。只能通过模块导出的内容访问模块内部的实体。
+
+\pnum
+模块导出的内容即其根文件导出的内容。一般情况下，根文件是根目录下名称为\tcode{index.x}的文件。
+
+\rSec1[module.decl]{模块声明}
+\indextext{模块声明}
+
+\begin{bnf}{ModuleDecl}
+    \terminal{module} ModuleID\bnfq \terminal{\{} ModuleContent \terminal{\}} \br
+    \terminal{module} ModuleID\bnfq \terminal{;} \br
+    \terminal{module} ModuleID\bnfq \terminal{=} ImportPath \terminal{;}
+\end{bnf}
+
+\begin{bnf}{ModuleID}
+    Identifier \br
+    ModuleID \terminal{.} Identifier
+\end{bnf}
+
+\pnum
+模块声明用于定义一个模块。模块声明中的模块ID指定模块的名称。
+
+\pnum
+如果模块声明省略了名称，则定义的是当前文件的模块。否则，模块声明定义的是当前文件模块的子模块。
+
 \rSec1[import]{导入指令}
 \indextext{导入指令}
 
 \begin{bnf}{ImportDirective}
-    \terminal{import} ImportPath \terminal{;} \br
-    \terminal{import} ImportPath \terminal{:} ImportItems \terminal{;}
+    \terminal{public}\bnfq \terminal{import} ImportPath \terminal{;} \br
+    \terminal{public}\bnfq \terminal{import} ImportPath \terminal{:} ImportItems \terminal{;}
 \end{bnf}
 
 \begin{bnf}{ImportPath}
@@ -47,13 +79,13 @@
 \end{bnf}
 
 \pnum
-\term{导入指令}用于将其他模块的内容引入到当前模块中。
+\term{导入指令}用于将其他模块或文件的内容引入到当前模块中。
 
 \pnum
-被导入的模块可以通过三种方式指定：外部路径、内部路径或相对路径。
+被导入的模块或文件可以通过三种方式指定：外部路径、内部路径或相对路径。
 外部路径以模块名开始，用于导入外部模块。
-内部路径以\tcode{root}开始，从当前模块根目录开始寻找模块。
-相对路径以\tcode{this}开始，从当前模块文件开始寻找模块。
+内部路径以\tcode{root}开始，从当前模块根目录开始寻找文件或子模块。
+相对路径以\tcode{this}开始，从当前文件开始寻找文件或子模块。
 
 \pnum
 模块的路径各部分可以使用一个标识符或者字符串标识。
@@ -78,6 +110,9 @@ import "super"; // 导入外部模块\tcode{super}
 \pnum
 \tcode{*}导入指定模块的所有内容，但是不包括运算符定义。
 
+\pnum
+导入指令可以带有一个\tcode{public}修饰符。此时该指令除了将被导入的实体引入当前文件外，还将这些实体重新作为公开实体导出。
+
 \rSec1[access]{访问控制}
 \indextext{访问控制}
 
@@ -86,11 +121,27 @@ import "super"; // 导入外部模块\tcode{super}
 \end{bnf}
 
 \pnum
-模块的每个顶层声明都具有\term{访问可见性}。访问可见性有以下三种类型：公开（\tcode{public}）、内部（\tcode{internal}）、私有（\tcode{private}）、局部，其级别依次降低。
-实现成员也具有访问可见性。
+声明具有\term{访问可见性}，用于指定该程序实体能被什么范围的其他实体所访问。
+访问可见性有以下四种类型：公开（\tcode{public}）、内部（\tcode{internal}）、私有（\tcode{private}）、局部，其级别依次降低。
 
 \pnum
-导入一个外部模块的内容时，只有公开的内容才能被导入。导入一个内部模块的内容时，只有公开和内部的内容才能被导入。私有模块只能被该模块内部访问。
+公开级别的实体能被任何位置的程序实体访问。在导入外部模块时，只能导入公开级别的实体。
+
+\pnum
+内部级别的实体能被同一模块中的程序实体访问。
+
+\pnum
+私有级别的实体只能被同一文件中的实体访问。
+
+\pnum
+如果一个声明位于函数内部，则它具有局部可见性。不能为它指定访问修饰符。
+函数参数也具有局部可见性。
+只能在函数内部访问该声明。
+
+公开级别可以被任何位置的程序实体访问。
+内部级别可以被同一模块中的程序实体访问。
+私有级别只能被同一文件中的程序实体访问。
+局部级别只能被其所在的函数中的程序实体访问。
 
 \pnum
 声明的默认可见性为\tcode{public}。
@@ -100,9 +151,6 @@ import "super"; // 导入外部模块\tcode{super}
 \pnum
 特征的项具有的可见性与特征相同。不能为这些项单独指定可见性。
 在特征实现中，包含在特征中的项的可见性与该特征相同；未包含在特征中的项的可见性总是为\tcode{private}。不能为这些项重新指定可见性。
-
-\pnum
-如果一个声明位于函数内部，则它具有局部可见性。具有局部可见性的实体只能在其所在函数内部访问。函数的参数也具有局部可见性。
 
 \enterexample
 \begin{codeblock}
