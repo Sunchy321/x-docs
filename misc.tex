@@ -146,7 +146,7 @@ impl void : ErrorCode = never;
 
 \indexlibrary{结果类型!实现}
 \begin{itemdecl}
-impl<T, E> T throw E { /* ... */ }
+impl<T, E> T !! E { /* ... */ }
 \end{itemdecl}
 
 \indexlibrary{结果类型!\idxcode{isOK}}
@@ -222,7 +222,7 @@ func expectError(failMessage: string) -> E {
 
 \indexlibrary{结果类型!\idxcode{and}}
 \begin{itemdecl}
-func and<U>(other: U throw E) throw -> U {
+func and<U>(other: U !! E) throw -> U {
     try this catch let e { throw e } else { try other }
 }
 \end{itemdecl}
@@ -232,7 +232,7 @@ func and<U>(other: U throw E) throw -> U {
 
 \indexlibrary{结果类型!\idxcode{andThen}}
 \begin{itemdecl}
-func andThen<U>(f: T -> U throw E) throw(E) -> U {
+func andThen<U>(f: T -> U !! E) throw(E) -> U {
     try f(try this)
 }
 \end{itemdecl}
@@ -242,7 +242,7 @@ func andThen<U>(f: T -> U throw E) throw(E) -> U {
 
 \indexlibrary{结果类型!\idxcode{or}}
 \begin{itemdecl}
-func or(other: T throw E) -> T {
+func or(other: T !! E) -> T {
     this? ?? try other
 }
 \end{itemdecl}
@@ -252,7 +252,7 @@ func or(other: T throw E) -> T {
 
 \indexlibrary{结果类型!\idxcode{orElse}}
 \begin{itemdecl}
-func orElse<F>(f: E -> T throw F) throw(F) -> T {
+func orElse<F>(f: E -> T !! F) throw(F) -> T {
     try this catch let e { try f(e) }
 }
 \end{itemdecl}
@@ -272,7 +272,7 @@ func unwrapOr(default: T) -> T {
 
 \indexlibrary{结果类型!\idxcode{unwrapOrElse}}
 \begin{itemdecl}
-impl<T, E> T throw E if T is default {
+impl<T, E> T !! E if T is default {
     func unwrapOrDefault() -> T {
         this? ?? self::default
     }
@@ -284,7 +284,7 @@ impl<T, E> T throw E if T is default {
 
 \indexlibrary{结果类型!\idxcode{toOK}}
 \begin{itemdecl}
-impl<T> T throw never {
+impl<T> T !! never {
     func toOK() -> T {
         try this
     }
@@ -296,7 +296,7 @@ impl<T> T throw never {
 
 \indexlibrary{结果类型!\idxcode{toError}}
 \begin{itemdecl}
-impl<E> never throw E {
+impl<E> never !! E {
     func toError() -> E {
         try this
     }
@@ -308,7 +308,7 @@ impl<E> never throw E {
 
 \indexlibrary{结果类型!\idxcode{flatten}}
 \begin{itemdecl}
-impl<T, E> (T throw E) throw E {
+impl<T, E> (T !! E) !! E {
     func flatten() throw(E) -> T {
         this!!
     }

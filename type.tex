@@ -283,7 +283,7 @@ $$ \tcode{\{} K_1\tcode{:}T_1\tcode{,} \ldots\tcode{,} K_n\tcode{:}T_n \tcode{\}
 
 \pnum
 \tcode{($T_1$, $\ldots$, $T_n$) -> $R$}称作\term{函数类型}。函数类型标识能以函数方式调用的值。
-如果函数只有一个位置参数，则可以省略括号。此时参数类型后跟的\tcode{throw}总是被识别为\tcode{throw}修饰符而不会和前面的类型结合成为一个错误类型。
+如果函数只有一个位置参数，则可以省略括号。
 
 \pnum
 函数类型可以包含显式指定类型的\tcode{this}参数。在这种情况下，函数可以在动态成员访问表达式中作为方法被调用。
@@ -390,11 +390,11 @@ y = x; // 正确，\tcode{any T}之间可以互相赋值
 \indextext{类型!结果类型}
 
 \begin{bnf}{ResultType}
-    NormalType \terminal{throw} NormalType
+    NormalType \terminal{!!} NormalType
 \end{bnf}
 
 \pnum
-结果类型\tcode{$T$ throw $E$}标识一个可能产生错误的值，其中$T$是正常的返回值类型，$E$是错误类型，且必须实现\tcode{ErrorCode}。
+结果类型\tcode{$T$ !! $E$}标识一个可能产生错误的值，其中$T$是正常的返回值类型，$E$是错误类型，且必须实现\tcode{ErrorCode}。
 
 \rSec2[type.named]{具名类型}
 

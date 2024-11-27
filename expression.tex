@@ -270,7 +270,7 @@ let a = (int[])[1, 2, 3]; // 可以
 \tcode{$T$\{\}}、\tcode{$T$\{$e$\}}和\tcode{$T$[...$e$]}的语法歧义将按与普通字面量类似的规则解决（见上）。
 
 \pnum
-如果使用了内建的初始化方式或者采用了不抛出异常的初始化器，则结果类型为$T$；否则，结果类型为\tcode{$T$ throw $E$}，其中$E$为抛出的异常类型。
+如果使用了内建的初始化方式或者采用了不抛出异常的初始化器，则结果类型为$T$；否则，结果类型为\tcode{$T$ !! $E$}，其中$E$为抛出的异常类型。
 
 \rSec2[expr.enum]{匿名静态成员表达式}
 
@@ -564,7 +564,7 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
 如果空值检测运算符的左操作数不是可空类型（且并未重载空值检测运算符），则空值检测运算符将被忽略。编译器可以为此提出一个警告。
 
 \pnum
-如果$e$是结果类型\tcode{$T$ throw $E$}，则\tcode{$e$?}与\tcode{try $e$ catch \{ nil \} else let $v$ \{ some $v$ \}}等价。
+如果$e$是结果类型\tcode{$T$ !! $E$}，则\tcode{$e$?}与\tcode{try $e$ catch \{ nil \} else let $v$ \{ some $v$ \}}等价。
 
 \pnum
 如果$e$是结果类型，则$e!$在$e$为正确值的情况下返回$e$，否则抛出$e$的错误值，即等价于\tcode{try $e$}。
