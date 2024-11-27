@@ -28,7 +28,7 @@
 \indextext{作用域!函数}
 
 \pnum
-函数作用域限制\tcode{return}语句的使用。参见~\ref{stmt.control}。
+函数作用域限制\tcode{return}语句、\tcode{throw}语句的使用。参见~\ref{stmt.control}。
 
 \pnum
 函数作用域也限制\tcode{await}运算符的使用。参见~\ref{expr.await}。
@@ -70,11 +70,11 @@ let a = [1, 2, 3, 4, 5];
 let o = { a };
 
 impl int[] : Functor<() -> int[]> {
-    func call(&this): int[] => [];
+    func call(&this, index: usize) => 0;
 }
 
 impl int[] {
-    func v(index: usize): int[] => [];
+    func v(&this, index: usize) => 1;
 }
 
 a[$ - 1] // 当前序列为a
@@ -95,8 +95,18 @@ a.v($ - 1) // 方法调用，当前序列为a
     \terminal{deinit}
 \end{bnf}
 
+\begin{bnf}{FullID}
+    UnqualID \br
+    UnqualID \terminal{::} FullID \br
+    TypeName \terminal{::} FullID
+\end{bnf}
+
 \pnum
-\term{名称}用于引用程序实体。一个名称可能是一个标识符、\tcode{init}、\tcode{deinit}或一个运算符名称。
+\term{名称}用于引用程序实体。一个\term{未限定名称}可能是一个标识符、\tcode{init}或\tcode{deinit}。
+
+\pnum
+\term{限定名称}由未限定名称通过\tcode{::}连接而成，用于指定嵌套在其他实体内部的名称。
+除最后一个名称之外，其他未限定名称也可以是类型名称。\enterexample 例如\tcode{int::someMethod}。\exitexample
 
 \rSec2[name.lookup]{名称查找}
 \indextext{名称查找}
