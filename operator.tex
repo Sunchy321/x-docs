@@ -47,11 +47,11 @@
 \tcode{<=} & \tcode{>} & \tcode{>=} & \tcode{cmp} & \tcode{in} \\
 \tcode{\&} & \tcode{|} & & & \\
 \hhline{|=====|}
-\tcode{.} & \tcode{await} & 前缀\tcode{\&} & \tcode{??} & \tcode{!in} \\
-\tcode{is} & \tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} \\
-\tcode{*=} & \tcode{/=} & \tcode{\%=} & \tcode{shl_eq} & \tcode{shr_eq} \\
-\tcode{'\&=} & \tcode{'\^{}=} & \tcode{'|=} & \tcode{??=} & \tcode{++} \\
-\tcode{--} & \tcode{\~>} & \tcode{<\~} & \tcode{;} & \\
+\tcode{.} & \tcode{await} & 前缀\tcode{\&} & \tcode{!in} & \tcode{is} \\
+\tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} & \tcode{*=} \\
+\tcode{/=} & \tcode{\%=} & \tcode{shl_eq} & \tcode{shr_eq} & \tcode{'\&=} \\
+\tcode{'\^{}=} & \tcode{'|=} & \tcode{??=} & \tcode{++} & \tcode{--} \\
+\tcode{\~>} & \tcode{<\~} & \tcode{;} && \\
 \end{floattable}
 
 \rSec1[op.user]{自定义运算符}
@@ -259,23 +259,42 @@ let mut x = () as X;
 \pnum
 函数调用运算符有三个对应的特征方法：\tcode{FunctorMut::callMut}、\tcode{Functor::call}和\tcode{FunctorOnce::callOnce}，分别对应可变、不可变和只能调用一次的情况。这三个特征都需要一个函数类型的泛型参数。
 
-\rSec2[op.over.null]{空值检测运算符}
-\indextext{运算符!重载!空值检测}
+\rSec2[op.over.null]{空值检测与空值合并运算符}
+\indextext{运算符!重载!空值检测与空值合并}
 
 \pnum
-后缀\tcode{?}运算符对应\tcode{Failable::chain}。后缀\tcode{!}运算符对应\tcode{Failable::unwrap}。
+后缀\tcode{?}和后缀\tcode{!}运算符是使用到了\tcode{FromResidual}及\tcode{Try}两个特征的语法糖。
 
 \pnum
-\tcode{Failable::chain}的返回类型必须实现了\tcode{Failable}（可空类型对\tcode{Failable}的实现是内建的）。
+\tcode{$e$!}将被翻译为如下代码：
+
+\begin{codeblock}
+
+match Try::branch(\{$e$}) {
+    case .Continue(\{$c$}) => \{$c$},
+    case .Break(\{$b$}) => return FromResidual::fromResidual(\{$b$}),
+}
+
+\end{codeblock}
+
+其中$c$和$b$是内部使用的匿名变量名称。
 
 \pnum
-对重载了的后缀\tcode{?}的求值将会连续调用\tcode{Failable::chain}直到得到一个可空类型，然后对其进行内建的后缀\tcode{?}运算符求值。
+后缀\tcode{?}与后缀\tcode{!}类似，但是残差值不会直接返回而是作为完整表达式的值。
 
 \pnum
-\tcode{Failable::unwrap}需要返回一个\tcode{ControlFlow}类型。如果返回\tcode{.Return($e$)}，则将这个值作为后缀\tcode{!}的值；如果返回\tcode{.Throw($e$)}，则将这个值作为异常抛出。
+\tcode{$a$ ?? $b$}将被翻译为如下代码：
 
-\pnum
-\tcode{Failable::unwrap}有一个内建实现，它对自身调用一次\tcode{Failable::chain}之后在其上调用\tcode{Failable::unwrap}。
+\begin{codeblock}
+
+match Try::branch(\{$a$}) {
+    case .Continue(\{$c$}) => \{$c$},
+    case .Break(_) => \{$b$},
+}
+
+\end{codeblock}
+
+其中$c$是内部使用的匿名变量名称。
 
 \rSec2[op.over.as]{类型转换运算符}
 \indextext{运算符!重载!类型转换}
