@@ -37,8 +37,8 @@ func g(x: X) { }
 f(.A); // 可以
 f(.B); // 错误，枚举符参数不一致
 f(.B(0)); // 可以
-g(.x); // 可以，等价于\tcode{g(X.x)}
-g(.v(0)); // 可以，等价于\tcode{g(X.v(0))}
+g(.x); // 可以，等价于\tcode{g(X::x)}
+g(.v(0)); // 可以，等价于\tcode{g(X::v(0))}
 
 \end{codeblock}
 \exitexample
@@ -52,13 +52,13 @@ enum E { A, B(int), C };
 enum F { X, Y, Z };
 
 impl E {
-    func f() => self.C;
-    func g() => F.X;
+    func f() => self::C;
+    func g() => F::X;
 }
 
 impl F {
-    func f() => E.A;
-    func g() => E.C;
+    func f() => E::A;
+    func g() => E::C;
 }
 
 func f(e: E) { }
