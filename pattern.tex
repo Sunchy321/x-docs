@@ -14,7 +14,6 @@
     SomePattern \br
     EnumPattern \br
     ArrayPattern \br
-    TuplePattern \br
     StructPattern \br
     AltPattern
 \end{bnf}
@@ -74,7 +73,6 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 
 \begin{bnf}{EnumPatternPayload}
     ArrayPattern \br
-    TuplePattern \br
     StructPattern
 \end{bnf}
 
@@ -116,32 +114,23 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \pnum
 如果任意项包含一个绑定，则该任意项匹配到的所有元素将被绑定到相应的标识符上。该标识符将具有与$\mathcal{v}$相同的类型。
 
-\rSec1[pattern.tuple]{元组模式}
-\indextext{模式匹配!元组}
-
-\begin{bnf}{TuplePattern}
-    \terminal{(} AnyPattern \bnflp\terminal{,} AnyPattern\bnfrp\bnfs\ \terminal{)}
-\end{bnf}
-
-\pnum
-与数组模式类似，\term{元组模式}匹配元组。但匹配能否成功都是能在编译期决定的。
-
-\pnum
-如果元组模式的任意项包含绑定，则该绑定对应的值将具有对应的元组类型。
-
 \rSec1[pattern.struct]{结构模式}
 \indextext{模式匹配!结构}
 
 \begin{bnf}{StructPattern}
-    \terminal{\{} StructPatternBody \terminal{\}}
+    \terminal{(} \terminal{)} \br
+    \terminal{(} StructPatternBody \terminal{,}\bnfq \terminal{)}
 \end{bnf}
 
 \begin{bnf}{StructPatternBody}
-    StructItem \bnflp\terminal{,} StructItem\bnfrp\bnfs
+    StructPatternItem \br
+    StructPatternBody \terminal{,} StructPattern
 \end{bnf}
 
-\begin{bnf}{StructItem}
-    Identifier \terminal{:} Pattern
+\begin{bnf}{StructPatternItem}
+    Pattern \br
+    Identifier \terminal{:} Pattern \br
+    \terminal{...} Pattern\bnfq
 \end{bnf}
 
 \pnum
@@ -170,7 +159,6 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
     Identifier PatternAssertion \br
     SomePatternBind \br
     ArrayPatternBind \br
-    TuplePatternBind \br
     StructPatternBind
 \end{bnf}
 
@@ -182,10 +170,6 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
     \terminal{[} AnyPatternBind \bnflp\terminal{,} AnyPatternBind\bnfrp\bnfs \terminal{]}
 \end{bnf}
 
-\begin{bnf}{TuplePatternBind}
-    \terminal{(} AnyPatternBind \bnflp\terminal{,} AnyPatternBind\bnfrp\bnfs \terminal{)}
-\end{bnf}
-
 \begin{bnf}{AnyPatternBind}
     PatternBind \br
     \terminal{...} Identifier\bnfq \br
@@ -194,16 +178,18 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 \end{bnf}
 
 \begin{bnf}{StructPatternBind}
-    \terminal{\{} StructPatternBodyBind \terminal{\}}
+    \terminal{(} \terminal{)} \br
+    \terminal{(} StructPatternBodyBind\bnfq \terminal{)}
 \end{bnf}
 
 \begin{bnf}{StructPatternBodyBind}
-    StructItemBind \bnflp\terminal{,} StructItemBind\bnfrp\bnfs
+    StructItemBind \br
+    StructPatternBodyBind \terminal{,} StructItemBind
 \end{bnf}
 
 \begin{bnf}{StructItemBind}
-    Identifier \terminal{:} PatternBind \br
-    Identifier
+    Identifier \terminal{:} AnyPatternBind \br
+    AnyPatternBind
 \end{bnf}
 
 \pnum
@@ -220,7 +206,6 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
     \tcode{let [a, b]} & \tcode{[let a, let b]} \\
     \tcode{let (v, _)} & \tcode{(let v, _)} \\
     \tcode{let [x, ...y]} & \tcode{[let x, let... y]} \\
-    \tcode{let \{ x \}} & \tcode{\{ x: let x \}} \\
 \end{floattable}
 
 \rSec2[pattern.alt]{选择模式}

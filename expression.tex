@@ -84,17 +84,12 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
     BooleanLiteral \br
     \terminal{nil} \br
     ArrayLiteral \br
-    TupleLiteral \br
     StructLiteral \br
     DictLiteral
 \end{bnf}
 
 \begin{bnf}{ArrayLiteral}
     \terminal{[} ExprList\bnfq \terminal{]}
-\end{bnf}
-
-\begin{bnf}{TupleLiteral}
-    \terminal{(} TupleExprList\bnfq \terminal{)}
 \end{bnf}
 
 \begin{bnf}{ExprList}
@@ -106,24 +101,13 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
     ExprListNoComma \terminal{,} ExprItem
 \end{bnf}
 
-\begin{bnf}{TupleExprList}
-    Expression \terminal{,} \br
-    \terminal{...} Expression \terminal{,}\bnfq \br
-    TupleExprListNoComma \terminal{,}\bnfq
-\end{bnf}
-
-\begin{bnf}{TupleExprListNoComma}
-    ExprItem \terminal{,} ExprItem \br
-    TupleExprListNoComma \terminal{,} ExprItem
-\end{bnf}
-
 \begin{bnf}{ExprItem}
     Expression \br
     \terminal{...} Expression
 \end{bnf}
 
 \begin{bnf}{StructLiteral}
-    \terminal{\{} StructItems\bnfq \terminal{\}}
+    \terminal{(} StructItems\bnfq \terminal{)}
 \end{bnf}
 
 \begin{bnf}{StructItems}
@@ -176,21 +160,14 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 如果数组字面量不包含任何成员，则$T$是一个待推导的类型。
 
 \pnum
-元组字面量\tcode{($e_1$, $\ldots$, $e_n$)}表示一个显式写出其各元素的元组值。
-其类型为\tcode{($T_1$, $\ldots$, $T_n$)}，其中$T_i$为$e_i$的类型。
-如果其中包含形如\tcode{...$e$}的项，则视同将$e$的各元素显式插入在该位置。$e$必须也是一个元组。
+结构字面量\tcode{($e_1$, $\ldots$, $e_m$, $k_1$:$f_1$, $\ldots$, $x_n$:$f_n$)}表示一个显式写出其各元素的结构值。
+其类型为\tcode{($T_1$, $\ldots$, $T_m$, $k_1$:$U_1$, $\ldots$, $x_n$:$U_n$)}，其中$T_i$为各$e_i$的类型，$U_i$为各$f_i$的类型。
 特别的，\tcode{($e$,)}表示一元元组，此时逗号不能省略。\tcode{()}的类型为\tcode{void}，是\tcode{void}的唯一值。
 
 \pnum
-结构字面量\tcode{\{$k_1$:$e_1$, $\ldots$, $x_n$:$e_n$\}}表示一个显式写出其各元素的结构值。
-其类型为\tcode{\{$k_1$:$T_1$, $\ldots$, $x_n$:$T_n$\}}，其中$T_i$为$e_i$的类型。
-如果其中包含形如\tcode{...$e$}的项，则视同将$e$的各成员以相同标签显式插入在该位置。$e$必须是结构类型。
-如果其中包含形如$e$的项，且$e$是一个标识符，则视同$e\mathbin{\tcode{:}}e$。
-\enternote 结构字面量必须至少包含一个键值对。\tcode{\{\}}将被解析为一个块。\exitnote
-
-\pnum
-形如\tcode{\{\}}的表达式总是被视为一个空的结构字面量而不是块。\enternote 如果需要创建一个空的块，请使用\tcode{do! \{\}}。\exitnote
-形如\tcode{\{$e$\}}的表达式总是被视为一个块而不是结构字面量。\enternote 如果需要创建结构字面量，请显式写为\tcode{\{$e$:$e$\}}。\exitnote
+结构字面量必须保持顺序成员在前、命名成员在后的顺序。
+如果结构字面量中包含形如\tcode{...$e$}的项，则视同将$e$的各成员插入在该位置。$e$必须是结构类型。
+如果该项后面有顺序成员，则该项的类型必须不包含任何命名成员；如果该项前面有命名成员，则该项的类型必须不包含任何顺序成员。
 
 \pnum
 字典字面量\tcode{[$k_1$:$v_1$, $k_2$:$v_2$, $\ldots$, $k_n$:$v_n$]}表示一个显式写出其各元素的字典值。
@@ -207,21 +184,16 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 \begin{bnf}{TypeLiteral}
     TypeParenLiteral \br
     TypeArrayLiteral \br
-    TypeStructLiteral \br
     TypeDictLiteral
 \end{bnf}
 
 \begin{bnf}{TypeParenLiteral}
-    TypeName \terminal{(} Arguments\bnfq \terminal{)} Block\bnfs \br
+    TypeName \terminal{(} Arguments\bnfq \terminal{)} Block\bnfq \br
     TypeName Block
 \end{bnf}
 
 \begin{bnf}{TypeArrayLiteral}
     TypeName \terminal{[} ExprList\bnfq \terminal{]}
-\end{bnf}
-
-\begin{bnf}{TypeStructLiteral}
-    TypeName \terminal{\{} StructItems\bnfq \terminal{\}}
 \end{bnf}
 
 \begin{bnf}{TypeDictLiteral}
@@ -246,28 +218,15 @@ let a = (int[])[1, 2, 3]; // 可以
 \exitexample
 
 \pnum
-\tcode{$T$($a_1$, $\ldots$, $a_n$)}以参数给定的参数创建$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有lambda块。如果这个对象的初始化器只接受这一个参数，也可以省略括号。
+\tcode{$T$($a_1$, $\ldots$, $a_n$)}以给定的参数创建$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有lambda块。如果这个对象的初始化器只接受这一个参数，也可以省略括号。
+如果不存在对应的初始化器，且该参数符合结构字面量的语法（并不包含lambda块），则会依次初始化对应的顺序成员和命名成员。
 
 \pnum
 \tcode{$T$[$v_1$, $\ldots$, $v_n$]}以对应的数组字面量为参数创建$T$的对象。
 \tcode{$T$[$k_1$:$v_1$, $k_2$:$v_2$, $\ldots$, $k_n$:$v_n$]}以对应的字典字面量创建$T$的对象。
 
 \pnum
-\tcode{$T$\{$k_1$:$v_1$, $\ldots$, $k_n$:$v_n$\}}以结构方式创建$T$的对象。
-
-\pnum
-如果$T$是结构类型，则每个$kv$对都会用来初始化对应的成员。如果$v$不能隐式转换到成员的类型，则这是一个编译错误。如果有成员未被显式指定初始值，且其不是可空类型，则这是一个编译错误；如果是可空类型，则其初始值为\tcode{nil}。
-
-\pnum
-如果$T$是类类型，则选择以下方式中第一个成功的：
-
-\begin{itemize}
-    \item 以具名参数初始化，等价于\tcode{$T$($k_1$:$v_1$, $\ldots$, $k_n$:$v_n$)}；
-    \item 以单个结构字面量的方式初始化，等价于\tcode{$T$(\{$k_1$:$v_1$, $\ldots$, $k_n$:$v_n$\})}。
-\end{itemize}
-
-\pnum
-\tcode{$T$\{\}}、\tcode{$T$\{$e$\}}和\tcode{$T$[...$e$]}的语法歧义将按与普通字面量类似的规则解决（见上）。
+\tcode{$T$[...$e$]}的语法歧义将按与普通字面量类似的规则解决（见上）。
 
 \pnum
 如果使用了内建的初始化方式或者采用了不抛出异常的初始化器，则结果类型为$T$；否则，结果类型为\tcode{$T$ !! $E$}，其中$E$为抛出的异常类型。
@@ -278,8 +237,7 @@ let a = (int[])[1, 2, 3]; // 可以
     \terminal{.} Identifier \br
     \terminal{.} Identifier \terminal{(} Arguments\bnfq \terminal{)} Block\bnfs \br
     \terminal{.} Identifier Block \br
-    \terminal{.} Identifier \terminal{[} ExprList\bnfq \terminal{]} \br
-    \terminal{.} Identifier \terminal{\{} StructItems\bnfq \terminal{\}}
+    \terminal{.} Identifier \terminal{[} ExprList\bnfq \terminal{]}
 \end{bnf}
 
 \pnum
@@ -466,7 +424,7 @@ let first3 = do! {
 如果函数调用运算符的左操作数形如\tcode{$o$.$f$}，其中$f$是一个名称且不是$o$的成员名称，则这称作\term{方法调用}。此时，$o$将作为$f$的\tcode{this}参数传递给函数$f$。
 
 \pnum
-函数调用运算符可以后跟一个块。这个块将作为一个匿名lambda块，创建一个lambda表达式并作为函数的最后一个位置参数传递给函数。若此时函数没有任何其他参数，则函数调用的小括号可以省略。
+函数调用运算符可以后跟一个块。这个块将作为一个匿名lambda块，创建一个lambda表达式并作为函数的最后一个顺序参数传递给函数。若此时函数没有任何其他参数，则函数调用的小括号可以省略。
 
 \pnum
 如果函数参数指定了修饰符，则传递实参时必须显式传递相同的修饰符。
@@ -481,17 +439,20 @@ let first3 = do! {
 \end{bnf}
 
 \pnum
-成员访问运算符用于访问对象的成员。\tcode{$o$.$m$}表示对象$o$的成员$m$。如果$o$没有成员$m$，若它后跟一个函数调用运算符，则作为方法调用处理；否则这是一个编译错误。
+成员访问运算符用于访问对象的成员。
 
 \pnum
-\tcode{$o$.$i$}用于元组成员的访问，表示$o$的第$i$个元素。$i$必须是一个不包含前缀或后缀的十进制字面量。如果$i$大于等于元组的长度，这是一个编译错误。
+\tcode{$o$.$m$}表示对象$o$的命名成员$m$。如果$o$没有命名成员$m$，若它后跟一个函数调用运算符，则作为方法调用处理；否则这是一个编译错误。
 
 \pnum
-\tcode{$o$.($e$)}首先对$e$求值。如果得到一个\tcode{symbol}类型的值，则对$o$进行成员访问。如果得到一个整数类型的值，则对$o$进行元组成员访问。此时$o$必须是一个常量表达式。否则，$o$必须是一个带有\tcode{this}参数的函数类型，且其必须后跟一个函数调用运算符，此时将视为对$e$调用方法$o$。
+\tcode{$o$.$i$}用于结构顺序成员的访问，表示$o$的第$i$个顺序成员。$i$必须是一个不包含前缀或后缀的十进制字面量。如果$i$大于等于结构顺序成员的数量，这是一个编译错误。
+
+\pnum
+\tcode{$o$.($e$)}首先对$e$求值。如果得到一个\tcode{symbol}类型的值，则对$o$进行命名成员访问。如果得到一个整数类型的值，则对$o$进行顺序成员访问。此时$o$必须是一个常量表达式。否则，$o$必须是一个带有\tcode{this}参数的函数类型，且其必须后跟一个函数调用运算符，此时将视为对$e$调用方法$o$。
 
 \enterexample
 \begin{codeblock}
-let o = { a: 1, b: 2 };
+let o = (a: 1, b: 2);
 let s = 'a;
 
 o.(s) // 等价于\tcode{o.a}

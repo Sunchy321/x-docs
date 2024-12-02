@@ -21,7 +21,6 @@
 \begin{bnf}{EnumeratorTail}
     \terminal{=} Expression \br
     \terminal{[} Type \terminal{]} \br
-    TupleType \br
     StructType
 \end{bnf}
 
@@ -35,12 +34,12 @@ enum E {
     A,
     B(int),
     C[int],
-    D{ name: string }
+    D(name: string)
 }
 
 \end{codeblock}
 
-上述代码定义了一个枚举类型\tcode{E}，它包含四个枚举符，可以以如下方式访问：\tcode{E.A}、\tcode{E.B(0)}、\tcode{E.C[1, 2, 3]}及\tcode{E.D { name: "Hello" }}。
+上述代码定义了一个枚举类型\tcode{E}，它包含四个枚举符，可以以如下方式访问：\tcode{E.A}、\tcode{E.B(0)}、\tcode{E.C[1, 2, 3]}及\tcode{E.D(name: "Hello")}。
 \exitexample
 
 \rSec1[enum.trad]{传统枚举类型}
@@ -54,7 +53,7 @@ enum E {
 
 \begin{itemize}
     \item 如果该枚举符被指定值，则其值为被指定的表达式隐式转换到$B$的结果；
-    \item 否则，如果该枚举符是第一个值，则其值为\tcode{$B$.init()}；
+    \item 否则，如果该枚举符是第一个值，且基底类型实现了\tcode{core::Default}，则其值为\tcode{$B$::default()}；
     \item 否则，假设该枚举符的前一个值为$v$，则其值为\tcode{$v$+!}。
 \end{itemize}
 

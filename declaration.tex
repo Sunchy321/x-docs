@@ -41,12 +41,14 @@
 
 \begin{bnf}{TypeBody}
     StructType \br
-    TupleType \br
+    \terminal{\{} \terminal{\}} \br
+    \terminal{\{} StructTypeList \terminal{,}\bnfq \terminal{\}} \br
     \terminal{=} Type
 \end{bnf}
 
 \pnum
 类型声明用于为类型创建别名。在类型声明之后，可以使用该名称代表所关联的类型。
+在类型声明中，可以使用大括号代替结构类型的小括号。
 
 \rSec1[decl.class]{类声明}
 \indextext{声明!类}
@@ -61,12 +63,14 @@
 
 \begin{bnf}{ClassBody}
     StructType \br
-    TupleType \br
+    \terminal{\{} \terminal{\}} \br
+    \terminal{\{} StructTypeList \terminal{,}\bnfq \terminal{\}} \br
     \terminal{=} Type
 \end{bnf}
 
 \pnum
 类声明创建不透明类型。\tcode{class $C$ $B$}等价于\tcode{type $C$ = class $B$}。参见~\ref{type.opaque}。
+在类声明中，可以使用大括号代替结构类型的小括号。
 
 \rSec1[qual.dir]{限定符指令}
 \indextext{限定符指令}
