@@ -192,16 +192,19 @@
 整数字面量的值为其数字序列表示的值，依不同前缀分别为十进制、十六进制或二进制。最左侧的数字为最高位。字面量的类型参见表格~\ref{tab:integer-suffix}，其中$i$为其字面值：
 
 \begin{floattable}{整数字面量后缀}{tab:integer-suffix}{c|c||c|c}
-    \topline
-    后缀 & 对应的类型 & 后缀 & 对应的类型 \\
-    \capsep
-    无          & $\tcode{int}_i$     & \tcode{u}   & $\tcode{uint}_i$     \\
-    \tcode{i8}  & $\tcode{int<8>}_i$  & \tcode{u8}  & $\tcode{uint<8>}_i$  \\
-    \tcode{i16} & $\tcode{int<16>}_i$ & \tcode{u16} & $\tcode{uint<16>}_i$ \\
-    \tcode{i32} & $\tcode{int<32>}_i$ & \tcode{u32} & $\tcode{uint<32>}_i$ \\
-    \tcode{i64} & $\tcode{int<64>}_i$ & \tcode{u64} & $\tcode{uint<64>}_i$ \\
-    \tcode{f} 或 \tcode{f64} & \tcode{float<64>} &
-    \tcode{f32} & \tcode{float<32>} \\
+\topline
+后缀 & 对应的类型 & 后缀 & 对应的类型 \\
+\capsep
+无          & $\tcode{int}_i$     & \tcode{u}   & $\tcode{uint}_i$     \\
+\tcode{i8}  & $\tcode{int<8>}_i$  & \tcode{u8}  & $\tcode{uint<8>}_i$  \\
+\tcode{i16} & $\tcode{int<16>}_i$ & \tcode{u16} & $\tcode{uint<16>}_i$ \\
+\tcode{i32} & $\tcode{int<32>}_i$ & \tcode{u32} & $\tcode{uint<32>}_i$ \\
+\tcode{i64} & $\tcode{int<64>}_i$ & \tcode{u64} & $\tcode{uint<64>}_i$ \\
+\tcode{i128} & $\tcode{int<128>}_i$ & \tcode{u128} & $\tcode{uint<128>}_i$ \\
+\tcode{f16} & \tcode{float<16>} &
+\tcode{f32} & \tcode{float<32>} \\
+\tcode{f} 或 \tcode{f64} & \tcode{float<64>} &
+\tcode{f128} & \tcode{float<128>} \\
 \end{floattable}
 
 如果字面量的字面值超出了其类型的约束范围，则这是一个编译错误。
@@ -244,11 +247,13 @@
 浮点字面量的类型按表~\ref{tab:floating-suffix}~确定。其值依如下方式确定：如果它包含指数部分，则命$e$为指数部分按十进制数字解析得到的数；否则，$e$为0。对十进制浮点字面量而言，命$s$为除去指数的部分按十进制数字解析得到的数，则令$f=s\times 10^e$。对十六进制浮点字面量而言，命$s$为除去指数的部分按十六进制数字解析得到的数，则令$f=s\times 2^e$。浮点字面量的值为其类型中最接近$f$的值。如果$f$太大，则值为对应的正无限大；如果$f$太小，则值为0。
 
 \begin{floattable}{浮点字面量后缀}{tab:floating-suffix}{c|c}
-    \topline
-    后缀 & 对应的类型 \\
-    \capsep
-    无或\tcode{f64} & \tcode{float<64>} \\
-    \tcode{f32} & \tcode{float<32>} \\
+\topline
+后缀 & 对应的类型 \\
+\capsep
+\tcode{f16} & \tcode{float<16>} \\
+\tcode{f32} & \tcode{float<32>} \\
+无或\tcode{f64} & \tcode{float<64>} \\
+\tcode{f128} & \tcode{float<128>} \\
 \end{floattable}
 
 \rSec2[literal.string]{字符串字面量}
