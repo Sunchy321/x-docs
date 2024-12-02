@@ -354,19 +354,19 @@ y = x; // 错误，\tcode{B}不能赋给\tcode{A}
 \end{codeblock}
 \exitexample
 
-\rSec2[type.any]{\tcode{any}类型}
-\indextext{类型!\tcode{any}}
+\rSec2[type.dyn]{\tcode{dyn}类型}
+\indextext{类型!\tcode{dyn}}
 
 \begin{bnf}{AnyType}
-    \terminal{any} Type \br
-    \terminal{any} \terminal{_} \br
-    \terminal{any}
+    \terminal{dyn} Type \br
+    \terminal{dyn} \terminal{_} \br
+    \terminal{dyn}
 \end{bnf}
 
 \pnum
-\tcode{any $T$}对$T$的子类型进行包装，保证在运行时可以接受任何为$T$的子类型的值。
-\tcode{any _}代表一个基础类型待推导的\tcode{any}类型。
-\tcode{any}表示对任意类型的包装。
+\tcode{dyn $T$}对$T$的子类型进行包装，保证在运行时可以接受任何为$T$的子类型的值。
+\tcode{dyn _}代表一个基础类型待推导的\tcode{dyn}类型。
+\tcode{dyn}表示对任意类型的包装。
 
 \enterexample
 \begin{codeblock}
@@ -378,10 +378,10 @@ type B { }
 impl A : T { }
 impl B : T { }
 
-let x: any T = A { }; // \tcode{x}的类型是\tcode{any T}
-let mut y: any T = B { }; // \tcode{y}的类型是\tcode{any T}
+let x: dyn T = A { }; // \tcode{x}的类型是\tcode{dyn T}
+let mut y: dyn T = B { }; // \tcode{y}的类型是\tcode{dyn T}
 
-y = x; // 正确，\tcode{any T}之间可以互相赋值
+y = x; // 正确，\tcode{dyn T}之间可以互相赋值
 
 \end{codeblock}
 \exitexample
