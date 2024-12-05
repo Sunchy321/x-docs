@@ -91,8 +91,7 @@ a.v($ - 1) // 方法调用，当前序列为a
 
 \begin{bnf}{UnqualID}
     Identifier \br
-    \terminal{init} \br
-    \terminal{deinit}
+    \terminal{init}
 \end{bnf}
 
 \begin{bnf}{FullID}
@@ -102,7 +101,7 @@ a.v($ - 1) // 方法调用，当前序列为a
 \end{bnf}
 
 \pnum
-\term{名称}用于引用程序实体。一个\term{未限定名称}可能是一个标识符、\tcode{init}或\tcode{deinit}。
+\term{名称}用于引用程序实体。一个\term{未限定名称}可能是一个标识符或关键字\tcode{init}。
 
 \pnum
 \term{限定名称}由未限定名称通过\tcode{::}连接而成，用于指定嵌套在其他实体内部的名称。

@@ -46,6 +46,21 @@ enum Order {
 \pnum
 \tcode{cmp}也可以返回\tcode{Order?}。如果返回值为\tcode{nil}，则代表两个操作数之间没有序关系。
 
+\rSec1[core.deinit]{析构器}
+
+\indexlibrary{\idxcode{Deinit}}
+\begin{itemdecl}
+auto trait Deinit {
+    func deinit(&mut this) -> void;
+}
+\end{itemdecl}
+
+\pnum
+\tcode{Deinit}为类型提供\term{析构器}。具有析构器的值在被销毁时会调用其析构器。
+
+\pnum
+对于没有显式实现\tcode{Deinit}的类型，编译器会自动生成依次析构其所有成员的析构器。
+
 \rSec1[core.range]{范围}
 
 \indexlibrary{\idxcode{Range}}

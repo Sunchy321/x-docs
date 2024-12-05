@@ -102,7 +102,31 @@ if x.filter{ true }
 
 \pnum
 \term{\tcode{match}语句}对其后跟的表达式进行模式匹配。
+
+\pnum
 \tcode{match}语句的各项中的模式必须覆盖被匹配表达式的所有可能值，否则这是一个编译错误。
+如果该表达式的某可能值包含类型为\tcode{never}的项，则可以省略该项。
+
+\enterexample
+\begin{codeblock}
+
+enum E {
+    A(int),
+    B(never),
+}
+
+func foo(e: E) {
+    match e {
+        .A(_) => { ... },
+        .B(_) => { ... }, // 可以省略，不是编译错误
+                          // 包含该项同样也不是编译错误，但可能导致不可达代码警告
+    }
+}
+
+\end{codeblock}
+\exitexample
+
+\pnum
 对\tcode{match}语句的求值将按如下顺序进行：
 
 \begin{itemize}
