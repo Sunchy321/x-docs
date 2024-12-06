@@ -60,10 +60,16 @@ $$\tcode{never} \coloneqq \{ \}$$
 \pnum
 \tcode{never}标识没有值的类型。
 
-$$\tcode{bool} \coloneqq \{ \mathrm{true}, \mathrm{false} \}$$
+$$\tcode{bool} \coloneqq \{ \mathrm{false}, \mathrm{true} \}$$
 
 \pnum
-\tcode{bool}标识具有真或假两个值的类型。
+\tcode{bool}标识具有假（\tcode{false}）或真（\tcode{true}）两个值的类型。
+
+\pnum
+\tcode{true}的二进制表示为\tcode{0x01}，\tcode{false}为\tcode{0x00}。持有其他二进制表示的\tcode{bool}类型的值是未定义的。
+
+\pnum
+\tcode{bool}是有序的，其中\tcode{false}小于\tcode{true}。
 
 $$\tcode{int}_{l,h} \coloneqq \{ x \in \mathcal{Z} \mid l \le x \le h \} $$
 
