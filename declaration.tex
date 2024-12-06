@@ -17,6 +17,7 @@
     ImplDecl \br
     OperatorDecl \br
     MacroDecl \br
+    StaticAssertion \br
     QualifierDirective
 \end{bnf}
 
@@ -71,6 +72,23 @@
 \pnum
 类声明创建不透明类型。\tcode{class $C$ $B$}等价于\tcode{type $C$ = class $B$}。参见~\ref{type.opaque}。
 在类声明中，可以使用大括号代替结构类型的小括号。
+
+\rSec1[decl.static-assert]{静态断言}
+\indextext{声明!静态断言}
+
+\begin{bnf}{StaticAssertion}
+    \terminal{static} \terminal{assert} Expression \terminal{;} \br
+    \terminal{static} \terminal{assert} Expression \terminal{:} Expression \terminal{;}
+\end{bnf}
+
+\pnum
+\term{静态断言}用于在编译时对条件进行检查。如果条件为假，则会产生一个编译错误。静态断言可以在函数、模块、枚举定义、特征定义、实现定义中出现。
+
+\pnum
+静态断言可以带有一个可选的错误消息。如果提供了错误消息，当条件为假时，编译器会输出该错误消息。
+
+\pnum
+静态断言的条件和错误消息都必须是常量。
 
 \rSec1[qual.dir]{限定符指令}
 \indextext{限定符指令}

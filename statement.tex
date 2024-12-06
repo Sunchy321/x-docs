@@ -12,7 +12,8 @@
     BreakStatement \br
     ContinueStatement \br
     ReturnStatement \br
-    ThrowStatement
+    ThrowStatement \br
+    AssertStatement
 \end{bnf}
 
 \pnum
@@ -234,3 +235,17 @@ func foo(e: E) {
 
 \pnum
 \tcode{throw}语句只能在函数作用域中使用。它终止当前函数的执行，并将后跟的表达式作为异常抛出。如果表达式被省略，除非语句当前处于\tcode{catch}块中，此时将会重新抛出原异常；否则这是一个编译错误。
+
+\rSec1[stmt.assert]{\tcode{assert}语句}
+\indextext{语句!\idxcode{assert}}
+
+\begin{bnf}{AssertStatement}
+    \terminal{assert} Expression\bnfq \terminal{;} \br
+    \terminal{assert} Expression\bnfq \terminal{:} Expression
+\end{bnf}
+
+\pnum
+\term{\tcode{assert}语句}用于在运行时检查表达式是否为真。如果表达式为假，则调用\tcode{panic}。
+
+\pnum
+\tcode{assert}语句可以带有一个\tcode{:}分隔的表达式，此时如果表达式为假，则将该表达式的值作为\tcode{panic}的参数。

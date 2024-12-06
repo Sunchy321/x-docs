@@ -3,7 +3,7 @@
 \rSec0[enum]{枚举}
 
 \begin{bnf}{EnumDecl}
-    \terminal{enum} Identifier EnumBaseType\bnfq \terminal{\{} Enumerators \terminal{\}}
+    \terminal{enum} Identifier EnumBaseType\bnfq \terminal{\{} StaticAssertion\bnfs Enumerators \terminal{\}}
 \end{bnf}
 
 \begin{bnf}{EnumBaseType}
@@ -41,6 +41,9 @@ enum E {
 
 上述代码定义了一个枚举类型\tcode{E}，它包含四个枚举符，可以以如下方式访问：\tcode{E.A}、\tcode{E.B(0)}、\tcode{E.C[1, 2, 3]}及\tcode{E.D(name: "Hello")}。
 \exitexample
+
+\pnum
+枚举类型定义中可以在所有枚举符之前包含任意数量的静态断言。
 
 \rSec1[enum.trad]{传统枚举类型}
 \indextext{枚举!传统}

@@ -42,6 +42,7 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
     \item \tcode{if}、\tcode{match}、\tcode{while}的条件表达式；
     \item \tcode{for}语句的迭代表达式；
     \item \tcode{return}、\tcode{throw}、\tcode{break}表达式的子表达式；
+    \item \tcode{assert}表达式的子表达式；
     \item 函数参数的默认值表达式；
     \item 函数体与属性体表达式；
     \item 枚举的初始化表达式；
@@ -292,6 +293,9 @@ let a = (int[])[1, 2, 3]; // 可以
 
 \pnum
 \tcode{break}、\tcode{continue}、\tcode{return}和\tcode{throw}表达式的语义与其对应的语句的语义相同，类型为\tcode{never}。
+
+\pnum
+\tcode{assert}表达式的语义与其对应的语句的语义相同，类型为\tcode{void}。
 
 \rSec2[expr.lambda]{Lambda表达式}
 \indextext{表达式!lambda}
