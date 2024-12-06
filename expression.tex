@@ -56,13 +56,13 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 
 \begin{bnf}{PrimaryExpr}
     \terminal{(} Expression \terminal{)} \br
+    Statement \br
     LiteralExpr \br
     TypeLiteral \br
     Identifier \br
     DeductedEnumerator \br
     \terminal{this} \br
     \terminal{\$} \br
-    StmtExpr \br
     LambdaParameter \br
     LambdaExpr \br
     DoExpr \br
@@ -71,6 +71,18 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
 
 \pnum
 表达式\tcode{($e$)}等价于$e$，括号只作分组用途。\enternote 注意括号表达式不是一元元组。\exitnote
+
+\pnum
+语句都是基本表达式。但由于某些语句可以在末尾包含一个表达式，这些语句实际上只能在另一侧当作基本表达式。
+
+\enterexample
+\begin{codeblock}
+
+return 1 + 2 // 等价于\tcode{return (1 + 2)}
+1 + return 2 // 等价于\tcode{1 + (return 2)}
+
+\end{codeblock}
+\exitexample
 
 \rSec2[expr.lit]{字面量表达式}
 \indextext{表达式!字面量}
@@ -258,44 +270,6 @@ let a = (int[])[1, 2, 3]; // 可以
 如果当前序列为$s$，则\tcode{\$}等价于\tcode{$s$.opeartor\$()}。
 如果$s$实现了\tcode{Sequence}（例如内建数组\tcode{$T$[]}），其值为\tcode{$s$.size}。
 在其他位置使用\tcode{\$}是一个编译错误。
-
-\rSec2[expr.stmt]{语句表达式}
-\indextext{表达式!语句}
-
-\begin{bnf}{StmtExpr}
-    Block \br
-    IfExpr \br
-    MatchStatement \br
-    \terminal{break} SymbolLiteral\bnfq Expression\bnfq \br
-    \terminal{continue} SymbolLiteral\bnfq \br
-    \terminal{return} Expression\bnfq \br
-    \terminal{throw} Expression\bnfq
-\end{bnf}
-
-\begin{bnf}{IfExpr}
-    IfStatement \br
-    \terminal{if} Condition \terminal{then} Expression \br
-    \terminal{if} Condition \terminal{then} Expression \terminal{else} Expression \br
-    \terminal{if} Condition \terminal{then} Expression \terminal{else} IfExpr
-\end{bnf}
-
-\pnum
-部分语句也有对应的表达式。
-
-\pnum
-块表达式的值是其末尾表达式的值。如果该表达式被省略，其类型为\tcode{void}。
-
-\pnum
-\tcode{if}表达式的类型是其两个分支表达式的公共类型。如果\tcode{else}分支被省略，则视为\tcode{void}。其值为最终执行的那个分支的值。只有一个分支会被求值。可以使用\tcode{then}来用表达式代替块。
-
-\pnum
-\tcode{match}表达式的类型为其所有分支的公共类型，值为最终匹配成功的分支的值。只有一个分支会被求值。
-
-\pnum
-\tcode{break}、\tcode{continue}、\tcode{return}和\tcode{throw}表达式的语义与其对应的语句的语义相同，类型为\tcode{never}。
-
-\pnum
-\tcode{assert}表达式的语义与其对应的语句的语义相同，类型为\tcode{void}。
 
 \rSec2[expr.lambda]{Lambda表达式}
 \indextext{表达式!lambda}

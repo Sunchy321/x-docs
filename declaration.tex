@@ -24,6 +24,24 @@
 \pnum
 \term{声明}将名称插入当前作用域，或者使用特定的程序结构实现程序功能。声明在插入名称时也可能\term{定义}了该名称对应的程序项。
 
+\rSec1[decl.binding]{绑定}
+\indextext{绑定}
+
+\begin{bnf}{Binding}
+    Pattern \terminal{=} Expression \terminal{;} \br
+    Pattern \terminal{=} Expression \terminal{else} Block
+\end{bnf}
+
+\pnum
+\term{绑定}形如$p\ \tcode{=}\ e$，其中$p$是包含至少一个绑定模式的模式。
+
+\pnum
+\term{绑定}将一个绑定插入当前作用域中。该绑定必须不能失败。
+
+\pnum
+绑定可以带有一个\tcode{else}块，此时绑定可以失败，且失败时会执行该\tcode{else}块。该块的类型必须是\tcode{never}。
+只能在块作用域中使用带\tcode{else}块的绑定。
+
 \rSec1[decl.type]{类型声明}
 \indextext{声明!类型}
 

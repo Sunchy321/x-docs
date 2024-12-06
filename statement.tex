@@ -33,48 +33,51 @@ if x.filter{ true }
 \indextext{语句!块}
 
 \begin{bnf}{Block}
-    \terminal{\{} BlockItem\bnfs\ \terminal{\}}
+    \terminal{\{} BlockItems \terminal{\}}
+\end{bnf}
+
+\begin{bnf}{BlockItems}
+    BlockItemsNoExpr Expression\bnfs
+\end{bnf}
+
+\begin{bnf}{BlockItemsNoExpr}
+    BlockItem \br
+    BlockItemsNoExpr BlockItem
 \end{bnf}
 
 \begin{bnf}{BlockItem}
-    Expression \terminal{;}\bnfq \br
+    Expression \terminal{;} \br
     BlockDecl \br
     Statement
 \end{bnf}
 
 \pnum
-块是由大括号包裹的一系列声明和表达式的序列。块定义了一个块作用域。块的求值按照顺序进行，整个语句的值是最后一个项目的值。所有不是最后一项的表达式项的值被丢弃；这些表达式必须以\tcode{;}结尾。如果最后一个项目是一个声明，这个块的类型为\tcode{void}。
-
-\rSec1[stmt.bind]{绑定语句}
-\indextext{语句!绑定}
-
-\begin{bnf}{Binding}
-    Pattern \terminal{=} Expression \terminal{;} \br
-    Pattern \terminal{=} Expression \terminal{else} Block
-\end{bnf}
-
-\pnum
-\term{绑定}形如$p\ \tcode{=}\ e$，其中$p$是包含至少一个绑定模式的模式。
-
-\pnum
-\term{绑定语句}将一个绑定插入当前作用域中。该绑定必须不能失败。
-
-\pnum
-绑定语句可以带有一个\tcode{else}块，此时绑定可以失败，且失败时会执行该\tcode{else}块。该块的类型必须是\tcode{never}。
+块是由大括号包裹的一系列声明和表达式的序列。块定义了一个块作用域。
+块的求值按顺序进行。如果最后一项为不带分号的表达式，整个块的值为最后一项的值；否则块的类型为\tcode{void}。
 
 \rSec1[stmt.if]{\tcode{if} 语句}
 \indextext{语句!\idxcode{if}}
 
 \begin{bnf}{IfStatement}
-    \terminal{if} Condition Block \br
-    \terminal{if} Condition Block \terminal{else} Block \br
-    \terminal{if} Condition Block \terminal{else} IfStatement
+    \terminal{if} Condition IfClause \br
+    \terminal{if} Condition IfClause \terminal{else} Block \br
+    \terminal{if} Condition IfClause \terminal{else} IfStatement
 \end{bnf}
 
 \begin{bnf}{Condition}
     Expression \br
     Binding
 \end{bnf}
+
+\begin{bnf}{IfClause}
+    Block \br
+    \terminal{then} Expression
+\end{bnf}
+
+\pnum
+\term{\tcode{if}表达式}进行条件分支。条件后必须跟一个块，除非使用上下文关键字\tcode{then}进行分隔。
+如果\tcode{if}语句的条件成立，对第一个表达式（或子块）求值。否则，若有\tcode{else}子句，执行\tcode{else}子块。
+\tcode{else}子块允许直接的\tcode{if}语句串联。
 
 \pnum
 如果条件为表达式$e$\footnote{因为赋值表达式的类型是\tcode{void}，形如\tcode{p = e}的程序文本将始终被看做一个模式匹配而不是赋值表达式。}，那么这个表达式的类型必须实现了\tcode{Condition}。
@@ -84,7 +87,7 @@ if x.filter{ true }
 如果条件是绑定，那条件成立当且仅当绑定成功。该绑定必须可以失败。
 
 \pnum
-如果\tcode{if}语句的条件成立，执行第一个子块。否则，若有\tcode{else}子块，执行\tcode{else}子块。
+\tcode{if}表达式的类型是其两个分支表达式的公共类型。如果\tcode{else}分支被省略，则视为\tcode{void}。
 
 \rSec1[stmt.match]{\tcode{match} 语句}
 \indextext{语句!\idxcode{match}}
@@ -134,6 +137,8 @@ func foo(e: E) {
     \item 如果语句匹配块之前有项，执行这些项。他们的作用域是整个块。
     \item 按出现顺序对每个项进行匹配。如果某个项的模式匹配成功，则执行其后的语句。所有其他项都不会进行求值。
 \end{itemize}
+
+\tcode{match}表达式的类型为其所有分支的公共类型。
 
 \rSec1[stmt.while]{\tcode{while} 语句}
 \indextext{语句!\idxcode{while}}
@@ -202,19 +207,19 @@ func foo(e: E) {
 \indextext{语句!控制}
 
 \begin{bnf}{BreakStatement}
-    \terminal{break} SymbolLiteral\bnfq Expression\bnfq \terminal{;}
+    \terminal{break} SymbolLiteral\bnfq Expression\bnfq
 \end{bnf}
 
 \begin{bnf}{ContinueStatement}
-    \terminal{continue} SymbolLiteral\bnfq \terminal{;}
+    \terminal{continue} SymbolLiteral\bnfq
 \end{bnf}
 
 \begin{bnf}{ReturnStatement}
-    \terminal{return} Expression\bnfq \terminal{;}
+    \terminal{return} Expression\bnfq
 \end{bnf}
 
 \begin{bnf}{ThrowStatement}
-    \terminal{throw} Expression\bnfq \terminal{;}
+    \terminal{throw} Expression\bnfq
 \end{bnf}
 
 \pnum
@@ -236,11 +241,14 @@ func foo(e: E) {
 \pnum
 \tcode{throw}语句只能在函数作用域中使用。它终止当前函数的执行，并将后跟的表达式作为异常抛出。如果表达式被省略，除非语句当前处于\tcode{catch}块中，此时将会重新抛出原异常；否则这是一个编译错误。
 
+\pnum
+这些语句的类型都是\tcode{never}。
+
 \rSec1[stmt.assert]{\tcode{assert}语句}
 \indextext{语句!\idxcode{assert}}
 
 \begin{bnf}{AssertStatement}
-    \terminal{assert} Expression\bnfq \terminal{;} \br
+    \terminal{assert} Expression\bnfq \br
     \terminal{assert} Expression\bnfq \terminal{:} Expression
 \end{bnf}
 
@@ -249,3 +257,6 @@ func foo(e: E) {
 
 \pnum
 \tcode{assert}语句可以带有一个\tcode{:}分隔的表达式，此时如果表达式为假，则将该表达式的值作为\tcode{panic}的参数。
+
+\pnum
+\tcode{assert}语句的类型为\tcode{void}。
