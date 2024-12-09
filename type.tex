@@ -303,7 +303,6 @@ $$ \tcode{()} \coloneqq \tcode{void} $$
 \pnum
 不透明类型会继承原类型的
 \begin{itemize}
-    \item 字面量初始化，这包括语言内建的无后缀字面量，也包括\tcode{true}、\tcode{nil}这类关键字字面量；
     \item 成员访问（顺序成员和命名成员），但这些成员的默认访问级别会更改为\tcode{private}；
     \item 固有实现；
     \item 所有特征实现（以及所有运算符）。
@@ -318,7 +317,6 @@ type U = class int;
 let i = 0;
 let j: T = i; // 错误，\tcode{int}不能隐式转换为\tcode{class int}
 let k: T = i as T; // 可以，显式转换
-let l: T = 0; // 可以，字面量能推导为正确的类型
 let m: U = j; // 错误，\tcode{T}和\tcode{U}之间没有隐式转换
 
 \end{codeblock}
