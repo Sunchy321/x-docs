@@ -28,15 +28,20 @@
 \indextext{绑定}
 
 \begin{bnf}{Binding}
-    Pattern \terminal{=} Expression \terminal{;} \br
-    Pattern \terminal{=} Expression \terminal{else} Block
+    BindKeyword PatternBind TypeNotation\bnfq \terminal{=} Expression \terminal{;} \br
+    BindKeyword PatternBind TypeNotation\bnfq \terminal{=} Expression \terminal{else} Block
+\end{bnf}
+
+\begin{bnf}{TypeNotation}
+    \terminal{:} Type
 \end{bnf}
 
 \pnum
-\term{绑定}形如$p\ \tcode{=}\ e$，其中$p$是包含至少一个绑定模式的模式。
+\term{绑定}形如\tcode{let $p$ = $e$}，其中$p$是绑定模式。
 
 \pnum
 \term{绑定}将一个绑定插入当前作用域中。该绑定必须不能失败。
+绑定可以显式指定类型。
 
 \pnum
 绑定可以带有一个\tcode{else}块，此时绑定可以失败，且失败时会执行该\tcode{else}块。该块的类型必须是\tcode{never}。
