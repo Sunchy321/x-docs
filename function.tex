@@ -70,7 +70,7 @@
 \end{bnf}
 
 \begin{bnf}{NamedParamDecl}
-    Attribute\bnfs ParamQual\bnfq \terminal{(} Identifier \terminal{)} Pattern TypeNotation\bnfq DefaultValue\bnfq
+    Attribute\bnfs ParamQual\bnfs \terminal{(} Identifier \terminal{)} Pattern TypeNotation\bnfq DefaultValue\bnfq
 \end{bnf}
 
 \begin{bnf}{ThisParamDecl}
@@ -82,8 +82,8 @@
 \begin{bnf}{ParamQual}
     \terminal{mut} \br
     \terminal{ref} \br
-    \terminal{ref} \terminal{mut} \br
-    \terminal{lazy}
+    \terminal{lazy} \br
+    \terminal{borrow}
 \end{bnf}
 
 \begin{bnf}{TypeNotation}
@@ -139,18 +139,77 @@ func foo((a, b): (int, bool)) {
 类型为$T$的\tcode{ref}参数实际上是类型为\tcode{$T$\&}（或\tcode{$T$ mut\&}）的引用参数的语法糖。
 在函数内部使用该参数时，将会自动对参数进行解引用。
 
+\pnum
+\tcode{ref}参数将会按如下方式脱糖：
+
+\begin{codeblock}
+func foo(ref a: int) {
+    a = 1;
+}
+
+let mut a = 0;
+
+foo(ref a);
+\end{codeblock}
+
+变为
+
+\begin{codeblock}
+func foo(\{$r_a$}: int mut&) {
+    *\{$r_a$} = 1;
+}
+
+let mut a = 0;
+
+foo(&mut a);
+\end{codeblock}
+
 \rSec2[param.qual.lazy]{\tcode{lazy}}
 \indextext{参数修饰符!\idxcode{lazy}}
 
 \pnum
 \tcode{lazy}修饰的参数是惰性求值的，只有在函数内部使用时才会计算实参的值。
+\tcode{lazy}不能与\tcode{mut}修饰符一起使用。
 
 \pnum
 类型为$T$的\tcode{lazy}参数实际上是类型为\tcode{() once -> $T$}的闭包参数的语法糖。
 在函数内部首次读取该参数时，将会调用该闭包并将结果缓存，之后再次读取时直接使用缓存的值。
 
 \pnum
-\tcode{lazy}不能与\tcode{mut}修饰符一起使用。
+\tcode{lazy}参数将会按如下方式脱糖：
+
+\begin{codeblock}
+func foo(lazy a: int) {
+    bar(a);
+}
+
+let a = 0;
+
+foo(a);
+\end{codeblock}
+
+变为
+
+\begin{codeblock}
+func foo(\{$c_a$}: () once -> int) {
+    let \{$s_a$}: int? = nil;
+    let \{$g_a$} = do {
+        if let some \{$v_a$} = \{$s_a$} {
+            \{$v_a$}
+        } else {
+            let \{$v_a$} = \{$c_a$}();
+            \{$s_a$} = some \{$v_a$};
+            \{$v_a$}
+        }
+    };
+
+    bar(\{$g_a$}());
+}
+
+let a = 0;
+
+foo(do { a });
+\end{codeblock}
 
 \rSec1[func.async]{异步函数}
 
