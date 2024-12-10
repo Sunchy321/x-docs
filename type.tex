@@ -2,9 +2,6 @@
 
 \rSec0[typesystem]{类型系统}
 
-\rSec1[type]{类型、值和对象}
-\indextext{类型}
-
 \begin{bnf}{Type}
     NormalType \br
     ResultType
@@ -32,7 +29,7 @@ $$ \mathcal{V} = \{ \langle v, T, Q \rangle \mid T \in \mathcal{T}, v \in T, Q \
 \pnum
 \term{类型}是一个集合。\term{值}是类型、类型的成员和修饰符集合的元组。$T$称为值$v$的\term{类型}。
 
-\rSec2[type.funda]{基本类型}
+\rSec1[type.funda]{基本类型}
 \indextext{类型!基本类型}
 
 \begin{bnf}{FundaType}
@@ -105,7 +102,7 @@ $$\tcode{string} \coloneqq \left\{ \textnormal{Any UTF-8 String} \right\} $$
 \pnum
 \tcode{string}表示任意长度的UTF-8字符串，包括空字符串。
 
-\rSec3[type.symbol]{符号类型}
+\rSec2[type.symbol]{符号类型}
 \indextext{类型!符号}
 
 \begin{bnf}{SymbolType}
@@ -130,7 +127,7 @@ $$ \tcode{Symbol} \coloneqq \bigcup_{\tcode{'}s} \left\{  \tcode{'}s \right\} $$
 \pnum
 \tcode{self}在特征或实现中代表当前类型。在此之外使用\tcode{self}是一个编译错误。
 
-\rSec2[type.comp]{复合类型}
+\rSec1[type.comp]{复合类型}
 \indextext{类型!复合类型}
 
 \begin{bnf}{CompType}
@@ -145,7 +142,7 @@ $$ \tcode{Symbol} \coloneqq \bigcup_{\tcode{'}s} \left\{  \tcode{'}s \right\} $$
     OpaqueType
 \end{bnf}
 
-\rSec3[type.optional]{可空类型}
+\rSec2[type.optional]{可空类型}
 \indextext{类型!可空}
 
 $$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil} \} $$
@@ -157,7 +154,7 @@ $$ T\tcode{?} \coloneqq \{ \langle t \rangle \mid t \in T \} \cup \{ \mathrm{nil
 \pnum
 可空类型在核心库中对应\tcode{core::Optional}。参见~\ref{core.type}。
 
-\rSec3[type.array]{数组类型}
+\rSec2[type.array]{数组类型}
 \indextext{类型!数组}
 
 $$ T\tcode{[]} \coloneqq \bigcup^\infty_{i=1} T^i $$
@@ -168,7 +165,7 @@ $$ T\tcode{[]} \coloneqq \bigcup^\infty_{i=1} T^i $$
 \pnum
 数组类型在核心库中对应\tcode{core::Array}。参见~\ref{core.type}。
 
-\rSec3[type.dict]{字典类型}
+\rSec2[type.dict]{字典类型}
 \indextext{类型!字典}
 
 $$ T\tcode{[}K\tcode{]} \coloneqq T^K $$
@@ -179,7 +176,7 @@ $$ T\tcode{[}K\tcode{]} \coloneqq T^K $$
 \pnum
 字典类型在核心库中对应\tcode{core::Dictionary}。参见~\ref{core.type}。
 
-\rSec3[type.struct]{结构类型}
+\rSec2[type.struct]{结构类型}
 \indextext{类型!结构}
 
 \begin{bnf}{StructType}
@@ -229,13 +226,13 @@ $$ \tcode{()} \coloneqq \tcode{void} $$
 \pnum
 命名成员可以具有默认值。具有默认值的成员在初始化的时候可以省略而使用默认值。
 
-\rSec3[type.ref]{引用类型}
+\rSec2[type.ref]{引用类型}
 \indextext{类型!引用}
 
 \pnum
 引用类型是另一个值的引用。
 
-\rSec3[type.func]{函数类型}
+\rSec2[type.func]{函数类型}
 \indextext{类型!函数}
 
 \begin{bnf}{FuncType}
@@ -301,7 +298,7 @@ $$ \tcode{()} \coloneqq \tcode{void} $$
 如果函数类型包含\tcode{mut}修饰符，则对它的调用将会更改其值，它实现了\tcode{core::ops::FunctorMut}。
 如果函数类型不包含这两种修饰符，则对它的调用不会更改其值，它实现了\tcode{core::ops::Functor}。函数均具有此类函数类型。
 
-\rSec2[type.opaque]{不透明类型}
+\rSec1[type.opaque]{不透明类型}
 \indextext{类型!不透明}
 
 \begin{bnf}{OpaqueType}
@@ -333,7 +330,7 @@ let m: U = j; // 错误，\tcode{T}和\tcode{U}之间没有隐式转换
 \end{codeblock}
 \exitexample
 
-\rSec2[type.impl]{\tcode{impl}类型}
+\rSec1[type.impl]{\tcode{impl}类型}
 \indextext{类型!\tcode{impl}}
 
 \begin{bnf}{SomeType}
@@ -367,7 +364,7 @@ y = x; // 错误，\tcode{B}不能赋给\tcode{A}
 \end{codeblock}
 \exitexample
 
-\rSec2[type.dyn]{\tcode{dyn}类型}
+\rSec1[type.dyn]{\tcode{dyn}类型}
 \indextext{类型!\tcode{dyn}}
 
 \begin{bnf}{AnyType}
@@ -399,7 +396,7 @@ y = x; // 正确，\tcode{dyn T}之间可以互相赋值
 \end{codeblock}
 \exitexample
 
-\rSec2[type.result]{结果类型}
+\rSec1[type.result]{结果类型}
 \indextext{类型!结果类型}
 
 \begin{bnf}{ResultType}
@@ -409,7 +406,7 @@ y = x; // 正确，\tcode{dyn T}之间可以互相赋值
 \pnum
 结果类型\tcode{$T$ !! $E$}标识一个可能产生错误的值，其中$T$是正常的返回值类型，$E$是错误类型，且必须实现\tcode{ErrorCode}。
 
-\rSec2[type.named]{具名类型}
+\rSec1[type.named]{具名类型}
 
 \begin{bnf}{TypeName}
     \terminal{(} Type \terminal{)} \br

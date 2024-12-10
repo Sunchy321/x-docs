@@ -10,26 +10,17 @@
     Expression Operator Expression
 \end{bnf}
 
-% \pnum
-% \term{表达式}由\term{运算符}与操作数按照顺序组合在一起，它表示一个计算过程。运算符是若干标点符号的组合、一个标识符或是语言规定的特殊结构。运算符可以是前缀、后缀或者是中缀的，这决定了运算符与其操作数的结合方式。运算符组是运算符的集合，每一个运算符都属于某个运算符组。运算符组之间有一个弱偏序关系，决定了它们的\term{优先级}。完全由中缀运算符构成的运算符组有\term{结合性}：左结合的组每个运算符从左到右选择操作数；右结合的组从右到左；无结合的组两个运算符不能选择同一个操作数。
+\pnum
+\term{表达式}由\term{运算符}与操作数按照顺序组合在一起，它表示一个计算过程。运算符是若干标点符号的组合、标识符或是语言规定的特殊结构。运算符可以是前缀、后缀或者是中缀的，这决定了运算符与其操作数的结合方式。运算符组是运算符的集合，每一个运算符都属于某个运算符组。运算符组之间有一个弱偏序关系，决定了它们的\term{优先级}。完全由中缀运算符构成的运算符组有\term{结合性}：左结合的组每个运算符从左到右选择操作数；右结合的组从右到左；无结合的组两个运算符不能选择同一个操作数。
 
 \pnum
-\ref{expr.suffix}到\ref{expr.semi}各节按照优先级从高到低依次对运算符组进行描述。若无特别说明，每一节描述一个运算符组。用户也能定义新的运算符组或在当前的组中添加新的运算符，参见\ref{op.user}。
-
-$$ \mathrm{\rhd}: \mathcal{E} \times \Omega \rightarrow (\mathcal{V} \cup \mathcal{V}^\dag \cup \{\ast\}) \times \Omega $$
-
-\indextext{求值}
-\pnum
-$\mathrm{e \rhd \omega}$ 称作\term{在环境 $\omega$ 下对 $e$ 求值}。设 $\mathrm{e \rhd \omega} = \langle v, \omega^\prime \rangle$。如果 $v \in \mathcal{V}$，称\term{求值正常结束}，$v$ 是 $e$ 的\term{值}；否则，称\term{求值以抛出$v$异常结束}。$v = \ast$ 意味着求值过程中程序终止了。若无特别说明，对表达式$e$的子表达式$e_0$求值以抛出$v$异常结束也会导致对$e$的求值以抛出$v$异常结束。
-
-\pnum
-$\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。如果 $\omega = \omega^\prime$，称 $e$ 是\term{无副作用}的；如果 $e$ 是无副作用的且 $v$ 与 $\omega$ 无关，称 $e$ 是\term{纯}的。
+\ref{expr.suffix}到\ref{expr.assign}各节按照优先级从高到低依次对运算符组进行描述。若无特别说明，每一节描述一个运算符组。用户也能定义新的运算符组或在当前的组中添加新的运算符，参见\ref{op.user}。
 
 \pnum
 对含有子表达式的表达式求值时，总是先对其子表达式按出现次序从左到右求值。
 
 \pnum
-\term{丢弃表达式 $e$ 的结果}指，在决定 $e$ 的类型时，直接将它确定为 \tcode{never} 而跳过所有步骤；在对 $e$ 求值时，进行所有步骤，但是如果求值正常结束，丢弃最后的值。
+\term{丢弃表达式 $e$ 的结果}指，在决定 $e$ 的类型时，直接将它确定为\tcode{never}而跳过所有步骤；在对 $e$ 求值时，进行所有步骤，但是如果求值正常结束，丢弃最后的值。
 
 \pnum
 完整表达式指下列情况之一：
@@ -49,6 +40,17 @@ $\omega$ 是求值之前的环境，$\omega^\prime$ 是求值之后的环境。�
     \item 模式匹配与泛型的约束表达式；
     \item \tcode{typeof}的参数表达式；
     \item 泛型参数的非类型表达式。
+\end{itemize}
+
+\pnum
+一些表达式为\tcode{位置表达式}，表示逻辑上的内存位置。这包括：
+\begin{itemize}
+    \item 变量名称，包括局部变量和全局变量；
+    \item \tcode{this}；
+    \item 前缀\tcode{*}运算符的结果；
+    \item 下标运算符\tcode{[]}的结果；
+    \item 成员访问运算符\tcode{.}的结果；
+    \item 内部是位置表达式的括号表达式。
 \end{itemize}
 
 \rSec1[expr.primary]{基本表达式}
@@ -549,7 +551,7 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
 位取反运算符\tcode{'\~}进行按位取反。操作数的类型必须是定长整数类型。
 
 \pnum
-引用运算符\tcode{\&}获得操作数的引用。\tcode{\& mut}获得操作数的可变引用。
+引用运算符\tcode{\&}获得操作数的引用。\tcode{\&mut}获得操作数的可变引用。
 
 \pnum
 解引用运算符\tcode{*}获得一个引用指向的值。
@@ -774,7 +776,7 @@ $a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!i
 \end{bnf}
 
 \pnum
-\tcode{\&}和\tcode{|}是逻辑运算符。两者的操作数都必须实现\tcode{Boolean}。它们都使用短路求值。在同一个表达式中混合使用两个运算符是一个编译错误。
+\tcode{\&}和\tcode{|}是逻辑运算符，它们都使用短路求值。在同一个表达式中混合使用两个运算符是一个编译错误。
 
 \rSec1[expr.assign]{赋值运算符}
 \indextext{运算符!赋值}
@@ -793,31 +795,28 @@ $a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!i
     SuffixExpr \terminal{'\^{}=} LogicExpr \br
     SuffixExpr \terminal{'|=} LogicExpr \br
     SuffixExpr \terminal{??=} LogicExpr \br
-    SuffixExpr \terminal{<\~} LogicExpr \br
-    LogicExpr \terminal{\~>} SuffixExpr
+    SuffixExpr \terminal{\~=} LogicExpr
 \end{bnf}
 
 \pnum
 赋值表达式的结果类型是\tcode{void}。
 
 \pnum
-\tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是\tcode{mut}的，且右操作数必须能隐式转换到左操作数。
+\tcode{=}将左操作数的值更新为右操作数的值。
+左操作数称为\tcode{赋值目标表达式}，并递归定义为：
+\begin{itemize}
+    \item 一个位置表达式，或
+    \item \tcode{_}，或
+    \item \tcode{...}，或
+    \item \tcode{...}后跟赋值目标表达式，或
+    \item 成员全部都为赋值目标表达式的结构字面量，或
+    \item 成员全部都为赋值目标表达式的数组字面量。
+\end{itemize}
+
+左操作数包含的所有位置表达式都必须是\tcode{mut}的。
+如果左操作数并非单个位置表达式，则使用类似模式匹配的规则进行赋值。
 
 \pnum
-复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\^{}=}、\tcode{'|=}和\tcode{??=}分别表示加、减、乘、除、取余、左移、右移、按位与、按位异或、按位或和空值合并赋值。
-对这些运算符而言，$a\ op\tcode{=}\ b$或$a\ op\tcode{_eq}\ b$等价于$a\ \tcode{=}\ a\ op\ b$，但$a$只被求值一次。
-
-\pnum
-追加运算符$e\ \tcode{<\~}\ v$等价于$e\ \tcode{=}\ e\ \tcode{\~}\ v$，$v\ \tcode{\~>}\ e$等价于$e\ \tcode{=}\ v\ \tcode{\~}\ e$，但$e$只被求值一次。
-
-\rSec1[expr.semi]{分号运算符}
-\indextext{运算符!分号}
-
-\begin{bnf}{Expression}
-    AssignExpr \br
-    AssignExpr \terminal{;} Expression\br
-    Binding \terminal{;} Expression
-\end{bnf}
-
-\pnum
-分号表达式中，分号左侧可以为一个表达式或绑定。如果分号左侧为绑定，则该绑定会被插入到当前作用域中。如果左侧为表达式，则该表达式将被求值且结果会被丢弃。在那之后，将对右侧表达式进行求值并将其值作为整个表达式的值。
+复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\^{}=}、\tcode{'|=}、\tcode{\~=}和\tcode{??=}是对应二元运算符的赋值简化。
+对这些运算符而言，\tcode{$a$ $op$= $b$}或\tcode{$a$ $op$_eq $b$}等价于\tcode{$a$ = $a$ $op$ $b$}，但$a$只被求值一次。
+复合运算符的左操作数必须是单个位置表达式。
