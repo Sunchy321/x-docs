@@ -151,9 +151,7 @@ let mut a = 0;
 
 foo(ref a);
 \end{codeblock}
-
 变为
-
 \begin{codeblock}
 func foo(\{$r_a$}: int mut&) {
     *\{$r_a$} = 1;
@@ -187,9 +185,7 @@ let a = 0;
 
 foo(a);
 \end{codeblock}
-
 变为
-
 \begin{codeblock}
 func foo(\{$c_a$}: () once -> int) {
     let \{$s_a$}: int? = nil;
@@ -209,6 +205,37 @@ func foo(\{$c_a$}: () once -> int) {
 let a = 0;
 
 foo(do { a });
+\end{codeblock}
+
+\rSec2[param.qual.borrow]{\tcode{borrow}}
+\indextext{参数修饰符!\idxcode{borrow}}
+
+\pnum
+\tcode{borrow}修饰的参数为借用参数，它会将实参移入到函数中，然后在函数返回时将其返回并覆盖原实参。
+\tcode{borrow}不能与\tcode{lazy}和\tcode{ref}修饰符一起使用。
+
+\pnum
+\tcode{borrow}参数将会按如下方式脱糖：
+
+\begin{codeblock}
+func foo(borrow a: int) {
+    let a = 1;
+}
+
+let a = 0;
+
+foo(borrow a);
+\end{codeblock}
+变为
+\begin{codeblock}
+func foo(a: int) -> (void, int) {
+    let a = 1;
+    ((), a)
+}
+
+let a = 0;
+
+let (_, a) = foo(a);
 \end{codeblock}
 
 \rSec1[func.async]{异步函数}
