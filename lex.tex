@@ -264,7 +264,7 @@
 \end{bnf}
 
 \begin{bnf}{Schar}
-    \textnormal{除了\terminal{\textbackslash}和\terminal{"}以外的非换行可打印字符} \br
+    \textnormal{除了\terminal{\textbackslash}和\terminal{"}以外的可打印字符} \br
     EscapeSeq \br
     TextInterpolation
 \end{bnf}
@@ -283,7 +283,7 @@
 \end{bnf}
 
 \begin{bnf}{Rchar}
-    \textnormal{非换行可打印字符} \br
+    \textnormal{可打印字符} \br
     RawTextInterpolation
 \end{bnf}
 
@@ -297,14 +297,20 @@
 普通字符串字面量也可以前后加上等量的\tcode{@}，此时它被称为\term{原始字符串字面量}。原始字符串字面量中的反斜杠不会被解释为转义序列，而是字符本身。
 
 \pnum
-字符串字面量可以横跨多行，其中每一行包含换行符都属于该字符串字面量，但是除了以下字符：
+字符串字面量可以横跨多行，但其开头引号必须为其所在行的最后一个字符，且结尾的引号必须为其所在行的第一个非空白字符。
+结尾引号之前的所有空白字符将作为这个字符串字面量的\term{行前缀}。
+开头引号到结尾引号之间的所有字符（包括换行符）按顺序成为该字符串字面量的内容，但除了以下字符：
 
 \begin{itemize}
-    \item 开头引号序列之后紧邻的换行会被删除。
-    \item 除了开始行之外的行的公共空白字符前缀会被删除。
-    \item 如果结尾行除了公共前缀之外没有其它字符，则上一行的换行会被删除。
-    \item 如果一行末尾有反斜杠，则这个反斜杠和其后的换行符会被删除。
+    \item 开头引号之后紧邻的换行；
+    \item 每一行的行前缀；
+    \item 结尾引号前一行的换行符；
+    \item 如果一行末尾有反斜杠，这个反斜杠和其后的换行符。
 \end{itemize}
+
+换行符会变成\tcode{'\textbackslash{}n'}。
+如果开始引号后不是换行符，或者结束引号前有非空白字符，这是一个编译错误。
+如果行前缀不是某一行的前缀，这是一个编译错误。
 
 \enterexample
 表~\ref{tab:multiline-string}~是一些多行字符串字面量及其等价的单行表示：
@@ -321,27 +327,31 @@ abc
 
 \begin{codeblock}
 "
-abc
-   "
-\end{codeblock}
-&\tcode{"abc\textbackslash{}n\ \ \ "}\\
-\hline
-
-\begin{codeblock}
-"abc
-def
-"
-\end{codeblock}
-&\tcode{"abc\textbackslash{}ndef"}\\
-\hline
-
-\begin{codeblock}
-"
 abc\
 def
 "
 \end{codeblock}
 &\tcode{"abcdef"}\\
+\hline
+
+\begin{codeblock}
+"
+abc
+   "
+\end{codeblock}
+&编译错误，空格不是公共前缀\\
+\hline
+
+\begin{codeblock}
+"
+
+abc
+
+"
+\end{codeblock}
+&\tcode{"\textbackslash{}nabc\textbackslash{}n"}\\
+\hline
+
 \end{floattable}
 \exitexample
 
