@@ -63,14 +63,25 @@
 \end{bnf}
 
 \begin{bnf}{RawIdentifier}
-    \terminal{`} NormalIdentifier \terminal{`}
+    \terminal{`} RIchar\bnfp \terminal{`}
+\end{bnf}
+
+\begin{bnf}{RIchar}
+    \textnormal{除了\terminal{`}以外的非空白可打印字符} \br
+    \textnormal{空格}
 \end{bnf}
 
 \pnum
 \term{标识符}以具有Unicode XID_Start属性的字符或\tcode{_}开始，后跟零个或数个具有Unicode XID_Continue属性的字符，但不能与关键字相同。标识符区分大小写。
 
 \pnum
-标识符可以使用反引号包围，这种标识符称为\term{原始标识符}。原始标识符与其不带引号的版本完全相同，但不会被识别为关键字。
+使用反引号包围的字符序列称为\term{原始标识符}。原始标识符可以用于将无法作为普通标识符的字符序列作为标识符使用。
+
+\pnum
+如果原始标识符中的字符序列是普通标识符的字符系列，则它与不带反引号的形式完全相同，但它不会被认为是关键字。
+
+\pnum
+原始标识符中不能包含空格以外的空白字符以及\tcode{`}。原始标识符不能以\tcode{\$}开头。
 
 \rSec1[lex.keyword]{关键字}
 
