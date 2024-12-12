@@ -42,23 +42,74 @@
     \item 泛型参数的非类型表达式。
 \end{itemize}
 
+\rSec1[expr.props]{表达式属性}
+\indextext{表达式!属性}
+
 \pnum
-一些表达式为\tcode{位置表达式}，表示逻辑上的内存位置。这包括：
-\begin{itemize}
-    \item 变量名称，包括局部变量和全局变量；
-    \item \tcode{this}；
-    \item 前缀\tcode{*}运算符的结果；
-    \item 下标运算符\tcode{[]}的结果；
-    \item 成员访问运算符\tcode{.}的结果；
-    \item 操作数是位置表达式的后缀\tcode{?}及\tcode{!}表达式；
-    \item 内部是位置表达式的括号表达式。
-\end{itemize}
+表达式具有若干属性。这些属性决定了表达式能用在什么样的位置。
+
+\pnum
+括号表达式\tcode{($e$)}的属性总是与\tcode{$e$}完全相同。
+
+\pnum
+表达式总是具有类型。类型决定了从表达式读取值会得到什么值以及向表达式写入值需要什么值。
+
+\rSec2[expr.props.readable]{可读性}
+\indextext{表达式!可读性}
+
+\pnum
+\term{可读}的表达式可以获取它的值，对可读表达式进行\term{求值}会得到具有该表达式类型的值。
+除了下述表达式，任何表达式都是可读的。除非指明，需要表达式的地方总是需要一个可读表达式。
+
+\pnum
+表达式\tcode{_}是不可读的。含有项\tcode{...}的数组、结构或字典字面量是不可读的。
+
+\pnum
+如果一个ID表达式引用一个不具有\tcode{get}访问器的属性，则它是不可读的。
+
+\pnum
+除非指明，具有不可读子表达式的表达式也是不可读的。
+
+\rSec2[expr.props.writable]{可写性}
+\indextext{表达式!可写性}
+
+\pnum
+\term{可写}的表达式可以向其中写入内容，能作为赋值表达式的左操作数。除了下述表达式，其他表达式都是不可写的。
+
+\pnum
+如果可寻址的表达式类型具有\tcode{mut}修饰符，则它是可写的。
+如果一个ID表达式引用一个具有\tcode{set}访问器的属性，则它是可写的。
+
+\pnum
+表达式\tcode{_}是可写的。
+
+\pnum
+如果一个数组或结构字面量，其成员要么是可写的，要么为\tcode{...}或\tcode{...$e$}（其中$e$是可写的），则它是可写的。
+
+\rSec2[expr.props.addressable]{可寻址性}
+\indextext{表达式!可寻址性}
+
+\pnum
+\term{可寻址}的表达式可以获取其内存地址。除了下述表达式，其他表达式都是不可寻址的。
+
+\pnum
+如果一个ID表达式引用一个变量或函数，则它是可寻址的。这包括局部变量（及函数参数）和任何非局部变量。
+
+\pnum
+前缀\tcode{*}表达式总是可寻址的。后缀\tcode{[]}表达式也总是可寻址的。
+
+\pnum
+如果成员访问表达式\tcode{.}引用的是结构成员（无论顺序的或命名的），则它是可寻址的。
+
+\pnum
+如果操作数是可寻址的，则内建的后缀\tcode{?}及后缀\tcode{!}表达式是可寻址的。
 
 \rSec1[expr.primary]{基本表达式}
 \indextext{表达式!基本}
 
 \begin{bnf}{PrimaryExpr}
     \terminal{(} Expression \terminal{)} \br
+    \terminal{_} \br
     Statement \br
     LiteralExpr \br
     TypeLiteral \br
@@ -74,6 +125,9 @@
 
 \pnum
 表达式\tcode{($e$)}等价于$e$，括号只作分组用途。\enternote 注意括号表达式不是一元元组。\exitnote
+
+\pnum
+表达式\tcode{_}代表赋值中的空位，它不能被读取值，且不参与类型推导。它的类型是\tcode{void}。
 
 \pnum
 语句都是基本表达式。但由于某些语句可以在末尾包含一个表达式，这些语句实际上只能在另一侧当作基本表达式。
@@ -119,7 +173,7 @@ return 1 + 2 // 等价于\tcode{return (1 + 2)}
 
 \begin{bnf}{ExprItem}
     Expression \br
-    \terminal{...} Expression
+    \terminal{...} Expression\bnfq
 \end{bnf}
 
 \begin{bnf}{StructLiteral}
@@ -138,7 +192,7 @@ return 1 + 2 // 等价于\tcode{return (1 + 2)}
 \begin{bnf}{StructItem}
     Identifier \terminal{:} Expression \br
     Identifier \br
-    \terminal{...} Expression
+    \terminal{...} Expression\bnfq
 \end{bnf}
 
 \begin{bnf}{DictLiteral}
@@ -168,6 +222,9 @@ return 1 + 2 // 等价于\tcode{return (1 + 2)}
 
 \pnum
 \tcode{nil}的类型为\tcode{$T$?}，其中$T$为待推导的类型参数。
+
+\pnum
+数组、结构和字典字面量中的\tcode{...}项是不可读的，只能用于赋值运算符的左侧。它的类型是\tcode{void}，但不参与数组、结构或字典的类型推导。
 
 \pnum
 数组字面量\tcode{[$e_1$, $\ldots$, $e_n$]}表示一个显式写出其各元素的数组值。
@@ -803,21 +860,9 @@ $a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!i
 赋值表达式的结果类型是\tcode{void}。
 
 \pnum
-\tcode{=}将左操作数的值更新为右操作数的值。
-左操作数称为\tcode{赋值目标表达式}，并递归定义为：
-\begin{itemize}
-    \item 一个位置表达式，或
-    \item \tcode{_}，或
-    \item \tcode{...}，或
-    \item \tcode{...}后跟赋值目标表达式，或
-    \item 成员全部都为赋值目标表达式的结构字面量，或
-    \item 成员全部都为赋值目标表达式的数组字面量。
-\end{itemize}
-
-左操作数包含的所有位置表达式都必须是\tcode{mut}的。
-如果左操作数并非单个位置表达式，则使用类似模式匹配的规则进行赋值。
+\tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是可写的，但可以是不可读的。如果左操作数并非单个位置表达式，则使用类似模式匹配的规则进行赋值。
 
 \pnum
 复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\^{}=}、\tcode{'|=}、\tcode{\~=}和\tcode{??=}是对应二元运算符的赋值简化。
 对这些运算符而言，\tcode{$a$ $op$= $b$}或\tcode{$a$ $op$_eq $b$}等价于\tcode{$a$ = $a$ $op$ $b$}，但$a$只被求值一次。
-复合运算符的左操作数必须是单个位置表达式。
+复合运算符的左操作数必须是可读可写的。
