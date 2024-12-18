@@ -31,7 +31,7 @@
 \end{bnf}
 
 \begin{bnf}{OperatorSymbol}[\oneof]
-    \terminal{\~ ! \% \^{} \& * - | + = / ? < > .}
+    \terminal{\~ ! \% \textasciicircum \& * - | + = / ? < > .}
 \end{bnf}
 
 \pnum
@@ -42,7 +42,7 @@
 \tcode{+!} & \tcode{-!} & 前缀\tcode{+} & 前缀\tcode{-} & 前缀\tcode{!} \\
 \tcode{'\~} & 前缀\tcode{*} & \tcode{?} & 后缀\tcode{!} & \tcode{*} \\
 \tcode{/} & \tcode{\%} & 二元\tcode{+} & 二元\tcode{-} & \tcode{shl} \\
-\tcode{shr} & \tcode{'\&} & \tcode{'\^{}} & \tcode{'|} & \tcode{..} \\
+\tcode{shr} & \tcode{'\&} & \tcode{'\textasciicircum} & \tcode{'|} & \tcode{..} \\
 \tcode{..=} & \tcode{\~} & \tcode{==} & \tcode{!=} & \tcode{<} \\
 \tcode{<=} & \tcode{>} & \tcode{>=} & \tcode{cmp} & \tcode{in} \\
 \tcode{\&} & \tcode{|} & & & \\
@@ -50,7 +50,7 @@
 \tcode{.} & \tcode{await} & 前缀\tcode{\&} & \tcode{!in} & \tcode{is} \\
 \tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} & \tcode{*=} \\
 \tcode{/=} & \tcode{\%=} & \tcode{shl_eq} & \tcode{shr_eq} & \tcode{'\&=} \\
-\tcode{'\^{}=} & \tcode{'|=} & \tcode{??=} & \tcode{++} & \tcode{--} \\
+\tcode{'\textasciicircum=} & \tcode{'|=} & \tcode{??=} & \tcode{++} & \tcode{--} \\
 \tcode{\~>} & \tcode{<\~} & \tcode{;} && \\
 \end{floattable}
 
@@ -88,7 +88,7 @@
 用户可以声明自己的运算符。自定义运算符需要指定一个或多个特征方法，实现此特征的类型可以使用这个运算符，且等价于调用该方法。
 
 \pnum
-自定义的运算符不能与内建的运算符相同，也不能是\tcode{->}、\tcode{=>}或\tcode{...}。自定义运算符不能包含\tcode{/*}、\tcode{*/}、\tcode{//}序列作为其一部分。如果自定义的运算符是一个标识符，则它不能在任何作用域中与另一个标识符相同，否则这是一个编译错误。自定义的运算符也不能是\tcode{prefix}、\tcode{suffix}或\tcode{infix}。
+自定义的运算符不能与内建的运算符相同，也不能是\tcode{\^}、\tcode{->}、\tcode{=>}或\tcode{...}。自定义运算符不能包含\tcode{/*}、\tcode{*/}、\tcode{//}序列作为其一部分。如果自定义的运算符是一个标识符，则它不能在任何作用域中与另一个标识符相同，否则这是一个编译错误。自定义的运算符也不能是\tcode{prefix}、\tcode{suffix}或\tcode{infix}。
 
 \pnum
 自定义的运算符可以是前缀、后缀或者中缀的，分别使用\tcode{prefix}、\tcode{suffix}和\tcode{infix}指定。
@@ -102,7 +102,7 @@
 \tcode{*} & \tcode{/} & \tcode{\%} & 左结合 \\
 \tcode{+} & \tcode{-} & & 左结合 \\
 \tcode{shl} & \tcode{shr} & & 不结合 \\
-\tcode{'\&} & \tcode{'\^{}} & \tcode{'|} & 左结合，不能混用 \\
+\tcode{'\&} & \tcode{'\textasciicircum} & \tcode{'|} & 左结合，不能混用 \\
 \tcode{..} & \tcode{..=} & & 不结合 \\
 \tcode{\~} && & 左结合，不能混用 \\
 \tcode{??} && & 右结合，不能混用 \\
@@ -350,7 +350,7 @@ match Try::branch(\{$a$}) {
 \tcode{shl} & \tcode{ShiftLeft::shiftLeft} \\
 \tcode{shr} & \tcode{ShiftRight::shiftRight} \\
 \tcode{'\&} & \tcode{BitAnd::bitAnd} \\
-\tcode{'\^{}} & \tcode{BitXor::bitXor} \\
+\tcode{'\textasciicircum} & \tcode{BitXor::bitXor} \\
 \tcode{'|} & \tcode{BitOr::bitOr} \\
 \tcode{..} & \tcode{RangeTo::rangeTo} \\
 \tcode{..=} & \tcode{ClosedRangeTo::closedrangeTo} \\
@@ -366,7 +366,7 @@ match Try::branch(\{$a$}) {
 \tcode{shl_eq} & \tcode{ShiftLeftAssign::shiftLeftAssign} \\
 \tcode{shr_eq} & \tcode{ShiftRightAssign::shiftRightAssign} \\
 \tcode{'\&=} & \tcode{BitAndAssign::bitAndAssign} \\
-\tcode{'\^{}=} & \tcode{BitXorAssign::bitXorAssign} \\
+\tcode{'\textasciicircum=} & \tcode{BitXorAssign::bitXorAssign} \\
 \tcode{'|=} & \tcode{BitOrAssign::bitOrAssign} \\
 \tcode{<\~} & \tcode{AppendRight::appendRight} \\
 \tcode{\~>} & \tcode{AppendLeft::appendLeft} \\

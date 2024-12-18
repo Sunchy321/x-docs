@@ -30,8 +30,6 @@
     \item 一个语句表达式；
     \item 绑定语句中的初始化表达式；
     \item lambda表达式的函数体表达式；
-    \item \tcode{if}、\tcode{match}、\tcode{while}的条件表达式；
-    \item \tcode{for}语句的迭代表达式；
     \item \tcode{return}、\tcode{throw}、\tcode{break}表达式的子表达式；
     \item \tcode{assert}表达式的子表达式；
     \item 函数参数的默认值表达式；
@@ -116,6 +114,7 @@
     Identifier \br
     DeductedEnumerator \br
     \terminal{this} \br
+    \terminal{\textasciicircum} \br
     \terminal{\$} \br
     LambdaParameter \br
     LambdaExpr \br
@@ -322,14 +321,26 @@ let a = (int[])[1, 2, 3]; // 可以
 \pnum
 表达式\tcode{this}在类方法或扩展方法中表示当前方法的调用者。如果没有在参数中显式指定\tcode{this}的类型，则其类型为\tcode{self}。
 
-\rSec2[expr.dollar]{\tcode{\$}}
-\indextext{表达式!\idxcode{\$}}
+\rSec2[expr.bound]{边界表达式}
+\indextext{表达式!边界}
 
 \pnum
-表达式\tcode{\$}只能在序列作用域（\ref{scope.sequence}）中使用。
-如果当前序列为$s$，则\tcode{\$}等价于\tcode{$s$.opeartor\$()}。
-如果$s$实现了\tcode{Sequence}（例如内建数组\tcode{$T$[]}），其值为\tcode{$s$.size}。
-在其他位置使用\tcode{\$}是一个编译错误。
+表达式\tcode{\textasciicircum}和\tcode{\$}称为\tcode{边界标记}，表示序列的边界。
+
+\pnum
+\term{边界表达式}指下列情况之一：
+\begin{itemize}
+    \item 完整表达式；
+    \item \tcode{[]}以及\tcode{()}的内部表达式。
+\end{itemize}
+
+\pnum
+如果一个边界表达式含有边界标记，则它称为\term{待决边界表达式}，其为一个闭包。
+
+\pnum
+如果一个待决边界表达式出现在序列作用域（\ref{scope.sequence}）中时，若其对应的序列为$s$，
+则会如同其中的\tcode{\textasciicircum}替换为\tcode{$s$.RangeBound::caret()}，\tcode{\$}替换为\tcode{$s$.RangeBound::dollar()}一样求值。
+如果$s$实现了\tcode{Sequence}（例如内建数组\tcode{$T$[]}），则\tcode{\textasciicircum}等价于\tcode{0}，\tcode{\$}等价于\tcode{$s$.size}。
 
 \rSec2[expr.lambda]{Lambda表达式}
 \indextext{表达式!lambda}
@@ -556,13 +567,23 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
 \exitexample
 
 \pnum
-后缀\tcode{!}与后缀\tcode{?}类似，但是它将空值直接返回而不是传播给完整表达式。
+后缀\tcode{!}与后缀\tcode{?}类似，但是它将空值直接返回而不是传播给错误传播表达式。
 
 \pnum
 如果空值检测运算符的操作数类型是\tcode{$T$?}，则整个表达式的类型为$T$。
 
 \pnum
-如果$e$是结果类型\tcode{$T$ !! $E$}，则\tcode{$e$?}在正确值的情况下使用该值，为错误值的情况下将错误传播到完整表达式。
+如果$e$是结果类型\tcode{$T$ !! $E$}，则\tcode{$e$?}在正确值的情况下使用该值，为错误值的情况下将错误传播到包含它最小的\term{错误传播表达式}。
+
+\pnum
+错误传播表达式指下列情况之一：
+
+\begin{itemize}
+    \item 完整表达式；
+    \item \tcode{??}运算符的操作数；
+    \item \tcode{if}、\tcode{match}、\tcode{while}的条件表达式；
+    \item \tcode{for}语句的迭代表达式。
+\end{itemize}
 
 \rSec2[expr.prev-next]{前驱后继运算符}
 \indextext{运算符!前驱后继}
@@ -667,12 +688,12 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
 \begin{bnf}{BitwiseExpr}
     ShiftExpr \br
     BitwiseExpr \terminal{'\&} ShiftExpr \br
-    BitwiseExpr \terminal{'\^{}} ShiftExpr \br
+    BitwiseExpr \terminal{'\textasciicircum} ShiftExpr \br
     BitwiseExpr \terminal{'|} ShiftExpr
 \end{bnf}
 
 \pnum
-运算符\tcode{'\&}、\tcode{'\^{}}和\tcode{'|}分别表示按位与、按位异或和按位或。其操作数必须为定长整数类型。在同一个表达式中混合使用\tcode{'\&}、\tcode{'\^{}}和\tcode{'|}是一个编译错误。
+运算符\tcode{'\&}、\tcode{'\textasciicircum}和\tcode{'|}分别表示按位与、按位异或和按位或。其操作数必须为定长整数类型。在同一个表达式中混合使用\tcode{'\&}、\tcode{'\textasciicircum}和\tcode{'|}是一个编译错误。
 
 \rSec1[expr.range]{区间运算符}
 \indextext{运算符!区间}
@@ -850,7 +871,7 @@ $a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!i
     SuffixExpr \terminal{shl_eq} LogicExpr \br
     SuffixExpr \terminal{shr_eq} LogicExpr \br
     SuffixExpr \terminal{'\&=} LogicExpr \br
-    SuffixExpr \terminal{'\^{}=} LogicExpr \br
+    SuffixExpr \terminal{'\textasciicircum=} LogicExpr \br
     SuffixExpr \terminal{'|=} LogicExpr \br
     SuffixExpr \terminal{??=} LogicExpr \br
     SuffixExpr \terminal{\~=} LogicExpr
@@ -863,6 +884,6 @@ $a \mathrel{\tcode{is}} p$检测$a$是否匹配模式$p$。$a \mathrel{\tcode{!i
 \tcode{=}将左操作数的值更新为右操作数的值。左操作数必须是可写的，但可以是不可读的。如果左操作数并非单个位置表达式，则使用类似模式匹配的规则进行赋值。
 
 \pnum
-复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\^{}=}、\tcode{'|=}、\tcode{\~=}和\tcode{??=}是对应二元运算符的赋值简化。
+复合赋值运算符\tcode{+=}、\tcode{-=}、\tcode{*=}、\tcode{/=}、\tcode{\%=}、\tcode{shl_eq}、\tcode{shr_eq}、\tcode{'\&=}、\tcode{'\textasciicircum=}、\tcode{'|=}、\tcode{\~=}和\tcode{??=}是对应二元运算符的赋值简化。
 对这些运算符而言，\tcode{$a$ $op$= $b$}或\tcode{$a$ $op$_eq $b$}等价于\tcode{$a$ = $a$ $op$ $b$}，但$a$只被求值一次。
 复合运算符的左操作数必须是可读可写的。
