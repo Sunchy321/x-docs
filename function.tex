@@ -4,8 +4,8 @@
 \indextext{函数}
 
 \begin{bnf}{FuncDecl}
-    FuncQual\bnfs \terminal{func} FuncName Parameter ThrowQual\bnfq ReturnType\bnfq Block \br
-    FuncQual\bnfs \terminal{func} FuncName Parameter ThrowQual\bnfq \terminal{=>} Expression \terminal{;}
+    FuncQual\bnfs \terminal{func} FuncName Parameter ThrowQual\bnfq FuncBody \br
+    FuncQual\bnfs \terminal{func} FuncName Parameter ThrowQual\bnfq ReturnType\bnfq \terminal{;}
 \end{bnf}
 
 \begin{bnf}{FuncName}
@@ -17,6 +17,11 @@
     \terminal{const} \br
     \terminal{extern} \br
     \terminal{unsafe}
+\end{bnf}
+
+\begin{bnf}{FuncBody}
+    ReturnType\bnfq Block \br
+    \terminal{=>} Expression \terminal{;}
 \end{bnf}
 
 \begin{bnf}{ReturnType}
@@ -50,6 +55,10 @@
 \end{bnf}
 
 \begin{bnf}{ParamList}
+    Params \terminal{,}\bnfq
+\end{bnf}
+
+\begin{bnf}{Params}
     ThisParamDecl \br
     ThisParamDecl \terminal{,} NamedParamList \br
     ThisParamDecl \terminal{,} UnnamedParamList \br
@@ -70,11 +79,11 @@
 \end{bnf}
 
 \begin{bnf}{UnnamedParamDecl}
-    Attribute\bnfs ParamQual\bnfq Pattern TypeNotation\bnfq
+    Attribute\bnfs ParamQual\bnfq Pattern TypeNotation
 \end{bnf}
 
 \begin{bnf}{NamedParamDecl}
-    Attribute\bnfs ParamQual\bnfs \terminal{(} Identifier \terminal{)} Pattern TypeNotation\bnfq DefaultValue\bnfq
+    Attribute\bnfs ParamQual\bnfs \terminal{(} Identifier \terminal{)} Pattern TypeNotation DefaultValue\bnfq
 \end{bnf}
 
 \begin{bnf}{ThisParamDecl}

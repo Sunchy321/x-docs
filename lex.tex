@@ -7,7 +7,7 @@
     Keyword \br
     Punctuator \br
     Literal \br
-    LambdaParameter \br
+    ClosureArgument \br
     MacroInvocation
 \end{bnf}
 
@@ -30,7 +30,7 @@
 \term{程序文本}指将被翻译为\X{}程序的文本的整体或者一部分。它存储在\term{源文件}中，并以UTF-8编码读取。
 
 \pnum
-程序文本将被分割为\term{标记}的序列。标记是程序文本中的最小单元，包括标识符、关键字、标点符号、字面量、lambda参数。
+程序文本将被分割为\term{标记}的序列。标记是程序文本中的最小单元，包括标识符、关键字、标点符号、字面量、闭包参数。
 除了少数地方，标记之间包含的空白字符或注释会被忽略。它们不影响程序含义。
 
 \pnum
@@ -445,13 +445,16 @@ IntegerLiteral<'_s>; // 错误，后缀不能包含前导下划线
 特征\tcode{IntegerLiteral}、\tcode{FloatingLiteral}、\tcode{StringLiteral}、\tcode{CharacterLiteral}用于实现具有特定后缀的字面量。
 如果有多于一个类型实现了相同的后缀或者提供了非法的后缀，这是一个编译错误。
 
-\rSec1[lex.lambda-param]{Lambda参数}
+\rSec1[lex.closure-args]{闭包参数}
 
-\begin{bnf}{LambdaParameter}
+\begin{bnf}{ClosureArgument}
     \terminal{\$} Digit\bnfp \br
     \terminal{\$} Identifier
 \end{bnf}
 
 \pnum
-Lambda参数只能在lambda作用域（\ref{scope.lambda}）中使用，用于引用匿名参数。其类型是待推导的。
-不在lambda作用域中使用lambda参数，或在显式指定参数的lambda表达式中使用lambda参数，是一个编译错误。
+闭包参数只能在闭包作用域（\ref{scope.closure}）中使用，用于引用匿名参数。其类型是待推导的。
+不在闭包作用域中使用闭包参数，或在显式指定参数的闭包表达式中使用闭包参数，是一个编译错误。
+
+\pnum
+\tcode{\$}后跟数字$i$指代第$i$个参数。\tcode{\$}后跟标识符$n$指代具名参数$n$。它们只能出现在不含参数列表的闭包表达式中，且\tcode{\$}与后续的数字或标识符之间不能有空白。

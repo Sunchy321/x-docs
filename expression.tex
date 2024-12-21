@@ -29,7 +29,7 @@
     \item 表达式语句中的表达式；
     \item 一个语句表达式；
     \item 绑定语句中的初始化表达式；
-    \item lambda表达式的函数体表达式；
+    \item 闭包表达式的函数体；
     \item \tcode{return}、\tcode{throw}、\tcode{break}表达式的子表达式；
     \item \tcode{assert}表达式的子表达式；
     \item 函数参数的默认值表达式；
@@ -111,14 +111,13 @@
     Statement \br
     LiteralExpr \br
     TypeLiteral \br
-    Identifier \br
+    FullID \br
     DeductedEnumerator \br
-    \terminal{this} \br
     \terminal{\textasciicircum} \br
     \terminal{\$} \br
-    LambdaParameter \br
-    LambdaExpr \br
-    DoExpr \br
+    ClosureExpr \br
+    ImmediateExpr \br
+    ClosureArgument \br
     TryExpr
 \end{bnf}
 
@@ -290,8 +289,8 @@ let a = (int[])[1, 2, 3]; // 可以
 \exitexample
 
 \pnum
-\tcode{$T$($a_1$, $\ldots$, $a_n$)}以给定的参数创建$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有lambda块。如果这个对象的初始化器只接受这一个参数，也可以省略括号。
-如果不存在对应的初始化器，且该参数符合结构字面量的语法（并不包含lambda块），则会依次初始化对应的顺序成员和命名成员。
+\tcode{$T$($a_1$, $\ldots$, $a_n$)}以给定的参数创建$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有闭包块。如果这个对象的初始化器只接受这一个参数，也可以省略括号。
+如果不存在对应的初始化器，且该参数符合结构字面量的语法（并不包含闭包块），则会依次初始化对应的顺序成员和命名成员。
 
 \pnum
 \tcode{$T$[$v_1$, $\ldots$, $v_n$]}以对应的数组字面量为参数创建$T$的对象。
@@ -325,7 +324,7 @@ let a = (int[])[1, 2, 3]; // 可以
 \indextext{表达式!边界}
 
 \pnum
-表达式\tcode{\textasciicircum}和\tcode{\$}称为\tcode{边界标记}，表示序列的边界。
+表达式\tcode{\textasciicircum}和\tcode{\$}称为\term{边界标记}，表示序列的边界。
 
 \pnum
 \term{边界表达式}指下列情况之一：
@@ -342,48 +341,93 @@ let a = (int[])[1, 2, 3]; // 可以
 则会如同其中的\tcode{\textasciicircum}替换为\tcode{$s$.RangeBound::caret()}，\tcode{\$}替换为\tcode{$s$.RangeBound::dollar()}一样求值。
 如果$s$实现了\tcode{Sequence}（例如内建数组\tcode{$T$[]}），则\tcode{\textasciicircum}等价于\tcode{0}，\tcode{\$}等价于\tcode{$s$.size}。
 
-\rSec2[expr.lambda]{Lambda表达式}
-\indextext{表达式!lambda}
+\rSec2[expr.closure]{闭包表达式}
+\indextext{表达式!闭包}
 
-\begin{bnf}{LambdaExpr}
-    LambdaParameter LambdaQual\bnfs ReturnType\bnfq \terminal{=>} LambdaBody
+\begin{bnf}{ClosureExpr}
+    \terminal{do} ClosureQual\bnfs Capture\bnfq ClosureParameter\bnfq ThrowQual\bnfq FuncBody
 \end{bnf}
 
-\begin{bnf}{LambdaQual}
+\begin{bnf}{ClosureQual}
     \terminal{async} \br
-    ThrowQual
+    \terminal{const} \br
+    \terminal{unsafe}
 \end{bnf}
 
-\begin{bnf}{LambdaParameter}
-    ParamDecl
+\begin{bnf}{ClosureParameter}
+    \terminal{(} ClosureParamList\bnfq \terminal{)}
 \end{bnf}
 
-\begin{bnf}{LambdaBody}
-    Expression
+\begin{bnf}{ClosureParamList}
+    ClosureParams \terminal{,}\bnfq
+\end{bnf}
+
+\begin{bnf}{ClosureParams}
+    UnnamedClosureParamList \br
+    UnnamedClosureParamList \terminal{,} NamedClosureParamList \br
+    NamedClosureParamList
+\end{bnf}
+
+\begin{bnf}{UnnamedParamList}
+    UnnamedClosureParamDecl \br
+    UnnamedClosureParamList \terminal{,} UnnamedClosureParamDecl
+\end{bnf}
+
+\begin{bnf}{NamedParamList}
+    NamedClosureParamDecl \br
+    NamedClosureParamList \terminal{,} NamedClosureParamDecl
+\end{bnf}
+
+\begin{bnf}{UnnamedClosureParamDecl}
+    Attribute\bnfs ParamQual\bnfq Pattern TypeNotation\bnfq
+\end{bnf}
+
+\begin{bnf}{NamedClosureParamDecl}
+    Attribute\bnfs ParamQual\bnfs \terminal{(} Identifier \terminal{)} Pattern TypeNotation\bnfq DefaultValue\bnfq
+\end{bnf}
+
+\begin{bnf}{Capture}
+    \terminal{[} CaptureList \terminal{]}
+\end{bnf}
+
+\begin{bnf}{CaptureList}
+    DefaultCapture \terminal{,}\bnfq \br
+    Captures \terminal{,}\bnfq \br
+    DefaultCapture \terminal{,} Captures \terminal{,}\bnfq
+\end{bnf}
+
+\begin{bnf}{Captures}
+    CaptureItem \br
+    CaptureList \terminal{,} CaptureItem
+\end{bnf}
+
+\begin{bnf}{DefaultCapture}
+    \terminal{=} \br
+    \terminal{\&} \br
+    \terminal{\&} \terminal{mut}
+\end{bnf}
+
+\begin{bnf}{CaptureItem}
+    \terminal{this} \br
+    \terminal{\&} \terminal{this} \br
+    \terminal{\&} \terminal{mut} \terminal{this} \br
+    Identifier \terminal{...}\bnfq \br
+    Identifier \terminal{...}\bnfq \terminal{=} Expression \br
+    \terminal{\&} Identifier \terminal{...}\bnfq \br
+    \terminal{\&} \terminal{mut} Identifier \terminal{...}\bnfq
 \end{bnf}
 
 \pnum
-\tcode{\$}后跟数字$i$指代第$i$个参数。\tcode{\$}后跟标识符$n$指代具名参数$n$。
-
-\rSec3[expr.do]{\tcode{do}表达式}
-\indextext{表达式!\idxcode{do}}
-
-\begin{bnf}{DoExpr}
-    \terminal{do} LambdaQual\bnfs Block \br
-    \terminal{do!} LambdaQual\bnfs Block
-\end{bnf}
+\tcode{do}后跟一个块创建一个闭包。如果闭包表达式不含显式的参数列表，则闭包可以包含隐式参数。
 
 \pnum
-\tcode{do}后跟一个块创建一个没有显式指定参数的lambda表达式。
-
-\pnum
-\tcode{do!}后跟一个块创建一个无参的lambda表达式并立即调用它，将其值作为整个表达式的值。\enternote \tcode{do}和后面的\tcode{!}之间必须没有空白，否则会被识别成两个分开的运算符。\exitnote
+闭包可以捕获当前作用域中的变量，并且可以使用移动、借用和可变借用三种方式捕获变量。如果没有显式指定捕获方式，则会自动推断最合适的捕获方式。
 
 \enterexample
 \begin{codeblock}
 let arr = [1, 2, 3];
 
-let first1 = arr.first(do { $0 > 2 }); // 获取第一个满足条件的元素
+let first1 = arr.first do { $0 > 2 }; // 获取第一个满足条件的元素
 
 let firstFinder = do {
     for let v : $0 {
@@ -391,7 +435,21 @@ let firstFinder = do {
     }
     nil
 };
+\end{codeblock}
+\exitexample
 
+\rSec2[expr.instant]{立即表达式}
+\indextext{表达式!立即}
+
+\begin{bnf}{ImmediateExpr}
+    \terminal{do!} ClosureQual\bnfs Block
+\end{bnf}
+
+\pnum
+立即表达式创建一个无参的闭包表达式并立即调用它，将其值作为整个表达式的值。\enternote \tcode{do}和后面的\tcode{!}之间必须没有空白，否则会被识别成两个分开的运算符。\exitnote
+
+\enterexample
+\begin{codeblock}
 let first2 = firstFinder(arr); // 与上面等价
 
 let first3 = do! {
@@ -442,8 +500,8 @@ let first3 = do! {
 \indextext{运算符!函数调用}
 
 \begin{bnf}{FuncCallExpr}
-    SuffixExpr \terminal{(} Arguments\bnfq \terminal{)} Block\bnfs \br
-    SuffixExpr Block
+    SuffixExpr \terminal{(} Arguments\bnfq \terminal{)} TrailingClosure\bnfq \br
+    SuffixExpr TrailingClosure
 \end{bnf}
 
 \begin{bnf}{Arguments}
@@ -466,6 +524,11 @@ let first3 = do! {
     ParamQual\bnfq Expression
 \end{bnf}
 
+\begin{bnf}{TrailingClosure}
+    Block \br
+    ClosureExpr
+\end{bnf}
+
 \pnum
 函数调用运算符用于调用函数。括号内的项作为参数传递给函数。
 
@@ -473,7 +536,8 @@ let first3 = do! {
 如果函数调用运算符的左操作数形如\tcode{$o$.$f$}，其中$f$是一个名称且不是$o$的成员名称，则这称作\term{方法调用}。此时，$o$将作为$f$的\tcode{this}参数传递给函数$f$。
 
 \pnum
-函数调用运算符可以后跟一个块。这个块将作为一个匿名lambda块，创建一个lambda表达式并作为函数的最后一个顺序参数传递给函数。若此时函数没有任何其他参数，则函数调用的小括号可以省略。
+函数调用运算符可以后跟一个闭包表达式。这个表达式将作为函数最后一个顺序参数。若此时函数没有任何其他参数，则函数调用的小括号可以省略。
+如果该闭包表达式是关键字\tcode{do}加块的形式，则关键字\tcode{do}也可以省略。
 
 \pnum
 如果函数参数指定了修饰符，则传递实参时必须显式传递相同的修饰符。
@@ -482,7 +546,7 @@ let first3 = do! {
 \indextext{运算符!成员访问}
 
 \begin{bnf}{MemberAccessExpr}
-    SuffixExpr \terminal{.} UnqualID \br
+    SuffixExpr \terminal{.} FullID \br
     SuffixExpr \terminal{.} IntegerLiteral \br
     SuffixExpr \terminal{.} \terminal{(} Expression \terminal{)}
 \end{bnf}

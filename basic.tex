@@ -34,25 +34,25 @@
 函数作用域也限制\tcode{await}运算符的使用。参见~\ref{expr.await}。
 
 \pnum
-函数定义的块、lambda表达式的块或表达式、\tcode{do}表达式的块和函数调用表达式的lambda块具有函数作用域。
+函数定义的块、闭包表达式的块或表达式、立即闭包表达式的块或表达式和函数调用表达式的闭包块具有函数作用域。
 
-\rSec2[scope.lambda]{Lambda 作用域}
-\indextext{作用域!lambda}
-
-\pnum
-Lambda作用域限制lambda参数的使用。参见~\ref{lex.lambda-param}。
+\rSec2[scope.closure]{闭包作用域}
+\indextext{作用域!闭包}
 
 \pnum
-lambda表达式的块或表达式以及函数调用表达式的lambda块具有lambda作用域。
+闭包作用域限制匿名闭包参数的使用。参见~\ref{lex.closure-args}。
 
 \pnum
-属性的访问器也具有lambda作用域。参见\ref{impl.prop}。
+闭包表达式的块或表达式以及函数调用表达式的闭包块具有闭包作用域。
+
+\pnum
+属性的访问器也具有闭包作用域。参见\ref{impl.prop}。
 
 \rSec2[scope.sequence]{序列作用域}
 \indextext{作用域!序列}
 
 \pnum
-序列作用域限制\tcode{\$}的使用，参见~\ref{expr.dollar}。序列作用域有一个关联的当前序列值，无论它是否实现\tcode{Sequence}。
+序列作用域限制\tcode{\textasciicircum}和\tcode{\$}的使用，参见~\ref{expr.bound}。序列作用域有一个关联的当前序列值，无论它是否实现\tcode{Sequence}。
 
 \pnum
 下标运算符\tcode{$s$[$\ldots$]}的两个方括号之间具有序列作用域。其当前序列为$s$。
@@ -61,7 +61,7 @@ lambda表达式的块或表达式以及函数调用表达式的lambda块具有la
 函数调用表达式\tcode{$s$($\ldots$)}的括号之间具有序列作用域。如果$s$形如\tcode{$o$.$f$}，且$f$是一个方法，则其当前序列为$o$，否则当前序列为$s$。\enternote 此处只能进行一次拆分，即\tcode{$a$.$b$.$c$}的当前序列不可能为$a$。\exitnote
 
 \pnum
-如果函数调用表达式带有一个lambda块，则这整个块也具有序列作用域，其当前序列确定方法同上。
+如果函数调用表达式带有一个闭包块，则这整个块也具有序列作用域，其当前序列确定方法同上。
 
 \enterexample
 

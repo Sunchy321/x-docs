@@ -74,7 +74,7 @@
 \end{bnf}
 
 \pnum
-实现可以给类型添加\term{属性}。属性的定义至少需要包含一个访问器。访问器的块或表达式具有lambda作用域，且隐含\tcode{this}参数。
+实现可以给类型添加\term{属性}。属性的定义至少需要包含一个访问器。访问器的块或表达式具有闭包作用域，且隐含\tcode{\&this}参数。
 
 \pnum
 属性的访问器可以以上下文关键字\tcode{get}、\tcode{set}、\tcode{willSet}或\tcode{didSet}开始。
@@ -83,7 +83,7 @@
 \tcode{willSet}和\tcode{didSet}访问器可以接受一个或两个参数，其类型为属性的类型。
 
 \pnum
-如果\tcode{set}访问器不显式写出参数，则视为其具有lambda参数\tcode{\$value}。如果\tcode{willSet}或\tcode{didSet}不显式写出参数，则视为其具有lambda参数\tcode{\$oldValue}和\tcode{\$newValue}。
+如果\tcode{set}访问器不显式写出参数，则视为其具有闭包参数\tcode{\$value}。如果\tcode{willSet}或\tcode{didSet}不显式写出参数，则视为其具有闭包参数\tcode{\$oldValue}和\tcode{\$newValue}。
 
 \pnum
 如果属性以直接后跟\tcode{=> $e$}的方式声明，则视作该属性具有访问器\tcode{get => $e$}。
