@@ -78,7 +78,7 @@
 \indextext{声明!类}
 
 \begin{bnf}{ClassDecl}
-    ClassQual\bnfs \terminal{class} Identifier ClassBody
+    ClassQual\bnfs \terminal{class} Identifier InheritTraits\bnfq ClassBody
 \end{bnf}
 
 \begin{bnf}{ClassQual}
@@ -92,9 +92,21 @@
     \terminal{=} Type
 \end{bnf}
 
+\begin{bnf}{InheritTraits}
+    \terminal{:} TraitList
+\end{bnf}
+
+\begin{bnf}{TraitList}
+    FullID \br
+    TraitList \terminal{,} FullID
+\end{bnf}
+
 \pnum
 类声明创建不透明类型。\tcode{class $C$ $B$}等价于\tcode{type $C$ = class $B$}。参见~\ref{type.opaque}。
 在类声明中，可以使用大括号代替结构类型的小括号。
+
+\pnum
+类声明中可以指定一个或多个能够自动实现的特征。
 
 \rSec1[decl.static-assert]{静态断言}
 \indextext{声明!静态断言}
