@@ -345,3 +345,13 @@ func panic(message: string = "") -> never;
 
 \pnum
 如果\tcode{panic}在执行过程中再次调用了\tcode{panic}，则会直接终止程序的执行而略过任何对象的析构。
+
+\rSec2[core.assert]{\tcode{assert}}
+
+\indexlibrary{\idxcode{assert}}
+\begin{itemdecl}
+func assert(condition: bool, message: string = "") -> void;
+\end{itemdecl}
+
+\pnum
+\tcode{assert}在运行时检查条件。如果条件为假，则调用\tcode{panic}。编译器识别\tcode{assert}并在 release 模式下消除此调用。debug 模式下保留。

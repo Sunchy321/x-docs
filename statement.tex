@@ -13,7 +13,6 @@
     ContinueStatement \br
     ReturnStatement \br
     ThrowStatement \br
-    AssertStatement \br
     DeferStatement
 \end{bnf}
 
@@ -247,23 +246,6 @@ func foo(e: E) {
 
 \pnum
 这些语句的类型都是\tcode{never}。
-
-\rSec1[stmt.assert]{\tcode{assert}语句}
-\indextext{语句!\idxcode{assert}}
-
-\begin{bnf}{AssertStatement}
-    \terminal{assert} Expression\bnfq \br
-    \terminal{assert} Expression\bnfq \terminal{:} Expression
-\end{bnf}
-
-\pnum
-\term{\tcode{assert}语句}用于在运行时检查表达式是否为真。如果表达式为假，则调用\tcode{panic}。
-
-\pnum
-\tcode{assert}语句可以带有一个\tcode{:}分隔的表达式，此时如果表达式为假，则将该表达式的值作为\tcode{panic}的参数。
-
-\pnum
-\tcode{assert}语句的类型为\tcode{void}。
 
 \rSec1[stmt.defer]{\tcode{defer}语句}
 \indextext{语句!\idxcode{defer}}
