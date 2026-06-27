@@ -13,7 +13,8 @@
     ContinueStatement \br
     ReturnStatement \br
     ThrowStatement \br
-    AssertStatement
+    AssertStatement \br
+    DeferStatement
 \end{bnf}
 
 \pnum
@@ -110,6 +111,9 @@ if x.filter{ true }
 \pnum
 \tcode{match}语句的各项中的模式必须覆盖被匹配表达式的所有可能值，否则这是一个编译错误。
 如果该表达式的某可能值包含类型为\tcode{never}的项，则可以省略该项。
+
+\pnum
+穷举性检查按类型分类进行：对\tcode{bool}、枚举、定长整数类型（\tcode{int<$w$>}、\tcode{uint<$w$>}）等有限值类型，编译器通过构造函数分裂检查全部可能值是否被覆盖；对\tcode{int}（任意精度整数）、\tcode{string}、数组等无限值类型，必须包含\tcode{_}兜底分支，否则报编译错误。
 
 \enterexample
 \begin{codeblock}
@@ -260,3 +264,32 @@ func foo(e: E) {
 
 \pnum
 \tcode{assert}语句的类型为\tcode{void}。
+
+\rSec1[stmt.defer]{\tcode{defer}语句}
+\indextext{语句!\idxcode{defer}}
+
+\begin{bnf}{DeferStatement}
+    \terminal{defer} Block
+\end{bnf}
+
+\pnum
+\term{\tcode{defer}语句}注册一个在当前作用域结束时执行的块。\tcode{defer}语句不产生值。
+
+\pnum
+同一作用域内多个\tcode{defer}按声明逆序（LIFO）执行。\tcode{defer}块捕获当前作用域中的变量（按引用），无论作用域以何种方式退出（正常返回、异常传播或\tcode{panic}），均会执行。
+
+\pnum
+\tcode{defer}等价于创建一个匿名的、实现了\tcode{Deinit}的栈值。编译器将其脱糖为匿名结构体，其中被捕获的变量按引用持有。
+
+\enterexample
+\begin{codeblock}
+{
+    let file = File::open("data.txt");
+    defer { file.close(); }
+    defer { log("done"); }
+
+    process(file);
+}
+// 先执行 log("done")，再执行 file.close()
+\end{codeblock}
+\exitexample

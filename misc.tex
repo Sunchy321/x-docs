@@ -13,7 +13,7 @@ type Symbol = __intrinsic;
 \end{itemdecl}
 
 \pnum
-\tcode{Symbol}是所有符号字面量的公共类型。它只能通过内建的符号字面量来获得值。
+\tcode{Symbol}是所有符号字面量的公共类型。它是一个内建实体（\ref{intrinsic}），只能通过内建的符号字面量来获得值。
 
 \indexlibrary{\idxcode{Optional}}
 \begin{itemdecl}
@@ -50,13 +50,13 @@ enum Order {
 
 \indexlibrary{\idxcode{Deinit}}
 \begin{itemdecl}
-auto trait Deinit {
+@auto trait Deinit {
     func deinit(&mut this) -> void;
 }
 \end{itemdecl}
 
 \pnum
-\tcode{Deinit}为类型提供\term{析构器}。具有析构器的值在被销毁时会调用其析构器。
+\tcode{Deinit}为类型提供\term{析构器}。栈值离开作用域且未被移走时，析构器被确定性调用。若栈值的引用可能逃逸其作用域（例如被存入全局变量或被闭包长期捕获），编译器将报告编译错误。
 
 \pnum
 对于没有显式实现\tcode{Deinit}的类型，编译器会自动生成依次析构其所有成员的析构器。

@@ -30,8 +30,11 @@
 \term{程序文本}指将被翻译为\X{}程序的文本的整体或者一部分。它存储在\term{源文件}中，并以UTF-8编码读取。
 
 \pnum
-程序文本将被分割为\term{标记}的序列。标记是程序文本中的最小单元，包括标识符、关键字、标点符号、字面量、闭包参数。
+程序文本将被分割为\term{标记}的序列。标记是程序文本中的最小单元，包括标识符、关键字、标点符号、字面量、闭包参数、宏调用。
 除了少数地方，标记之间包含的空白字符或注释会被忽略。它们不影响程序含义。
+
+\pnum
+当一段字符序列可以匹配多种标记类型时，按以下优先级确定标记类型：宏调用优先于字面量，字面量优先于闭包参数，闭包参数优先于标点符号，标点符号优先于关键字，关键字优先于标识符。标点符号内部，总是尽可能长地匹配。标识符不能与关键字相同，因此关键字总是优先于标识符被识别。
 
 \pnum
 宏调用是特殊的标记，它将在编译时展开为标记序列。
@@ -72,13 +75,13 @@
 \end{bnf}
 
 \pnum
-\term{标识符}以具有Unicode XID_Start属性的字符或\tcode{_}开始，后跟零个或数个具有Unicode XID_Continue属性的字符，但不能与关键字相同。标识符区分大小写。
+\term{标识符}以具有Unicode XID_Start属性的字符或\tcode{_}开始，后跟零个或数个具有Unicode XID_Continue属性的字符，但不能与关键字相同。标识符区分大小写。所有标识符在比较前转换为NFC正规化形式。
 
 \pnum
 使用反引号包围的字符序列称为\term{原始标识符}。原始标识符可以用于将无法作为普通标识符的字符序列作为标识符使用。
 
 \pnum
-如果原始标识符中的字符序列是普通标识符的字符系列，则它与不带反引号的形式完全相同，但它不会被认为是关键字。
+如果原始标识符中的字符序列是普通标识符的字符序列，则它与不带反引号的形式完全相同，但它不会被认为是关键字。
 
 \pnum
 原始标识符中不能包含空格以外的空白字符以及\tcode{`}。原始标识符不能以\tcode{\$}开头。
@@ -88,20 +91,27 @@
 \pnum
 \begin{floattable}{关键字}{tab:keyword}{lllll}
 \topline
-\tcode{_}         & \tcode{any}       & \tcode{as}        & \tcode{assert}    & \tcode{async}     \\
-\tcode{await}     & \tcode{auto}      & \tcode{bool}      & \tcode{borrow}    & \tcode{break}     \\
-\tcode{catch}     & \tcode{char}      & \tcode{class}     & \tcode{cmp}       & \tcode{const}     \\
-\tcode{continue}  & \tcode{defer}     & \tcode{do}        & \tcode{dyn}       & \tcode{else}      \\
-\tcode{enum}      & \tcode{extern}    & \tcode{false}     & \tcode{float}     & \tcode{for}       \\
+\tcode{_}         & \tcode{and}       & \tcode{and_eq}    & \tcode{any}       & \tcode{as}        \\
+\tcode{assert}    & \tcode{async}     & \tcode{await}     & \tcode{bool}      & \tcode{break}     \\
+\tcode{catch}     & \tcode{char}      & \tcode{class}     & \tcode{cmp}       & \tcode{compl}     \\
+\tcode{const}     & \tcode{continue}  & \tcode{defer}     & \tcode{do}        & \tcode{dyn}       \\
+\tcode{else}      & \tcode{enum}      & \tcode{extern}    & \tcode{float}     & \tcode{for}       \\
 \tcode{func}      & \tcode{if}        & \tcode{impl}      & \tcode{import}    & \tcode{in}        \\
-\tcode{infer}     & \tcode{init}      & \tcode{int}       & \tcode{internal}  & \tcode{is}        \\
-\tcode{let}       & \tcode{macro}     & \tcode{match}     & \tcode{module}    & \tcode{mut}       \\
-\tcode{never}     & \tcode{nil}       & \tcode{operator}  & \tcode{partial}   & \tcode{private}   \\
+\tcode{init}      & \tcode{int}       & \tcode{internal}  & \tcode{is}        & \tcode{let}       \\
+\tcode{macro}     & \tcode{match}     & \tcode{module}    & \tcode{mut}       & \tcode{never}     \\
+\tcode{operator}  & \tcode{or}        & \tcode{or_eq}     & \tcode{partial}   & \tcode{private}   \\
 \tcode{public}    & \tcode{ref}       & \tcode{return}    & \tcode{self}      & \tcode{shl}       \\
 \tcode{shl_eq}    & \tcode{shr}       & \tcode{shr_eq}    & \tcode{some}      & \tcode{static}    \\
-\tcode{string}    & \tcode{this}      & \tcode{throw}     & \tcode{trait}     & \tcode{true}      \\
-\tcode{try}       & \tcode{type}      & \tcode{typeof}    & \tcode{uint}      & \tcode{unsafe}    \\
-\tcode{void}      & \tcode{while}     &                   &                   &                   \\
+\tcode{string}    & \tcode{this}      & \tcode{throw}     & \tcode{trait}     & \tcode{try}       \\
+\tcode{type}      & \tcode{typeof}    & \tcode{uint}      & \tcode{unsafe}    & \tcode{void}      \\
+\tcode{while}     & \tcode{xor}       & \tcode{xor_eq}    &                   &                   \\
+\end{floattable}
+
+\pnum
+下列字面量因词法优先级规则优先于标识符被识别，因而也不能被用作普通标识符。
+\begin{floattable}{保留字面量}{tab:reserved-literal}{lll}
+\topline
+\tcode{false} & \tcode{nil} & \tcode{true} \\
 \end{floattable}
 
 \pnum
@@ -125,10 +135,11 @@
 \end{bnf}
 
 \pnum
-\term{标点符号}由一个或数个符号组成，其中的一部分称为\term{运算符}，参见~\ref{op}。
+\term{标点符号}由一个或数个标点字符组成，其中的一部分称为\term{运算符}，参见~\ref{op}。
+标点符号的识别采用最长匹配：尽可能从当前位置读取最长的已知多字符序列。如果无法匹配任何多字符序列，则取单个标点字符。
 
 \pnum
-除了多字符标点符号外，标点符号都由单个字符组成。表~\ref{tab:multichar-punc}~列出了内建的多字符标点，但不包含运算符。解析标点符号时，应尽可能长地匹配多字符标点符号。用户也可以自定义多字符运算符。
+除了内建的多字符标点，用户也可以自定义多字符运算符，同样适用最长匹配规则。
 
 \begin{floattable}{多字符标点符号}{tab:multichar-punc}{lllll}
 \topline
@@ -137,7 +148,11 @@
 \tcode{=>}  &
 \tcode{!!}  &\\
 \tcode{::}  &
-\tcode{...} &&&\\
+\tcode{...} &
+\tcode{\&\&} &
+\tcode{||} &\\
+\tcode{\textasciicircum+} &
+\tcode{\textasciicircum-} &\\
 \end{floattable}
 
 \rSec1[lex.literal]{字面量}
@@ -233,8 +248,8 @@
 \end{bnf}
 
 \begin{bnf}{HexadecimalFloatingLiteral}
-    HexadecimalPrefix HexadecimalDigits \terminal{.} HexadecimalDigits BinaryExponentPart\bnfq \br
-    HexadecimalPrefix HexadecimalDigits BinaryExponentPart
+    \terminal{0x} HexadecimalDigits \terminal{.} HexadecimalDigits BinaryExponentPart\bnfq \br
+    \terminal{0x} HexadecimalDigits BinaryExponentPart
 \end{bnf}
 
 \begin{bnf}{ExponentPart}
@@ -308,19 +323,20 @@
 普通字符串字面量也可以前后加上等量的\tcode{@}，此时它被称为\term{原始字符串字面量}。原始字符串字面量中的反斜杠不会被解释为转义序列，而是字符本身。
 
 \pnum
-字符串字面量可以横跨多行，但其开头引号必须为其所在行的最后一个字符，且结尾的引号必须为其所在行的第一个非空白字符。
-结尾引号之前的所有空白字符将作为这个字符串字面量的\term{行前缀}。
-开头引号到结尾引号之间的所有字符（包括换行符）按顺序成为该字符串字面量的内容，但除了以下字符：
+字符串字面量可以不横跨多行，此时其内容为开头引号和结尾引号之间的所有字符。
+
+\pnum
+字符串字面量也可以横跨多行。此时，开头引号必须为其所在行的最后一个字符，结尾引号必须为其所在行的第一个非空白字符，且开头引号后必须紧跟换行符，结尾引号前不能有非空白字符。除此之外，开头引号到结尾引号之间的所有字符（包括换行符）按顺序成为该字符串字面量的内容，但除了以下字符：
 
 \begin{itemize}
     \item 开头引号之后紧邻的换行；
-    \item 每一行的行前缀；
+    \item 每一行的行前缀（见下文）；
     \item 结尾引号前一行的换行符；
     \item 如果一行末尾有反斜杠，这个反斜杠和其后的换行符。
 \end{itemize}
 
+结尾引号之前的所有空白字符将作为这个字符串字面量的\term{行前缀}。
 换行符会变成\tcode{'\textbackslash{}n'}。
-如果开始引号后不是换行符，或者结束引号前有非空白字符，这是一个编译错误。
 如果行前缀不是某一行的前缀，这是一个编译错误。
 
 \enterexample

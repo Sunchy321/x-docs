@@ -43,6 +43,14 @@
 \pnum
 \X 中的实体可以带有编译器的类型或非类型参数进行泛化。
 
+\pnum
+紧随标识符且中间无空格的\tcode{<}视为泛型参数的开始。\tcode{<}与标识符之间有空白时视为小于运算符。\enterexample
+\begin{codeblock}
+a<b>   // 泛型参数，< 紧贴 a
+a < b  // 比较，有空白
+\end{codeblock}
+\exitexample
+
 \rSec1[kind]{高阶类型}
 \indextext{高阶类型}
 

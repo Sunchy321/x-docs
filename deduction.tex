@@ -68,3 +68,45 @@ f(.Y.g()); // 错误，\tcode{E}上的方法\tcode{g}不返回\tcode{E}
 
 \end{codeblock}
 \exitexample
+
+\rSec1[deduct.basic]{基本推导与双向推导}
+
+\pnum
+类型推导本质上是以类型变量求解约束方程组的过程。在需要类型但未显式指定的位置，编译器引入一个类型变量$\mathcal{?T}$，收集该变量参与的所有约束，然后通过合一（unification）求解。
+
+\pnum
+\term{基本推导}指从表达式向上推导类型的过程。\enterexample
+\begin{codeblock}
+let x = 42;         // 42 的类型为 int，因此 x 的类型为 int
+let y = x + 1;      // 1 的类型为 int，+ 要求两个操作数类型相同，因此 y 的类型为 int
+let z = true;       // true 的类型为 bool，因此 z 的类型为 bool
+\end{codeblock}
+\exitexample
+
+\pnum
+\term{双向推导}指类型信息同时沿两个方向流动：表达式向上提供类型，上下文标注向下提供预期类型。当同时存在时，预期类型被用于约束表达式内的类型变量推导。\enterexample
+\begin{codeblock}
+let a: int? = nil;           // nil 的类型为 ?T?，上下文要求 ?T? = int?，解出 ?T = int
+let b: string? = nil;        // 同上，解出 ?T = string
+let c = nil;                 // 编译错误：未能在函数体内确定 ?T
+\end{codeblock}
+\exitexample
+
+\pnum
+函数调用时，实参类型用于推导函数的泛型参数类型。\enterexample
+\begin{codeblock}
+func identity<T>(x: T) -> T { x }
+let v = identity(42);        // 实参 42 的类型为 int，推导 T = int，v 的类型为 int
+\end{codeblock}
+\exitexample
+
+\pnum
+如果泛型函数带有 trait 约束，则推导过程中同时求解约束。若约束无法满足，报编译错误。\enterexample
+\begin{codeblock}
+func add<T : Add<int>>(a: T, b: int) -> T { a + b }
+let v = add(3.0, 1);         // 实参 3.0 的类型为 float，推导 T = float，检查 float : Add<int>
+\end{codeblock}
+\exitexample
+
+\pnum
+类型推导的作用范围是当前函数体。函数体内的未解变量在函数体结束时必须全部确定。返回类型的推导跨越整个函数体——所有 \tcode{return} 表达式的公共类型为函数的返回类型。

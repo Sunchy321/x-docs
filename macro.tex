@@ -52,7 +52,7 @@
     Token \textnormal{但不是} \terminal{( ) [ ] \{ \} + * ?}
 \end{bnf}
 
-\begin{bnf}{MacroToken}{\oneof}
+\begin{bnf}{MacroRepeat}{\oneof}
     \terminal{+ * ?}
 \end{bnf}
 
@@ -81,7 +81,7 @@
 \pnum
 宏匹配项指定的特定程序项的含义如表~\ref{tab:macro-item-type}~所示。
 
-\begin{floattable}{整数字面量后缀}{tab:macro-item-type}{c|c}
+\begin{floattable}{宏匹配项类型}{tab:macro-item-type}{c|c}
     \topline
     类型 & 匹配的程序项 \\
     \capsep

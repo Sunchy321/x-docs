@@ -14,7 +14,7 @@
 \end{bnf}
 
 \begin{bnf}{OperatorKeyword}[\oneof]
-    \terminal{shl shr cmp in}
+    \terminal{shl shr cmp in and or xor compl}
 \end{bnf}
 
 \begin{bnf}{OperatorType}[\oneof]
@@ -39,25 +39,25 @@
 
 \begin{floattable}{内建运算符}{tab:op}{lllll}
 \topline
-\tcode{+!} & \tcode{-!} & 前缀\tcode{+} & 前缀\tcode{-} & 前缀\tcode{!} \\
+\tcode{\textasciicircum+} & \tcode{\textasciicircum-} & 前缀\tcode{+} & 前缀\tcode{-} & 前缀\tcode{!} \\
 \tcode{'\~} & 前缀\tcode{*} & \tcode{?} & 后缀\tcode{!} & \tcode{*} \\
 \tcode{/} & \tcode{\%} & 二元\tcode{+} & 二元\tcode{-} & \tcode{shl} \\
-\tcode{shr} & \tcode{'\&} & \tcode{'\textasciicircum} & \tcode{'|} & \tcode{..} \\
+\tcode{shr} & \tcode{and} & \tcode{xor} & \tcode{or} & \tcode{..} \\
 \tcode{..=} & \tcode{\~} & \tcode{==} & \tcode{!=} & \tcode{<} \\
 \tcode{<=} & \tcode{>} & \tcode{>=} & \tcode{cmp} & \tcode{in} \\
-\tcode{\&} & \tcode{|} & & & \\
+\tcode{\&\&} & \tcode{||} & & & \\
 \hhline{|=====|}
 \tcode{.} & \tcode{await} & 前缀\tcode{\&} & \tcode{!in} & \tcode{is} \\
 \tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} & \tcode{*=} \\
 \tcode{/=} & \tcode{\%=} & \tcode{shl_eq} & \tcode{shr_eq} & \tcode{'\&=} \\
-\tcode{'\textasciicircum=} & \tcode{'|=} & \tcode{??=} & \tcode{++} & \tcode{--} \\
+\tcode{xor\_eq} & \tcode{or\_eq} & \tcode{??=} & \tcode{++} & \tcode{--} \\
 \tcode{\~>} & \tcode{<\~} & \tcode{;} && \\
 \end{floattable}
 
 \rSec1[op.user]{自定义运算符}
 \indextext{运算符!自定义}
 
-\begin{bnf}{OpeartorDecl}
+\begin{bnf}{OperatorDecl}
     \terminal{operator} CustomOperator OperatorSpecifier OperatorTraitBinder \terminal{;} \br
     \terminal{operator} Identifier OperatorSpecifier OperatorTraitBinder \terminal{;}
 \end{bnf}
@@ -102,12 +102,12 @@
 \tcode{*} & \tcode{/} & \tcode{\%} & 左结合 \\
 \tcode{+} & \tcode{-} & & 左结合 \\
 \tcode{shl} & \tcode{shr} & & 不结合 \\
-\tcode{'\&} & \tcode{'\textasciicircum} & \tcode{'|} & 左结合，不能混用 \\
+\tcode{and} & \tcode{xor} & \tcode{or} & 左结合，不能混用 \\
 \tcode{..} & \tcode{..=} & & 不结合 \\
 \tcode{\~} && & 左结合，不能混用 \\
 \tcode{??} && & 右结合，不能混用 \\
 \tcode{==} 等 && & 特殊结合性 \\
-\tcode{\&} & \tcode{|} & & 左结合，不能混用 \\
+\tcode{\&\&} & \tcode{||} & & 左结合，不能混用 \\
 \tcode{=}等 && & 不结合 \\
 \end{floattable}
 
@@ -232,8 +232,8 @@ let mut x = () as X;
 \tcode{()} & \tcode{FunctorMut::callMut}, \tcode{Functor::call}, \tcode{FunctorOnce::callOnce} \\
 \tcode{?} & \tcode{Failable::chain} \\
 \tcode{!} & \tcode{Failable::unwrap} \\
-\tcode{+?} & \tcode{Successor::next} \\
-\tcode{-?} & \tcode{Predecessor::prev} \\
+\tcode{\textasciicircum+} & \tcode{Successor::next} \\
+\tcode{\textasciicircum-} & \tcode{Predecessor::prev} \\
 \tcode{++} & \tcode{Increment::inc} \\
 \tcode{--} & \tcode{Decrement::dec} \\
 \tcode{as} & \tcode{Into::into} \\
@@ -318,7 +318,7 @@ match Try::branch(\{$a$}) {
 \tcode{+} & \tcode{Positive::positive} \\
 \tcode{-} & \tcode{Negative::negative} \\
 \tcode{!} & \tcode{Not::not} \\
-\tcode{'\~} & \tcode{Complement::compl} \\
+\tcode{compl} & \tcode{Complement::compl} \\
 \tcode{*} & \tcode{DerefMut::derefMut}, \tcode{Deref::deref} \\
 \end{floattable}
 
@@ -349,15 +349,15 @@ match Try::branch(\{$a$}) {
 \tcode{-} & \tcode{Subtract::subtract} \\
 \tcode{shl} & \tcode{ShiftLeft::shiftLeft} \\
 \tcode{shr} & \tcode{ShiftRight::shiftRight} \\
-\tcode{'\&} & \tcode{BitAnd::bitAnd} \\
-\tcode{'\textasciicircum} & \tcode{BitXor::bitXor} \\
-\tcode{'|} & \tcode{BitOr::bitOr} \\
+\tcode{and} & \tcode{BitAnd::bitAnd} \\
+\tcode{xor} & \tcode{BitXor::bitXor} \\
+\tcode{or} & \tcode{BitOr::bitOr} \\
 \tcode{..} & \tcode{RangeTo::rangeTo} \\
 \tcode{..=} & \tcode{ClosedRangeTo::closedrangeTo} \\
 \tcode{\~} & \tcode{Concat::concat} \\
 \tcode{in} & \tcode{Include::include} \\
-\tcode{\&} & \tcode{LogicAnd::logicAnd} \\
-\tcode{|} & \tcode{LogicOr::logicOr} \\
+\tcode{\&\&} & \tcode{LogicAnd::logicAnd} \\
+\tcode{||} & \tcode{LogicOr::logicOr} \\
 \tcode{+=} & \tcode{AddAssign::addAssign} \\
 \tcode{-=} & \tcode{SubtractAssign::subtractAssign} \\
 \tcode{*=} & \tcode{MultiplyAssign::multiplyAssign} \\
@@ -365,9 +365,9 @@ match Try::branch(\{$a$}) {
 \tcode{\%=} & \tcode{ModuloAssign::moduloAssign} \\
 \tcode{shl_eq} & \tcode{ShiftLeftAssign::shiftLeftAssign} \\
 \tcode{shr_eq} & \tcode{ShiftRightAssign::shiftRightAssign} \\
-\tcode{'\&=} & \tcode{BitAndAssign::bitAndAssign} \\
-\tcode{'\textasciicircum=} & \tcode{BitXorAssign::bitXorAssign} \\
-\tcode{'|=} & \tcode{BitOrAssign::bitOrAssign} \\
+\tcode{and\_eq} & \tcode{BitAndAssign::bitAndAssign} \\
+\tcode{xor\_eq} & \tcode{BitXorAssign::bitXorAssign} \\
+\tcode{or\_eq} & \tcode{BitOrAssign::bitOrAssign} \\
 \tcode{<\~} & \tcode{AppendRight::appendRight} \\
 \tcode{\~>} & \tcode{AppendLeft::appendLeft} \\
 \end{floattable}

@@ -95,8 +95,7 @@
 \begin{bnf}{ParamQual}
     \terminal{mut} \br
     \terminal{ref} \br
-    \terminal{lazy} \br
-    \terminal{borrow}
+    \terminal{lazy}
 \end{bnf}
 
 \begin{bnf}{TypeNotation}
@@ -140,7 +139,7 @@ func foo((a, b): (int, bool)) {
 \indextext{参数修饰符!\idxcode{mut}}
 
 \pnum
-\tcode{mut}修饰的参数是可变的，可以在函数内部被修改或重新赋值。\enternote 由于参数总是移动传递，所以除非使用\tcode{ref}修饰，否则调用处实参的值不会受影响。\exitnote
+\tcode{mut}修饰的参数是可变的，可以在函数内部被修改或重新赋值。\enternote 由于参数总是移动传递，所以除非使用\tcode{ref}修饰，否则调用处实参的值不会受影响。实现了\tcode{Copy}的类型在移动时自动拷贝，调用处原变量继续可用。\exitnote
 
 \rSec2[param.qual.ref]{\tcode{ref}}
 \indextext{参数修饰符!\idxcode{ref}}
@@ -151,6 +150,7 @@ func foo((a, b): (int, bool)) {
 \pnum
 类型为$T$的\tcode{ref}参数实际上是类型为\tcode{$T$\&}（或\tcode{$T$ mut\&}）的引用参数的语法糖。
 在函数内部使用该参数时，将会自动对参数进行解引用。
+\tcode{ref}参数的子类型关系按其脱糖结果\tcode{$T$\&}的规则确定。
 
 \pnum
 \tcode{ref}参数将会按如下方式脱糖：
@@ -184,6 +184,7 @@ foo(&mut a);
 
 \pnum
 类型为$T$的\tcode{lazy}参数实际上是类型为\tcode{() once -> $T$}的闭包参数的语法糖。
+\tcode{lazy}参数的子类型关系按其脱糖结果\tcode{() once -> $T$}的规则确定。
 在函数内部首次读取该参数时，将会调用该闭包并将结果缓存，之后再次读取时直接使用缓存的值。
 
 \pnum
@@ -218,37 +219,6 @@ func foo(\{$c_a$}: () once -> int) {
 let a = 0;
 
 foo(do { a });
-\end{codeblock}
-
-\rSec2[param.qual.borrow]{\tcode{borrow}}
-\indextext{参数修饰符!\idxcode{borrow}}
-
-\pnum
-\tcode{borrow}修饰的参数为借用参数，它会将实参移入到函数中，然后在函数返回时将其返回并覆盖原实参。
-\tcode{borrow}不能与\tcode{lazy}和\tcode{ref}修饰符一起使用。
-
-\pnum
-\tcode{borrow}参数将会按如下方式脱糖：
-
-\begin{codeblock}
-func foo(borrow a: int) {
-    let a = 1;
-}
-
-let a = 0;
-
-foo(borrow a);
-\end{codeblock}
-变为
-\begin{codeblock}
-func foo(a: int) -> (void, int) {
-    let a = 1;
-    ((), a)
-}
-
-let a = 0;
-
-let (_, a) = foo(a);
 \end{codeblock}
 
 \rSec1[func.async]{异步函数}

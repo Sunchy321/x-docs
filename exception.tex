@@ -49,7 +49,7 @@
 \tcode{try}表达式的类型$T$与所有\tcode{catch}块的类型的公共类型。
 
 \pnum
-如果一个异常传播到了最顶层函数的最外层，将会调用\tcode{core::terminate}。
+如果一个异常传播到了最顶层函数的最外层，将会调用\tcode{core::terminate}。\tcode{core::terminate}向标准错误输出错误信息、析构当前线程的栈上值、放弃当前剩余表达式计算后结束程序。对\tcode{\&T}指向的堆对象，不保证析构。
 
 \rSec1[except.func.throw]{函数\tcode{throw}修饰符}
 

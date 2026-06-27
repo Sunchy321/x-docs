@@ -60,7 +60,8 @@
 \end{bnf}
 
 \begin{bnf}{TypeQual}
-    \terminal{const}
+    \terminal{const} \br
+    \terminal{partial}
 \end{bnf}
 
 \begin{bnf}{TypeBody}
@@ -107,6 +108,41 @@
 
 \pnum
 类声明中可以指定一个或多个能够自动实现的特征。
+
+\rSec1[decl.partial]{\tcode{partial}类型}
+\indextext{声明!\idxcode{partial}}
+
+\pnum
+\tcode{partial}修饰的类型声明创建\term{开放类型}。开放类型允许在其他模块或文件中对其进行\term{refine}——追加新的成员字段。多个\tcode{partial}声明中相同名称的字段类型必须一致。
+
+\pnum
+\tcode{partial}只能用于\tcode{type}声明，不能用于类型别名和\tcode{class}。开放类型采用与普通结构类型不同的内部存储方式，以支持未知字段的追加。
+
+\pnum
+refine 声明同样使用\tcode{partial}修饰符，后跟原始类型的名称和追加的成员。refine 声明与原始声明通过类型名称关联。
+
+\pnum
+refine 声明需在模块配置中显式激活后方可生效。被激活的 refine 声明在当前编译单元内与原始声明自动合并，未激活的 refine 不影响类型定义。
+
+\enterexample
+\begin{codeblock}
+// lib.x — 原始定义
+partial type NodeEnv {
+    platform: string;
+}
+
+// linux.x — refine 声明
+partial type NodeEnv {
+    kernelVersion: string;
+}
+
+// 使用方：配置激活 linux.x 的 refine 后
+let env = NodeEnv {
+    platform: "linux",
+    kernelVersion: "6.1",
+};
+\end{codeblock}
+\exitexample
 
 \rSec1[decl.static-assert]{静态断言}
 \indextext{声明!静态断言}

@@ -138,7 +138,6 @@ $$ \tcode{Symbol} \coloneqq \bigcup_{\tcode{'}s} \left\{  \tcode{'}s \right\} $$
     FuncType \br
     UnionType \br
     Type \terminal{\&} \br
-    FuncType \br
     OpaqueType
 \end{bnf}
 
@@ -298,6 +297,18 @@ $$ \tcode{()} \coloneqq \tcode{void} $$
 如果函数类型包含\tcode{mut}修饰符，则对它的调用将会更改其值，它实现了\tcode{core::ops::FunctorMut}。
 如果函数类型不包含这两种修饰符，则对它的调用不会更改其值，它实现了\tcode{core::ops::Functor}。函数均具有此类函数类型。
 
+\rSec2[type.union]{联合类型}
+\indextext{类型!联合类型}
+
+\begin{bnf}{UnionType}
+    Type \terminal{|} Type
+\end{bnf}
+
+\pnum
+\tcode{$A$ | $B$}为\term{联合类型}，代表类型$A$或类型$B$。联合类型的值为一个标志位和$A$与$B$的最大存储量的组合。
+联合类型具有代数性质：$A \mid A = A$（幂等），$A \mid B = B \mid A$（交换），$A \mid (B \mid C) = (A \mid B) \mid C$（结合）。
+\enternote 联合类型通常由类型推导产生，但用户也可以在类型位置显式写出。\exitnote
+
 \rSec1[type.opaque]{不透明类型}
 \indextext{类型!不透明}
 
@@ -418,6 +429,12 @@ y = x; // 正确，\tcode{dyn T}之间可以互相赋值
 
 \pnum
 \term{类型名称}在特定的语法位置表示类型，以避免潜在的语法歧义。
+
+\rSec1[type.typeof]{\tcode{typeof}}
+\indextext{类型!\idxcode{typeof}}
+
+\pnum
+\tcode{typeof($e$)}在类型位置上使用，表示表达式$e$的类型。$e$不会被求值，\tcode{typeof}仅在编译时获取其类型。
 
 \rSec1[subtype]{子类型}
 \indextext{类型!子类型}
