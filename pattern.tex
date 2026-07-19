@@ -239,6 +239,9 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
     \item \tcode{as T}要求值的类型能够转换到\tcode{T}，无论显式或隐式。
     \end{itemize}
 
+\pnum
+如果被匹配表达式的静态类型为联合类型，则类型断言成功的分支中，该值被收窄为断言所确定的类型。类型断言检查值自身的动态类型，不检查该值在转换为联合类型时所经过的成员类型；联合转换不保留构造路径。
+
 \rSec1[pattern.include]{包含断言}
 \indextext{模式匹配!包含断言}
 
