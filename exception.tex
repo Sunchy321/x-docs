@@ -1,30 +1,71 @@
 %!TEX root = x.tex
 
-\rSec0[except]{异常处理}
-\indextext{异常处理}
+\rSec0[except]{错误处理}
+\indextext{错误处理}
 
 \rSec1[except.intro]{概述}
-\indextext{异常处理!概述}
+\indextext{错误处理!概述}
 
 \pnum
-\X 将程序中出现的问题分为一般错误与致命错误。一般错误能被上层代码处理，例如打开文件时文件不存在；致命错误则无法被处理，例如内存耗尽。
-代码中的一般错误可以使用异常机制来处理。致命错误应该调用\tcode{panic}直接终止程序的执行。参见~\ref{except.panic}。
+\X 将程序中出现的问题分为一般错误与致命错误。两者的区别在于调用方能否合理地恢复：
 
-\rSec1[except.throw]{抛出异常}
-\indextext{异常处理!抛出}
+\begin{itemize}
+\item
+\term{一般错误}（recoverable errors）是调用方可以合理预期并处理的情况，例如文件不存在、网络超时、数据格式错误、权限被拒。
+一般错误应使用错误处理机制（\tcode{throw}表达式与结果类型\tcode{$T$ !! $E$}）处理，参与类型系统，由编译期保证错误被显式处理或传播。
+\item
+\term{致命错误}（unrecoverable bugs）是程序错误，调用方无法合理地恢复，例如空指针解引用、数组越界、除零、断言失败、合约违反。
+致命错误应调用\tcode{panic}终止当前线程的执行。\tcode{panic}不参与类型系统，不要求函数标注，不应被用作一般错误处理的控制流机制。
+\end{itemize}
 
 \pnum
-\tcode{throw}表达式（参见~\ref{stmt.control}）抛出异常。这等价于函数以结果类型的错误值返回。
-在没有\tcode{throw}修饰符的函数中使用\tcode{throw}表达式是一个编译错误。
+\enterexample
+\begin{codeblock}
+// 一般错误：调用方可以决定使用默认值
+func readConfig(path: string) throw(FileError | ParseError) -> Config { ... }
+let config = try readConfig("config.json") catch let e { Config.default() }
+
+// 致命错误：不应该被捕获，调用方无法合理恢复
+func getElement(arr: int[], index: int) -> int {
+    if index >= arr.len { panic("out of bounds") }
+    return arr[index]
+}
+\end{codeblock}
+\exitexample
+
+\rSec1[except.throw]{抛出错误}
+\indextext{错误处理!抛出}
+
+\pnum
+\tcode{throw}语句（参见~\ref{stmt.control}）抛出错误。
+在具有\tcode{throw}修饰符（参见~\ref{except.func.throw}）的函数或闭包中，
+\tcode{throw $e$}在语义上等价于\tcode{return}一个以\tcode{$e$}为载荷的错误值——即底层结果类型\tcode{$R$ !! $E$}的错误分支。
+若函数具有\tcode{throw(}$E_1$\tcode{,} $E_2$\tcode{,} ...\tcode{)}修饰符，则\tcode{$e$}的类型必须相容于所列错误类型之一。
+
+\pnum
+在既未携带\tcode{throw}修饰符、\tcode{throw()}中指定的错误类型也不包含所抛错误类型的函数中使用\tcode{throw}表达式是一个编译错误。
 
 \pnum
 \tcode{throw}表达式的参数必须实现了\tcode{ErrorCode}。
 
 \pnum
-不带参数的\tcode{throw}表达式只能在\tcode{catch}块中使用。它重新抛出当前捕获的异常。
+不带参数的\tcode{throw}表达式只能在\tcode{catch}块中使用。它重新抛出当前\tcode{catch}子句所捕获的错误。
+重新抛出的错误类型为\tcode{catch}子句模式所收窄后的错误类型。
+该类型必须相容于外层函数的\tcode{throw}修饰符所约束的错误类型，否则为编译错误。
 
-\rSec1[except.catch]{处理异常}
-\indextext{异常处理!处理}
+\pnum
+在带\tcode{throw}（自动推导）修饰符的函数或闭包中，以下错误类型均被加入所推导的错误联合类型：
+\begin{itemize}
+\item 每个\tcode{throw $e$}的参数类型$\tcode{typeof}(e)$；
+\item 每个\tcode{try}表达式中因未匹配任何\tcode{catch}子句（或无\tcode{catch}子句）而隐式传播的错误类型。
+\end{itemize}
+推导的错误类型为所有贡献类型的并集。若函数体不包含任何显式抛出或隐式传播的错误，推导的错误类型为\tcode{never}。
+
+\pnum
+\tcode{throw}语句的类型是\tcode{never}。\tcode{throw}之后的代码是不可达代码。
+
+\rSec1[except.catch]{处理错误}
+\indextext{错误处理!处理}
 
 \begin{bnf}{TryExpr}
     \terminal{try} Expression CatchBlock\bnfp TryElseBlock\bnfq \br
@@ -40,7 +81,34 @@
 \end{bnf}
 
 \pnum
-\tcode{try}表达式可以解构结果类型\tcode{$T$ !! $E$}。如果其子表达式为正确值$e$，则整个表达式的值就为$e$。否则，将错误值与每个\tcode{catch}子句的模式进行匹配。如果找到了匹配的块，则整个表达式的值就为该块的值。如果没有找到匹配的块，则异常会继续向上抛出，等价于一个隐含的\tcode{catch \{ throw \}}。
+\tcode{try}表达式可以解构结果类型\tcode{$T$ !! $E$}。如果其子表达式为正确值$e$，则整个表达式的值为$e$。否则，将错误值与每个\tcode{catch}子句的模式进行匹配。
+
+\pnum
+如果\tcode{catch}子句的模式匹配了错误值，则整个表达式的值为该\tcode{catch}块的值。如果所有\tcode{catch}子句均未匹配，或\tcode{try}表达式未包含\tcode{catch}子句，则错误会继续向上传播，等价于隐含了一个\tcode{catch \{ throw \}}。此种隐式传播的错误类型必须相容于外层函数的\tcode{throw}修饰符所约束的错误类型，否则为编译错误。
+
+\pnum
+当错误类型为结构化联合类型（例如\tcode{$E_1$ | $E_2$ | $E_3$}）时，每个\tcode{catch}子句通过模式匹配（参见~\ref{pattern}）收窄错误类型。匹配成功的部分从联合类型中移除：若\tcode{catch}子句匹配了$E_1$，则隐式传播的剩余错误类型将收窄为\tcode{$E_2$ | $E_3$}。若所有\tcode{catch}子句合起来穷尽了联合类型的所有成员，则没有剩余错误可传播，此时\tcode{try}表达式即使省略了部分显式的\tcode{catch}也不会触发未捕获错误的传播。
+
+\pnum
+\enterexample
+\begin{codeblock}
+func good() throw(FileError | ParseError) -> Int {
+    try parse()  // parse() 可能抛出 ParseError，向上传播，相容于 throw 约束
+}
+
+func exhaustive() throw() -> Int {
+    try open("data.txt")
+        catch FileNotFound { return -1; }
+        catch PermissionDenied { return -2; }
+    // open() 返回 Int !! (FileNotFound | PermissionDenied)
+    // catch 穷举了所有情况，没有剩余错误，此 try 表达式不会触发隐式 throw
+    // 因此 exhaustive 可以是 throw()（nothrow）
+}
+\end{codeblock}
+\exitexample
+
+\pnum
+在未携带\tcode{throw}修饰符的函数中使用\tcode{try}表达式且错误可能因未匹配或无\tcode{catch}子句而传播出去，同样是编译错误：未匹配的错误无法从 nothrow 函数逃逸。
 
 \pnum
 \tcode{try}表达式也可以包含一个\tcode{else}块。在这种情况下，\tcode{else}块的值将取代子表达式成为正确时整个表达式的值。匹配\tcode{else}块模式的是子表达式的正确值。
@@ -49,7 +117,7 @@
 \tcode{try}表达式的类型$T$与所有\tcode{catch}块的类型的公共类型。
 
 \pnum
-如果一个异常传播到了最顶层函数的最外层，将会调用\tcode{core::terminate}。\tcode{core::terminate}向标准错误输出错误信息、析构当前线程的栈上值、放弃当前剩余表达式计算后结束程序。对\tcode{\&T}指向的堆对象，不保证析构。
+如果一个错误传播到了最顶层函数的最外层，将会调用\tcode{core::terminate}。\tcode{core::terminate}向标准错误输出错误信息、析构当前线程的栈上值、放弃当前剩余表达式计算后结束程序。对\tcode{\&T}指向的堆对象，不保证析构。
 
 \rSec1[except.func.throw]{函数\tcode{throw}修饰符}
 
@@ -64,13 +132,85 @@
 \end{bnf}
 
 \pnum
-\tcode{throw}修饰符显式指定了函数会产生什么类型的异常。\tcode{throw}后面的括号标记了可能抛出的异常类型。如果括号内部为空，则代表该函数不抛出任何异常，其异常类型为\tcode{never}。如果括号被省略，将会自动推导函数抛出的异常类型。这些类型必须实现了\tcode{ErrorCode}。
+默认情况下，函数不抛出任何错误：不携带\tcode{throw}修饰符的函数为nothrow函数，
+其返回类型不受错误影响。
+带有\tcode{throw}修饰符的函数按以下规则确定其实际返回类型：
+
+\begin{itemize}
+\item
+\tcode{throw()}：显式nothrow。括号内无类型，等价于不携带\tcode{throw}修饰符。作为显式文档信号，表明该函数被设计为从不抛出错误。
+\item
+\tcode{throw}：自动推导。编译器从函数体中实际抛出的错误类型推导，取所有可能的错误类型的并集。
+\item
+\tcode{throw(}$E_1$\tcode{,} $E_2$\tcode{,} ...\tcode{)}：显式指定。函数可能抛出所列类型的错误，构成静态约束。
+编译器检查函数体中的\tcode{throw}表达式是否相容于所列类型。
+\end{itemize}
 
 \pnum
-如果函数指定了\tcode{throw}修饰符，且修饰符指定或推导的类型为$E$，其显式指定或推导的返回值为$R$，则该函数实际的返回值为\tcode{$R$ !! $E$}。
+\tcode{throw(}$E_1$\tcode{,} $E_2$\tcode{,} ...\tcode{)}中的逗号分隔类型列表等价于结构化联合类型\tcode{$E_1$ | $E_2$ | ...}（参见~\ref{type.union}）。
+两种写法可互换：\tcode{throw(FileError, ParseError)}与\tcode{throw(FileError | ParseError)}具有相同的语义。
+两种写法可互换：\tcode{throw(FileError, ParseError)}与\tcode{throw(FileError | ParseError)}具有相同的语义。
+实际返回类型为\tcode{$R$ !! ($E_1$ | $E_2$ | ...)}，即错误类型始终为单层\tcode{!!}，不存在\tcode{$R$ !! $E_1$ !! $E_2$}的嵌套形式。
+
+\pnum
+\tcode{throw}修饰符永远将函数的返回类型变为\tcode{$R$ !! $E$}，即使推导或指定的$E$为\tcode{never}，返回类型也为\tcode{$R$ !! never}——\tcode{throw}修饰符使得函数返回类型中始终携带错误类型，调用方必须使用\tcode{try}（或\tcode{match}、\tcode{?}）来解构结果。
+若$E$为\tcode{never}，则\tcode{$R$ !! never}可通过\tcode{toOK}转换为$R$。
+
+\pnum
+以上所有形式的\tcode{throw}修饰符中，引用的错误类型必须实现了\tcode{ErrorCode}。
+
+\pnum
+\enterexample
+\begin{codeblock}
+func noThrow() -> Int;                   // nothrow（默认）
+func noThrow2() throw() -> Int;          // 显式 nothrow，等价于不写
+func maybeFail() throw -> Int {          // 推导：体内 throw FileError → 实际返回 Int !! FileError
+    throw FileError("not found");
+}
+func mustFail() throw(FileError) -> Int; // 显式约束：实际返回 Int !! FileError
+func neverFail() throw -> Int {          // 推导：体内无 throw → 实际返回 Int !! never
+    return 42;
+}
+
+let a = maybeFail();                     // Int !! FileError，需 try 解构
+let b = try maybeFail();                 // 错误自动传播
+let c = neverFail();                     // Int !! never
+let d = c.toOK();                        // d: Int
+\end{codeblock}
+\exitexample
+
+\pnum
+闭包同样接受\tcode{throw}修饰符，规则与普通函数完全一致：默认 nothrow，可使用\tcode{throw()}、\tcode{throw}（自动推导）或\tcode{throw(}$E$\tcode{)}。
+闭包的\tcode{throw}修饰符仅约束闭包自身函数体中的\tcode{throw}，与定义闭包的外层函数的\tcode{throw}修饰符无关。
 
 \rSec1[except.panic]{\tcode{panic}}
-\indextext{异常处理!\idxcode{panic}}
+\indextext{错误处理!\idxcode{panic}}
 
 \pnum
-\tcode{core::panic}在程序遇到无法处理的错误时终止程序的执行。参见~\ref{core.panic}。
+\tcode{core::panic}在程序遇到无法处理的错误时终止当前线程的执行。参见~\ref{core.panic}。
+\tcode{panic}的类型为\tcode{never}。
+
+\pnum
+\tcode{panic}是声明不可恢复的程序错误的机制。以下情况应使用\tcode{panic}而非抛出错误：
+空指针解引用、数组越界访问、除零、整数溢出（有意时为\tcode{unchecked}）、断言失败、合约违反及其他调用方无法合理恢复的程序错误。
+
+\rSec2[except.panic.recovery]{\tcode{panic}恢复}
+
+\pnum
+\tcode{core::catch\_panic}提供一个受限的\tcode{panic}恢复机制。
+它捕获当前线程中发生的\tcode{panic}，将其作为值返回给调用方，从而允许线程继续执行。
+
+\pnum
+\tcode{catch\_panic}仅用于以下场景：
+\begin{itemize}
+\item 测试框架在隔离中运行测试用例，捕获测试中的\tcode{panic}以报告失败并继续执行后续用例；
+\item 线程或任务边界，在一个线程中发生的\tcode{panic}不应波及宿主线程；
+\item FFI 边界，防止\tcode{panic}展开穿过非\X 语言的调用栈帧。
+\end{itemize}
+
+\pnum
+\tcode{catch\_panic}不得用于一般错误处理。将\tcode{catch\_panic}作为\tcode{throw}/\tcode{try}/\tcode{!!}错误处理机制的替代品属于语义滥用。
+\tcode{catch\_panic}恢复的执行环境可能处于不一致的状态（例如\tcode{panic}发生时栈上的\tcode{defer}块已执行，但未完成的逻辑操作未回滚），因此恢复后的继续执行不保证逻辑正确性。
+
+\pnum
+\tcode{panic}展开栈的过程中，栈上所有值的\tcode{Deinit}（包括\tcode{defer}块）会按逆序执行。GC 管理的堆对象不保证析构。
