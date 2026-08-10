@@ -143,7 +143,6 @@
 
 \begin{floattable}{多字符标点符号}{tab:multichar-punc}{lllll}
 \topline
-\tcode{'(}  &
 \tcode{->}  &
 \tcode{=>}  &
 \tcode{!!}  &\\
@@ -402,11 +401,12 @@ abc
 \rSec2[literal.symbol]{符号字面量}
 
 \begin{bnf}{SymbolLiteral}
-    \terminal{'} Identifier
+    \terminal{\textbackslash} Identifier \br
+    \terminal{\textbackslash} Keyword
 \end{bnf}
 
 \pnum
-符号字面量用于标识成员名称，其类型和其值为其标识符的值。
+符号字面量是编译期的名字常量，其类型为\tcode{Symbol}（\ref{core.type}）。符号字面量由反斜杠后跟标识符或关键字构成，用于命名成员访问（\ref{expr.member}）与编译期位置（如常量泛型实参）。
 
 \rSec2[literal.boolean]{布尔字面量}
 

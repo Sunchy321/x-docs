@@ -4,8 +4,8 @@
 \indextext{函数}
 
 \begin{bnf}{FuncDecl}
-    FuncQual\bnfs \terminal{func} FuncName Parameter ThrowQual\bnfq FuncBody \br
-    FuncQual\bnfs \terminal{func} FuncName Parameter ThrowQual\bnfq ReturnType\bnfq \terminal{;}
+    FuncQual\bnfs \terminal{func} FuncName GenericSpecification\bnfq Parameter ThrowQual\bnfq FuncBody \br
+    FuncQual\bnfs \terminal{func} FuncName GenericSpecification\bnfq Parameter ThrowQual\bnfq ReturnType\bnfq \terminal{;}
 \end{bnf}
 
 \begin{bnf}{FuncName}

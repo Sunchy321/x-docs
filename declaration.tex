@@ -51,7 +51,7 @@
 \indextext{声明!类型}
 
 \begin{bnf}{TypeDecl}
-    TypeQual\bnfs \terminal{type} Identifier TypeBody
+    TypeQual\bnfs \terminal{type} Identifier GenericSpecification\bnfq TypeBody
 \end{bnf}
 
 \begin{bnf}{TypeDeclName}
@@ -79,7 +79,7 @@
 \indextext{声明!类}
 
 \begin{bnf}{ClassDecl}
-    ClassQual\bnfs \terminal{class} Identifier InheritTraits\bnfq ClassBody
+    ClassQual\bnfs \terminal{class} Identifier GenericSpecification\bnfq InheritTraits\bnfq ClassBody
 \end{bnf}
 
 \begin{bnf}{ClassQual}

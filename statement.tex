@@ -146,9 +146,13 @@ func foo(e: E) {
 \rSec1[stmt.while]{\tcode{while} 语句}
 \indextext{语句!\idxcode{while}}
 
+\begin{bnf}{Label}
+    \terminal{'} Identifier
+\end{bnf}
+
 \begin{bnf}{WhileStatement}
-    \terminal{while} SymbolLiteral\bnfq Condition\bnfq Block \br
-    \terminal{while} SymbolLiteral\bnfq Condition\bnfq Block \terminal{else} Block
+    \terminal{while} Label\bnfq Condition\bnfq Block \br
+    \terminal{while} Label\bnfq Condition\bnfq Block \terminal{else} Block
 \end{bnf}
 
 \pnum
@@ -163,14 +167,14 @@ func foo(e: E) {
 如果语句的条件被省略，则主体块的类型为\tcode{never}。\tcode{else}块的类型将被忽略。
 
 \pnum
-\tcode{while}语句可以带有一个符号字面量作为标签，用于在嵌套循环中终止指定的循环。\enternote \tcode{while} 之后紧跟的符号字面量总是被解析为一个标签。如果你需要在循环条件中使用符号字面量，请使用括号将其包裹起来。 \exitnote
+\tcode{while}语句可以带有一个标签，用于在嵌套循环中终止指定的循环。\enternote \tcode{while} 之后紧跟的标签（\tcode{'}后跟标识符）总是被解析为一个标签。 \exitnote
 
 \rSec1[stmt.for]{\tcode{for}语句}
 \indextext{语句!\idxcode{for}}
 
 \begin{bnf}{ForStatement}
-    \terminal{for} SymbolLiteral\bnfq \terminal{await}\bnfq Pattern \terminal{:} Expression Block \br
-    \terminal{for} SymbolLiteral\bnfq \terminal{await}\bnfq Pattern \terminal{:} Expression Block \terminal{else} Block
+    \terminal{for} Label\bnfq \terminal{await}\bnfq Pattern \terminal{:} Expression Block \br
+    \terminal{for} Label\bnfq \terminal{await}\bnfq Pattern \terminal{:} Expression Block \terminal{else} Block
 \end{bnf}
 
 \pnum
@@ -210,11 +214,11 @@ func foo(e: E) {
 \indextext{语句!控制}
 
 \begin{bnf}{BreakStatement}
-    \terminal{break} SymbolLiteral\bnfq Expression\bnfq
+    \terminal{break} Label\bnfq Expression\bnfq
 \end{bnf}
 
 \begin{bnf}{ContinueStatement}
-    \terminal{continue} SymbolLiteral\bnfq
+    \terminal{continue} Label\bnfq
 \end{bnf}
 
 \begin{bnf}{ReturnStatement}
@@ -231,12 +235,11 @@ func foo(e: E) {
 \pnum
 \tcode{break}语句只能在\tcode{while}或\tcode{for}语句中使用。它终止最内层的循环语句，将控制流移动到该语句之后。
 \tcode{break}语句可以带有一个表达式，此时该表达式将作为整个循环语句的值被返回。
-如果它带有一个符号字面量，则它会终止具有对应符号字面量的循环语句。如果没有对应的符号字面量，则这是一个编译错误。
-\enternote 如果希望将符号字面量作为返回表达式，则需要使用括号将其包裹起来。 \exitnote
+如果它带有一个标签，则它会终止具有对应标签的循环语句。如果没有对应的标签，则这是一个编译错误。
 
 \pnum
 \tcode{continue}语句只能在\tcode{while}或\tcode{for}语句中使用。它终止最内侧循环语句的本次循环。将控制流移动到该语句的下一次循环开始。
-如果它带有一个符号字面量，则它会终止具有对应符号字面量的循环语句。如果没有对应的符号字面量，则这是一个编译错误。
+如果它带有一个标签，则它会终止具有对应标签的循环语句。如果没有对应的标签，则这是一个编译错误。
 
 \pnum
 \tcode{return}语句只能在函数作用域（\ref{scope.func}）中使用。它中止当前函数的执行，并将后跟的表达式作为整个函数的返回值。如果表达式被省略，则等价于\tcode{()}。

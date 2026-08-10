@@ -126,7 +126,7 @@ a.v($ - 1) // 方法调用，当前序列为a
 \term{内建实体}的实现由编译器提供，而非通过库代码定义。内建实体使用保留标识符 \tcode{__intrinsic} 标记。
 
 \pnum
-\tcode{__intrinsic} 只能在 \tcode{core} 库的类型声明中使用，不能在用户代码中出现。类型声明 \tcode{type $T$ = __intrinsic} 表示 $T$ 的类型布局、实例化方式以及相关的运算符实现均由编译器直接提供。语言内建类型（如 \tcode{int}、\tcode{char}）和部分特殊类型（如 \tcode{Symbol}）均为内建实体。
+\tcode{__intrinsic} 只能在 \tcode{core} 库的类型声明中使用，不能在用户代码中出现。类型声明 \tcode{type $T$ = __intrinsic} 表示 $T$ 的类型布局、实例化方式以及相关的运算符实现均由编译器直接提供。语言内建类型（如 \tcode{int}、\tcode{char}）和部分特殊类型均为内建实体。
 
 \pnum
 内建类型可以拥有库代码中的附加实现。此时库实现提供该类型的辅助方法和特征，但其基础语义仍然由编译器保证。

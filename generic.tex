@@ -13,7 +13,9 @@
 \end{bnf}
 
 \begin{bnf}{GenericParameter}
-    Identifier \terminal{...}\bnfq GenericConstraint\bnfq GenericIfConstraint\bnfq
+    Identifier \terminal{...}\bnfq GenericConstraint\bnfq GenericIfConstraint\bnfq \br
+    Lifetime GenericIfConstraint\bnfq \br
+    \terminal{const} Identifier \terminal{:} Type GenericIfConstraint\bnfq
 \end{bnf}
 
 \begin{bnf}{GenericConstraint}
@@ -37,11 +39,18 @@
 
 \begin{bnf}{GenericArgument}
     Type \br
+    Lifetime \br
     Expression
 \end{bnf}
 
 \pnum
 \X 中的实体可以带有编译器的类型或非类型参数进行泛化。
+
+\pnum
+实体也可以带有生命期参数，用于引用类型中表达借用有效性约束（\ref{type.ref}）。生命期参数与类型参数并列于\tcode{<}、\tcode{>}之间，例如\tcode{func<'a, T> f(x: T '$a$ \&) -> T '$a$ \&}。
+
+\pnum
+实体也可以带有编译期值参数，形如\tcode{<const $S$: $T$>}，其中$S$是类型$T$的编译期值。符号字面量（\ref{literal.symbol}）可用于此类位置，例如\tcode{<const $S$: Symbol>}。
 
 \pnum
 紧随标识符且中间无空格的\tcode{<}视为泛型参数的开始。\tcode{<}与标识符之间有空白时视为小于运算符。\enterexample
