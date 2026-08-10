@@ -46,20 +46,23 @@ enum Order {
 \pnum
 \tcode{cmp}也可以返回\tcode{Order?}。如果返回值为\tcode{nil}，则代表两个操作数之间没有序关系。
 
-\rSec1[core.deinit]{析构器}
-
-\indexlibrary{\idxcode{Deinit}}
-\begin{itemdecl}
-@auto trait Deinit {
-    func deinit(&mut this) -> void;
-}
-\end{itemdecl}
+\rSec1[core.linear]{线性类型}
+\indextext{线性类型}
 
 \pnum
-\tcode{Deinit}为类型提供\term{析构器}。栈值离开作用域且未被移走时，析构器被确定性调用。若栈值的引用可能逃逸其作用域（例如被存入全局变量或被闭包长期捕获），编译器将报告编译错误。
+\term{线性类型}表示未完成的责任或协议（例如必须关闭的文件句柄、必须释放的连接）。线性值必须恰好被某个显式的\term{终结}操作消费一次；仅离开作用域、重绑、遗忘返回值或依赖 GC 回收均不结清其责任。
 
 \pnum
-对于没有显式实现\tcode{Deinit}的类型，编译器会自动生成依次析构其所有成员的析构器。
+含有线性字段、元素或捕获的聚合体本身也是线性的。线性所有权不得进入普通可共享的 GC 图或环；GC 可以承载其内存，但不承担协议责任。
+
+\pnum
+终结是按值消费线性值的显式操作。每个线性值在函数结束前必须被移入某个终结操作恰好一次；编译器在所有控制流路径上检查结清，作用域退出时仍未结清是编译错误。\tcode{defer}可用于显式安排终结（\ref{stmt.defer}）。
+
+\pnum
+普通的\tcode{$T$\&} / \tcode{$T$ mut\&}引用可以指向线性值，但不复制或承担其线性责任。借用不得跨越线性值的消费点，也不得经返回、存储或逃逸闭包进入长期/GC 可达状态。
+
+\pnum
+线性类型在类型声明处以\tcode{linear}标记（如\tcode{linear class $T$}）。终结协议的语法细节、标准库形态与异常/取消路径的实现暂缓定义。
 
 \rSec1[core.range]{范围}
 
@@ -341,10 +344,10 @@ func panic(message: string = "") -> never;
 \end{itemdecl}
 
 \pnum
-\tcode{panic}在程序遇到无法处理的错误时终止程序的执行。它会向标准错误流打印错误信息\tcode{message}，并析构当前线程的所有对象，然后终止程序的执行。
+\tcode{panic}在程序遇到无法处理的错误时终止程序的执行。它会向标准错误流打印错误信息\tcode{message}，然后终止程序的执行。普通值没有确定性析构，内存由 GC 管理；线性值在异常路径上的结清行为暂缓定义。
 
 \pnum
-如果\tcode{panic}在执行过程中再次调用了\tcode{panic}，则会直接终止程序的执行而略过任何对象的析构。
+如果\tcode{panic}在执行过程中再次调用了\tcode{panic}，则会直接终止程序的执行。
 
 \rSec2[core.assert]{\tcode{assert}}
 

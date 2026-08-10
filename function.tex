@@ -36,6 +36,9 @@
 如果两个函数在省略某些具有默认值的命名参数之后，剩余的命名参数名称完全相同（忽略顺序），则这也是一个编译错误。
 
 \pnum
+\tcode{return}以转移方式把返回值移交给调用方：函数体构造结果值并把它移动到调用方的结果位置（RVO 式），不进行复制。
+
+\pnum
 函数的返回类型可以省略，此时函数的返回类型为函数体的类型与函数中\tcode{return}语句参数类型的公共类型。
 如果函数包含\tcode{throw}修饰符（\tcode{throw()}除外），则返回类型变为\tcode{$R$ !! $E$}，其中$E$为修饰符推导或指定的错误类型。不携带\tcode{throw}修饰符的函数默认不会抛出异常，其返回类型不受影响。参见~\ref{except.func.throw}。
 
@@ -139,18 +142,19 @@ func foo((a, b): (int, bool)) {
 \indextext{参数修饰符!\idxcode{mut}}
 
 \pnum
-\tcode{mut}修饰的参数是可变的，可以在函数内部被修改或重新赋值。\enternote 由于参数总是移动传递，所以除非使用\tcode{ref}修饰，否则调用处实参的值不会受影响。实现了\tcode{Copy}的类型在移动时自动拷贝，调用处原变量继续可用。\exitnote
+\tcode{mut}修饰的参数是可变的，可以在函数内部被修改或重新赋值。\enternote 按值参数总是以移动方式传递：调用把实参位置的值转移给形参，实参随后失效。除非使用\tcode{ref}修饰或显式\tcode{clone}，调用处实参不会保留原值。\exitnote
 
 \rSec2[param.qual.ref]{\tcode{ref}}
 \indextext{参数修饰符!\idxcode{ref}}
 
 \pnum
-\tcode{ref}修饰的参数以引用方式传递，调用处实参的值会受影响。除非使用\tcode{mut}修饰，否则参数是只读的。
+\tcode{ref}修饰的参数以引用方式传递，是位置引用（\ref{type.ref}）。除非使用\tcode{mut}修饰，否则参数是只读的。
 
 \pnum
 类型为$T$的\tcode{ref}参数实际上是类型为\tcode{$T$\&}（或\tcode{$T$ mut\&}）的引用参数的语法糖。
 在函数内部使用该参数时，将会自动对参数进行解引用。
 \tcode{ref}参数的子类型关系按其脱糖结果\tcode{$T$\&}的规则确定。
+生命期可携带于\tcode{ref}参数的引用类型上，由函数声明处的生命期参数（\ref{generic}）绑定，未标注处由编译器推断。调用处被引用的实参位置在活引用期间不得被移出（借用检查）。
 
 \pnum
 \tcode{ref}参数将会按如下方式脱糖：

@@ -326,7 +326,7 @@ match Try::branch(\{$a$}) {
 \indextext{运算符!重载!解引用}
 
 \pnum
-前缀\tcode{*}运算符对应\tcode{Deref::deref}和\tcode{DerefMut::derefMut}，分别为不可变和可变版本。其返回类型必须是引用类型。
+前缀\tcode{*}运算符对应\tcode{Deref::deref}和\tcode{DerefMut::derefMut}，分别为不可变和可变版本。其返回类型必须是引用类型。解引用不是移动的来源（\ref{expr.prefix}）：不能把引用所指的非复制值按值移出。
 
 \rSec2[op.over.infix]{中缀运算符}
 \indextext{运算符!重载!中缀}

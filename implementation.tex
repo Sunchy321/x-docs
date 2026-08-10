@@ -136,6 +136,9 @@
     \tcode{\&mut self} & \tcode{self mut\&} \\
 \end{floattable}
 
+\pnum
+\tcode{\&self}与\tcode{\& mut self}是位置引用（\ref{type.ref}），遵循借用检查：借用期间调用者不得移出被借用的对象。
+
 \enterexample
 \begin{codeblock}
 impl A {

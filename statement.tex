@@ -264,7 +264,7 @@ func foo(e: E) {
 同一作用域内多个\tcode{defer}按声明逆序（LIFO）执行。\tcode{defer}块捕获当前作用域中的变量（按引用），无论作用域以何种方式退出（正常返回、异常传播或\tcode{panic}），均会执行。
 
 \pnum
-\tcode{defer}等价于创建一个匿名的、实现了\tcode{Deinit}的栈值。编译器将其脱糖为匿名结构体，其中被捕获的变量按引用持有。
+\tcode{defer}与线性类型的终结协议（\ref{core.linear}）相配合：它是在作用域退出时运行清理块（例如对线性值调用其终结操作）的构造。编译器不依赖析构器；线性值在作用域退出时未结清其义务是编译错误。
 
 \enterexample
 \begin{codeblock}
