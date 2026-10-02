@@ -392,67 +392,52 @@ let a = (int[])[1, 2, 3]; // 可以
 \end{bnf}
 
 \begin{bnf}{Capture}
-    \terminal{[} CaptureList \terminal{]}
+    \terminal{[} CaptureList\bnfq \terminal{]}
 \end{bnf}
 
 \begin{bnf}{CaptureList}
-    \textnormal{空} \br
-    DefaultCapture \terminal{,}\bnfq \br
-    Captures \terminal{,}\bnfq \br
-    DefaultCapture \terminal{,} Captures \terminal{,}\bnfq
-\end{bnf}
-
-\begin{bnf}{Captures}
     CaptureItem \br
     CaptureList \terminal{,} CaptureItem
-\end{bnf}
-
-\begin{bnf}{DefaultCapture}
-    \terminal{=} \br
-    \terminal{\&} \br
-    \terminal{\&} \terminal{mut}
 \end{bnf}
 
 \begin{bnf}{CaptureItem}
     \terminal{this} \br
     \terminal{\&} \terminal{this} \br
     \terminal{\&} \terminal{mut} \terminal{this} \br
-    Identifier \terminal{...}\bnfq \br
-    Identifier \terminal{...}\bnfq \terminal{=} Expression \br
-    \terminal{\&} Identifier \terminal{...}\bnfq \br
-    \terminal{\&} \terminal{mut} Identifier \terminal{...}\bnfq
+    Identifier \br
+    \terminal{\&} Identifier \br
+    \terminal{\&} \terminal{mut} Identifier
 \end{bnf}
 
 \pnum
 \tcode{do}后跟一个块创建一个闭包。如果闭包表达式不含显式的参数列表，则闭包可以包含隐式参数。
 
 \pnum
-闭包可以捕获当前作用域中的变量。捕获方式分为\term{移动捕获}与\term{引用捕获}。省略捕获列表时，默认按移动捕获处理；引用捕获必须显式写出。
+闭包可以捕获当前作用域中的变量。捕获方式分为\term{引用捕获}与\term{移动捕获}，由编译器按\term{最小捕获原则}推断，推断为默认：闭包体以只读方式使用的外部变量按共享引用捕获；以可写方式使用（赋值更新或取可变引用）的外部变量按可变引用捕获；闭包体将外部变量移出（\ref{expr.assign}）时，该变量升格为移动捕获。
 
 \pnum
-\term{移动捕获}将变量的值移入闭包，源变量随后失效。捕获列表中直接写出变量名即表示移动捕获。
+\term{引用捕获}使闭包持有对变量位置的引用而非其值。引用捕获遵循借用检查（\ref{type.ref}）：闭包存活期间，被捕获变量不得被移出；赋值更新被捕获变量时，闭包内外的引用观察新值。可变引用捕获不承诺唯一性，多个引用的共存遵循引用的一般规则。闭包逃逸时 GC 负责保活所指位置的内存。
 
 \pnum
-\term{引用捕获}使闭包持有对变量位置的引用而非其值。不可变引用写作\tcode{\&$x$}，可变引用写作\tcode{\& mut $x$}。引用捕获遵循借用检查（\ref{type.ref}）：借用期间源变量不得被移出；闭包逃逸时 GC 负责保活所指位置的内存。
+\term{移动捕获}将变量的值移入闭包，源变量在闭包创建处随后失效。推断产生的移动捕获与显式移动捕获遵循相同的失效规则。
 
 \pnum
-省略捕获列表时，闭包默认按移动捕获处理被使用的变量：被捕获变量的值移入闭包，源变量随后失效。需要借用而非移动时，在捕获列表中显式写出\tcode{\&$x$}或\tcode{\& mut $x$}。
+捕获列表显式指定个别变量的捕获方式，覆盖推断结果：直接写出变量名或\tcode{this}表示强制移动捕获；\tcode{\&$x$}表示共享引用捕获，\tcode{\& mut $x$}表示可变引用捕获；\tcode{\&this}与\tcode{\& mut this}同理。空捕获列表\tcode{[]}声明闭包不捕获任何外部变量。
 
 \pnum
-捕获列表可以包含一个默认捕获方式。\tcode{[=]} 将未列出的变量全部按移动捕获，\tcode{[\&]} 将未列出的变量全部按引用捕获。\tcode{[]} 显式声明闭包不捕获任何外部变量。默认捕获方式与逐项标注可以结合使用。
+内层闭包使用外层闭包已捕获的变量时，按相同的最小捕获原则对外层闭包的捕获进行再捕获：内层只读使用产生共享再借用，可写使用产生可变再借用，移出则要求外层捕获为移动捕获。
 
 \enterexample
 \begin{codeblock}
 let arr = [1, 2, 3];
 let name = "Alice";
+let mut count = 0;
 
-let f1 = arr.first do { $0 > 2 };              // 自动推断：未使用外部变量
-let f2 = arr.filter do [=] { $0 != name };     // 显式全部移动，name 移入闭包
-let f3 = arr.filter do [&] { $0 != name };     // 显式全部引用
-let f4 = do [] { 1 + 2 };                      // 不捕获任何外部变量
-let f5 = do [=, &name] {                        // 默认移动，name 用引用
-    name == "Bob"
-};
+let f1 = arr.first do { $0 > 2 };              // 不捕获外部变量
+let f2 = arr.filter do { $0 != name };         // name：推断为共享引用捕获
+let f3 = do { count += 1 };                    // count：推断为可变引用捕获
+let f4 = do [&count] { count += 1 };           // 与 f3 等价：显式可变引用捕获
+let f5 = do { finish(name) };                  // finish 按值消费 name：推断为移动捕获，name 随后失效
 \end{codeblock}
 \exitexample
 
