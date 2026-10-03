@@ -123,3 +123,12 @@
 
 \pnum
 \tcode{\#nameof($id$)}扩展为值为$id$的常量字符串。
+
+\rSec2[macro.expand]{参数组展开}
+\indextext{内建宏!参数组展开}
+
+\pnum
+\tcode{\#expandParameter($P$)}与\tcode{\#expandParameter($P$, $id$)}在形参位置把参数组$P$（\ref{core.function}）展开为形参列表；带$id$的形式同时把展开出的形参绑定为名称$id$。\tcode{\#expandArgument($P$, $id$)}在实参位置把$id$按参数组$P$展开为实参列表。
+
+\pnum
+\enternote 参数组与参数组展开是为函数形参与实参提供元编程能力的过渡性设计，可能在未来被替换或取消。 \exitnote

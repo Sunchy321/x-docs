@@ -26,6 +26,19 @@ enum Optional<T> {
 \pnum
 \tcode{Optional}是可空类型的核心库定义；\tcode{Optional<$T$>}等价于\tcode{$T$?}。其中\tcode{Optional<$T$>.Some($v$)}对应\tcode{some $v$}，\tcode{Optional<$T$>.Nil}对应\tcode{nil}。
 
+\rSec1[core.function]{函数特征}
+
+\indexlibrary{\idxcode{Function}}
+\begin{itemdecl}
+@auto trait Function {
+    type Return;
+    type Parameter;
+}
+\end{itemdecl}
+
+\pnum
+\tcode{Function}由所有函数类型（\ref{type.func}）自动实现。\tcode{Return}是函数的返回类型；\tcode{Parameter}是函数的\term{参数组}——参数类型的序列（可为空或为单个类型）。参数组用于下标与函数调用运算符的特征签名（\ref{op.over.index}、\ref{op.over.call}），并可由内建宏在形参与实参位置展开（\ref{macro.expand}）。
+
 \rSec1[core.order]{序}
 
 \indexlibrary{\idxcode{Order}}

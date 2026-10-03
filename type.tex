@@ -465,11 +465,15 @@ y = x; // 正确，\tcode{dyn T}之间可以互相赋值
     EntityID \br
     FundaType \br
     SpecialType \br
-    \terminal{typeof} \terminal{(} Expression \terminal{)}
+    \terminal{typeof} \terminal{(} Expression \terminal{)} \br
+    \terminal{<} Type \terminal{as} EntityID \terminal{>} \terminal{::} Identifier
 \end{bnf}
 
 \pnum
 \term{类型名称}在特定的语法位置表示类型，以避免潜在的语法歧义。
+
+\pnum
+实体名称形式的类型名称可以是关联类型的投影（如\tcode{$I$::Item}），按名称查找的规则解析（\ref{name.lookup}）；\tcode{<$T$ as $A$>::$B$}是投影的限定形式，用于消解多个候选之间的歧义。
 
 \rSec1[type.typeof]{\tcode{typeof}}
 \indextext{类型!\idxcode{typeof}}

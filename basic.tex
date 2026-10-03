@@ -115,6 +115,15 @@ a.v($ - 1) // 方法调用，当前序列为a
     TypeName \terminal{::} FullID
 \end{bnf}
 
+\begin{bnf}{EntityID}
+    UnqualID \br
+    UnqualID \terminal{::} EntityID \br
+    TypeName \terminal{::} EntityID
+\end{bnf}
+
+\pnum
+\term{实体名称}用于要求实体的语法位置（例如类型位置的\tcode{EntityID}、父特征列表），由限定名称构成，最终解析为一个实体。
+
 \pnum
 \term{名称}用于引用程序实体。一个\term{未限定名称}可能是一个标识符或关键字\tcode{init}。
 
@@ -133,6 +142,9 @@ a.v($ - 1) // 方法调用，当前序列为a
 
 \pnum
 限定名称\tcode{$A$::$B$}的查找首先解析$A$为实体（类型或模块），然后在$A$的可见范围内查找$B$。$A$可以是模块名称、类型名称或\tcode{root}（当前代码库根目录）、\tcode{this}（当前模块）等上下文关键字。
+
+\pnum
+当$A$是类型——包括类型参数、\tcode{self}与\tcode{typeof($e$)}——时，$B$在该类型的成员中查找：具体类型的成员来自其固有实现与特征实现；类型参数的成员来自其约束所绑定的关联类型（\ref{trait}）。查找结果必须唯一：若多个候选满足（例如多个特征各自声明了同名关联类型），则是编译错误，需使用限定形式\tcode{<$A$ as $T$>::$B$}（\ref{type.named}）。
 
 \rSec1[intrinsic]{内建实体}
 \indextext{内建实体}

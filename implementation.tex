@@ -4,11 +4,15 @@
 \indextext{实现}
 
 \begin{bnf}{ImplDecl}
-    \terminal{impl} GenericSpecification\bnfq Type TraitSpec\bnfq ImplBody
+    \terminal{impl} GenericSpecification\bnfq Type TraitSpec\bnfq ImplCondition\bnfq ImplBody
 \end{bnf}
 
 \begin{bnf}{TraitSpec}
     \terminal{:} Type
+\end{bnf}
+
+\begin{bnf}{ImplCondition}
+    \terminal{if} Expression
 \end{bnf}
 
 \begin{bnf}{ImplBody}
@@ -33,9 +37,13 @@
 
 \pnum
 指定了特征的实现称为\term{特征实现}。
-一个类型只能拥有一个特征的一个实现，但不要求该实现必须在类型或特征定义所在的模块中。
+特征实现要求类型定义于当前模块或特征定义于当前模块（至少其一）；\tcode{@auto}特征的实现由编译器推导，不受此限制。
+一个类型只能拥有一个特征的一个\term{适用实现}。
 该实现必须为特征中所有未提供默认实现的项提供实现。实现可以替换特征中已存在默认实现的项的实现。
 特征实现可以包含未在特征中定义的项，但是这些项不允许包含可见性修饰符且可见性总为\tcode{private}。
+
+\pnum
+特征实现可以携带\tcode{if}条件。\tcode{if}条件与泛型参数的\tcode{if}约束（\ref{generic}）是同一机制的不同书写位置：全部泛型实参代入后求值，条件不成立时该实现不适用于此次使用。若同一特征（包括其实参）的两个实现的类型模式可能匹配到同一类型、且两者的适用条件可能同时成立，则是编译错误。否定类型测试（如\tcode{$T$ !is $X$}）构成的互斥条件可用于证明条件不相交；判定按可判定的保守规则进行（\ref{deduct.basic}）。
 
 \rSec1[impl.prop]{属性}
 \indextext{实现!属性}
