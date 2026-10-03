@@ -117,7 +117,7 @@ func exhaustive() throw() -> Int {
 \tcode{try}表达式的类型$T$是所有\tcode{catch}块的类型的公共类型。
 
 \pnum
-如果一个错误传播到了最顶层函数的最外层，将会调用\tcode{core::terminate}。\tcode{core::terminate}向标准错误输出错误信息、放弃当前剩余表达式计算后结束程序。普通值没有确定性析构，内存由 GC 管理；线性值在异常路径上的结清行为暂缓定义。
+如果一个错误传播到了最顶层函数的最外层，将会调用\tcode{core::terminate}。\tcode{core::terminate}向标准错误输出错误信息、放弃当前剩余表达式计算后结束程序。普通值没有确定性析构，内存由 GC 管理；线性值的结清要求在异常路径上同样成立——经 defer 安排终结的线性值由 defer 结清（\ref{stmt.defer}），未经安排的线性值在异常路径上未结清与在正常路径上未结清同样是编译错误（\ref{core.linear}）。
 
 \rSec1[except.func.throw]{函数\tcode{throw}修饰符}
 
@@ -212,4 +212,4 @@ let d = c.toOK();                        // d: Int
 \tcode{catch\_panic}恢复的执行环境可能处于不一致的状态（例如\tcode{panic}发生时栈上的\tcode{defer}块已执行，但未完成的逻辑操作未回滚），因此恢复后的继续执行不保证逻辑正确性。
 
 \pnum
-\tcode{panic}展开栈的过程中，\tcode{defer}块按逆序执行。普通值没有确定性析构，内存由 GC 管理；线性值在异常路径上的结清行为暂缓定义。
+\tcode{panic}展开栈的过程中，\tcode{defer}块按逆序执行，经 defer 安排终结的线性值随之结清（\ref{stmt.defer}）。普通值没有确定性析构，内存由 GC 管理；未经 defer 安排的线性值在异常路径上未结清仍是编译错误（\ref{core.linear}）。
