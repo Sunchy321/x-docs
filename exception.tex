@@ -152,8 +152,7 @@ func exhaustive() throw() -> Int {
 实际返回类型为\tcode{$R$ !! ($E_1$ | $E_2$ | ...)}，即错误类型始终为单层\tcode{!!}，不存在\tcode{$R$ !! $E_1$ !! $E_2$}的嵌套形式。
 
 \pnum
-\tcode{throw}修饰符永远将函数的返回类型变为\tcode{$R$ !! $E$}，即使推导或指定的$E$为\tcode{never}，返回类型也为\tcode{$R$ !! never}——\tcode{throw}修饰符使得函数返回类型中始终携带错误类型，调用方必须使用\tcode{try}（或\tcode{match}、\tcode{?}）来解构结果。
-若$E$为\tcode{never}，则\tcode{$R$ !! never}可通过\tcode{toOK}转换为$R$。
+\tcode{throw}修饰符永远将函数的返回类型变为\tcode{$R$ !! $E$}，即使推导或指定的$E$为\tcode{never}，返回类型也为\tcode{$R$ !! never}。$E$非\tcode{never}时，调用方必须使用\tcode{try}（或\tcode{match}）来解构结果；$E$为\tcode{never}时，\tcode{$R$ !! never}是$R$的子类型（\ref{subtype}），返回值可直接作为$R$使用，无需解构。
 
 \pnum
 以上所有形式的\tcode{throw}修饰符中，引用的错误类型必须实现了\tcode{ErrorCode}。

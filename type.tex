@@ -531,6 +531,9 @@ T \preceq T\tcode{?}
 对引用类型而言，\tcode{$T$\&} $\preceq$ \tcode{$U$\&}当且仅当$T \preceq U$；\tcode{$T$ mut\&}与\tcode{$U$ mut\&}之间仅当$T$与$U$相同时互为子类型。\enternote 只读引用仅允许读取，随所指类型协变；可变引用允许写入，是不变的。可变引用可隐式弱化为同一位置的只读引用（\ref{type.ref}）。 \exitnote
 
 \pnum
+对结果类型而言，\tcode{$T$ !! $E$} $\preceq$ \tcode{$U$ !! $F$}当且仅当$T \preceq U$且$F \preceq E$。\tcode{$R$ !! \tcode{never}}是$R$的子类型。\enternote 错误类型是逆变的：不会产生某类错误的计算可以用在允许更宽错误集合的场合。 \exitnote
+
+\pnum
 类类型可以定义类型转换函数，供显式转换（\ref{expr.cast}）使用；类型转换函数不定义子类型关系。
 
 \pnum

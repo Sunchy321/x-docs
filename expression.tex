@@ -632,16 +632,16 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
 \exitexample
 
 \pnum
-后缀\tcode{!}与后缀\tcode{?}类似，但是它将空值直接返回而不是传播给错误传播表达式。
+后缀\tcode{!}断言其操作数取得成功：如果操作数类型是\tcode{$T$?}，非空时整个表达式的类型为$T$、值为其中的值，为\tcode{nil}时调用\tcode{panic}；如果操作数类型是\tcode{$T$ !! $E$}，正确时整个表达式的类型为$T$、值为正确值，为错误值时调用\tcode{panic}。
 
 \pnum
-如果空值检测运算符的操作数类型是\tcode{$T$?}，则整个表达式的类型为$T$。
+如果空值断言运算符\tcode{!}的操作数类型是\tcode{$T$?}或\tcode{$T$ !! $E$}，则整个表达式的类型为$T$。
 
 \pnum
-如果$e$是结果类型\tcode{$T$ !! $E$}，则\tcode{$e$?}在正确值的情况下使用该值，为错误值的情况下将错误传播到包含它最小的\term{错误传播表达式}。
+如果$e$是结果类型\tcode{$T$ !! $E$}，则\tcode{$e$?}遵循与空值检测（\ref{expr.null}）相同的截断语义：正确值的情况下，以其正确值继续求值，整个表达式的类型为\tcode{$T$?}；错误值的情况下，与操作数为\tcode{nil}时相同，该表达式直到截断边界为止的整个表达式的值为\tcode{nil}，错误值在截断处被丢弃。\enternote \tcode{?}不抛出错误；需要传播错误时使用不带\tcode{catch}的\tcode{try}表达式（\ref{except.catch}）。 \exitnote
 
 \pnum
-错误传播表达式指下列情况之一：
+截断边界指下列情况之一：
 
 \begin{itemize}
     \item 完整表达式；
