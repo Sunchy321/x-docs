@@ -515,33 +515,26 @@ I_{l,h} &\preceq \tcode{float<}s\tcode{>} \\
 \tcode{bool}没有语言内建的子类型约束。但是，其他类型的值可以在\tcode{if}表达式中当作条件使用，这通过实现\tcode{Condition}完成。
 
 \begin{equation*}
-\begin{aligned}
-T &\preceq T\tcode{?} \\
-T\tcode{[]} &\preceq U\tcode{[]} \mathrel{\mathrm{if}} T \preceq U \\
-T\tcode{[}K\tcode{]} &\preceq U\tcode{[}L\tcode{]} \mathrel{\mathrm{if}} T \preceq U \mathrel{\mathrm{and}} K \preceq L \\
-\end{aligned}
+T \preceq T\tcode{?}
 \end{equation*}
 
 \pnum
-任意类型是其对应可空类型的子类型。如果$T_i$是$U_i$的子类型，则\tcode{$T_0$[]}、\tcode{$T_0$[$T_1$]}、\tcode{($T_1$, $\ldots$, $T_n$)}分别是\tcode{$U_0$[]}、\tcode{$U_0$[$U_1$]}、\tcode{($U_1$, $\ldots$, $U_n$)}的子类型。\enternote 这意味着数组和字典的元素类型是协变的。 \exitnote
+任意类型是其对应可空类型的子类型。
 
 \pnum
-对两个结构类型$T$和$U$而言，如果
-\begin{itemize}
-    \item $T$的顺序成员数量小于或等于$U$的；
-    \item $T$的顺序成员是对应$U$顺序成员的子类型；
-    \item $T$的命名成员是对应$U$命名成员的子类型，或具有默认值；
-\end{itemize}
-则$U$是$T$的子类型。
+数组类型\tcode{$T$[]}、字典类型\tcode{$T$[$K$]}与结构类型（含元组类型）是\term{不变的}：数组之间仅当元素类型相同时互为子类型，字典之间仅当元素类型与键类型都相同时互为子类型，结构类型之间仅当成员完全相同时互为子类型。\enternote 需要元素多态时使用联合类型（\ref{type.union}）或显式转换；公共类型计算（\ref{type.common}）在无子类型关系时产生联合类型。 \exitnote
 
 \pnum
 对两个函数类型$T$和$U$而言，如果$U$的每个参数类型都是对应$T$的参数的子类型，且$T$的返回类型是$U$的返回类型的子类型，则$T$是$U$的子类型。\enternote 这意味着函数类型的参数类型是逆变的，返回类型是协变的。 \exitnote $T$可以拥有比$U$更多的顺序参数，或者$U$不包含的命名参数。
 
 \pnum
-类类型可以定义类型转换函数。每个这样的函数定义了一个子类型关系。
+对引用类型而言，\tcode{$T$\&} $\preceq$ \tcode{$U$\&}当且仅当$T \preceq U$；\tcode{$T$ mut\&}与\tcode{$U$ mut\&}之间仅当$T$与$U$相同时互为子类型。\enternote 只读引用仅允许读取，随所指类型协变；可变引用允许写入，是不变的。可变引用可隐式弱化为同一位置的只读引用（\ref{type.ref}）。 \exitnote
 
 \pnum
-对类型表达式而言，$T\mathbin{\tcode{\&}}U$是$T$和$U$的子类型；$T$和$U$是$T\mathbin{\tcode{|}}U$的子类型。
+类类型可以定义类型转换函数，供显式转换（\ref{expr.cast}）使用；类型转换函数不定义子类型关系。
+
+\pnum
+对类型表达式而言，$T$和$U$是$T\mathbin{\tcode{|}}U$的子类型。
 
 \rSec1[type.common]{公共类型}
 \indextext{类型!公共类型}
