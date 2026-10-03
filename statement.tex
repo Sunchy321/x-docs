@@ -208,6 +208,9 @@ func foo(e: E) {
 \tcode{for}语句消耗其迭代表达式：迭代表达式的值被移入为其创建的迭代器；如果迭代表达式是一个拥有值的位置，该位置在\tcode{for}语句后失效。经借用迭代另行设计。
 
 \pnum
+内建容器（如数组\tcode{$T$[]}、字典\tcode{$T$[$K$]}）的迭代由编译器提供（\ref{intrinsic}）：其迭代器在迭代过程中将元素按值移出，元素的移出不经过下标运算（\ref{expr.index}）。因此对不可复制元素的消耗迭代同样按值产出（\ref{value-model}）。
+
+\pnum
 与\tcode{while}语句相同，\tcode{for}语句也可以带有标签。
 
 \pnum
