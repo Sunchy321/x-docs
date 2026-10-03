@@ -39,13 +39,12 @@
 
 \begin{floattable}{内建运算符}{tab:op}{lllll}
 \topline
-\tcode{\textasciicircum+} & \tcode{\textasciicircum-} & 前缀\tcode{+} & 前缀\tcode{-} & 前缀\tcode{!} \\
-\tcode{'\~} & 前缀\tcode{*} & \tcode{?} & 后缀\tcode{!} & \tcode{*} \\
-\tcode{/} & \tcode{\%} & 二元\tcode{+} & 二元\tcode{-} & \tcode{shl} \\
-\tcode{shr} & \tcode{and} & \tcode{xor} & \tcode{or} & \tcode{..} \\
-\tcode{..=} & \tcode{\~} & \tcode{==} & \tcode{!=} & \tcode{<} \\
-\tcode{<=} & \tcode{>} & \tcode{>=} & \tcode{cmp} & \tcode{in} \\
-\tcode{\&\&} & \tcode{||} & & & \\
+前缀\tcode{+} & 前缀\tcode{-} & 前缀\tcode{!} & \tcode{'\~} & 前缀\tcode{*} \\
+\tcode{?} & 后缀\tcode{!} & \tcode{*} & \tcode{/} & \tcode{\%} \\
+二元\tcode{+} & 二元\tcode{-} & \tcode{shl} & \tcode{shr} & \tcode{and} \\
+\tcode{xor} & \tcode{or} & \tcode{..} & \tcode{..=} & \tcode{\~} \\
+\tcode{==} & \tcode{!=} & \tcode{<} & \tcode{<=} & \tcode{>} \\
+\tcode{>=} & \tcode{cmp} & \tcode{in} & \tcode{\&\&} & \tcode{||} \\
 \hhline{|=====|}
 \tcode{.} & \tcode{await} & 前缀\tcode{\&} & \tcode{!in} & \tcode{is} \\
 \tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} & \tcode{*=} \\
@@ -232,8 +231,6 @@ let mut x = () as X;
 \tcode{()} & \tcode{FunctorMut::callMut}, \tcode{Functor::call}, \tcode{FunctorOnce::callOnce} \\
 \tcode{?} & \tcode{Failable::chain} \\
 \tcode{!} & \tcode{Failable::unwrap} \\
-\tcode{\textasciicircum+} & \tcode{Successor::next} \\
-\tcode{\textasciicircum-} & \tcode{Predecessor::prev} \\
 \tcode{++} & \tcode{Increment::inc} \\
 \tcode{--} & \tcode{Decrement::dec} \\
 \tcode{as} & \tcode{Into::into} \\

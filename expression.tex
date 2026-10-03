@@ -650,17 +650,6 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
     \item \tcode{for}语句的迭代表达式。
 \end{itemize}
 
-\rSec2[expr.prev-next]{前驱后继运算符}
-\indextext{运算符!前驱后继}
-
-\begin{bnf}{PrevNextExpr}
-    SuffixExpr \terminal{\textasciicircum+} \br
-    SuffixExpr \terminal{\textasciicircum-}
-\end{bnf}
-
-\pnum
-\tcode{$e$\textasciicircum+}和\tcode{$e$\textasciicircum-}分别表示$e$的后继和前驱。如果$e$的类型是算术类型，\tcode{$e$\textasciicircum+}等价于$e+1$，\tcode{$e$\textasciicircum-}等价于$e-1$。
-
 \rSec2[expr.inc-dec]{自增自减运算符}
 
 \begin{bnf}{IncDecExpr}
@@ -669,7 +658,7 @@ match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断
 \end{bnf}
 
 \pnum
-自增运算符\tcode{$e$++}等价于\tcode{$e$ = $e$\textasciicircum+}，自减运算符\tcode{$e$--}等价于\tcode{$e$ = $e$\textasciicircum-}，但$e$只被求值一次。
+自增运算符\tcode{$e$++}等价于\tcode{$e$ = $e$ + 1}，自减运算符\tcode{$e$--}等价于\tcode{$e$ = $e$ - 1}，但$e$只被求值一次。
 
 \rSec1[expr.prefix]{前缀运算符}
 \indextext{运算符!前缀}
