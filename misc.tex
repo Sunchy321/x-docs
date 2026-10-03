@@ -359,6 +359,16 @@ func terminate(message: string = "") -> never;
 \pnum
 \tcode{terminate}向标准错误输出错误信息\tcode{message}、放弃当前剩余表达式计算后结束程序的执行（\ref{except.catch}）。
 
+\rSec2[core.future]{\tcode{Future}}
+
+\indexlibrary{\idxcode{Future}}
+\begin{itemdecl}
+type Future<T> = __intrinsic;
+\end{itemdecl}
+
+\pnum
+\tcode{Future<$T$>}是尚未完成的$T$的生产者，实现由编译器提供（\ref{intrinsic}）。异步函数的调用产生\tcode{Future}（\ref{func.async}）；\tcode{await}消费它并产生其中的值（\ref{expr.await}）。经任务产生的\tcode{Future}是普通的值，可以在任务之间移动（\ref{func.task}）。
+
 \rSec2[core.assert]{\tcode{assert}}
 
 \indexlibrary{\idxcode{assert}}

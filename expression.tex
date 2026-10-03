@@ -596,6 +596,9 @@ let f: (this: int) -> int = int::test;
 \pnum
 \tcode{await}运算符用于等待一个异步表达式的结果。\tcode{$e$.await}挂起当前计算，直到$e$的值可用。如果$e$的类型是\tcode{Future<$T$>}，则\tcode{$e$.await}的类型是$T$。只能在具有\tcode{async}修饰的函数作用域中使用\tcode{await}运算符。
 
+\pnum
+\tcode{await}消费其操作数，同一个\tcode{Future}只能被\tcode{await}一次。如果$e$的类型是\tcode{Future<$T$ !! $E$>}，则\tcode{$e$.await}的类型是\tcode{$T$ !! $E$}，其中的错误照常经错误处理机制传播（\ref{except.catch}）。
+
 \rSec2[expr.null]{空值检测运算符}
 \indextext{运算符!空值检测}
 
