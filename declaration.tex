@@ -68,13 +68,22 @@
 \begin{bnf}{TypeBody}
     StructType \br
     \terminal{\{} \terminal{\}} \br
-    \terminal{\{} StructTypeList \terminal{,}\bnfq \terminal{\}} \br
+    \terminal{\{} LetFieldList \terminal{,}\bnfq \terminal{\}} \br
     \terminal{=} Type
+\end{bnf}
+
+\begin{bnf}{LetFieldList}
+    LetField \br
+    LetFieldList \terminal{,} LetField
+\end{bnf}
+
+\begin{bnf}{LetField}
+    \terminal{let} \terminal{mut}\bnfq Identifier \terminal{:} Type
 \end{bnf}
 
 \pnum
 类型声明用于为类型创建别名。在类型声明之后，可以使用该名称代表所关联的类型。
-在类型声明中，可以使用大括号代替结构类型的小括号。
+在类型声明中，可以使用大括号代替结构类型的小括号；此时字段以\tcode{let}书写（大括号形式不接受顺序字段，也不接受省略\tcode{let}的字段声明）。
 
 \pnum
 类型别名可以引用其自身：递归必须经过至少一处间接——数组、字典、可空类型、函数类型或不透明类型；不经过间接的自引用（如\tcode{type X = X}）是编译错误。
@@ -93,9 +102,19 @@
 
 \begin{bnf}{ClassBody}
     StructType \br
-    \terminal{\{} \terminal{\}} \br
-    \terminal{\{} StructTypeList \terminal{,}\bnfq \terminal{\}} \br
+    \terminal{\{} ClassMemberList\bnfq \terminal{\}} \br
     \terminal{=} Type
+\end{bnf}
+
+\begin{bnf}{ClassMemberList}
+    ClassMember \br
+    ClassMemberList ClassMember
+\end{bnf}
+
+\begin{bnf}{ClassMember}
+    \terminal{let} \terminal{mut}\bnfq Identifier \terminal{:} Type \terminal{;}\bnfq \br
+    PropertyDecl \br
+    FuncDecl
 \end{bnf}
 
 \begin{bnf}{InheritTraits}
@@ -109,10 +128,37 @@
 
 \pnum
 类声明创建不透明类型。\tcode{class $C$ $B$}等价于\tcode{type $C$ = class $B$}。参见~\ref{type.opaque}。
-在类声明中，可以使用大括号代替结构类型的小括号。
+
+\pnum
+类体有两种书写形式。小括号形式\tcode{class $C$($B$)}是纯结构形式：成员为结构字段（顺序字段与命名用户字段，\ref{type.struct}），各成员以逗号分隔，不接受属性与方法。大括号形式\tcode{class $C$ \{ \ldots \}}是完整的类体：字段必须以\tcode{let}声明（\tcode{let $name$ : $T$}或\tcode{let mut $name$ : $T$}，不接受省略\tcode{let}的声明，也不接受顺序字段），此外还可以直接包含属性（\ref{impl.prop}）与方法（\ref{method}）。
 
 \pnum
 类声明中可以指定一个或多个能够自动实现的特征。
+
+\enterexample
+\begin{codeblock}
+// 小括号形式：纯结构
+class Pair(first: int, second: int);
+
+// 大括号形式：完整类体
+class Counter {
+    let count: int = 0;         // 字段
+    let total: int;             // 字段
+
+    func bump(&mut this) {      // 方法
+        this.count += 1;
+    }
+
+    let isZero: bool {          // 属性
+        get => this.count == 0;
+    }
+}
+
+impl Counter {
+    init() => self(count: 0, total: 0);
+}
+\end{codeblock}
+\exitexample
 
 \rSec1[decl.partial]{\tcode{partial}类型}
 \indextext{声明!\idxcode{partial}}
