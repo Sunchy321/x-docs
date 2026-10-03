@@ -101,7 +101,7 @@ if x.filter{ true }
 \end{bnf}
 
 \begin{bnf}{MatchItem}
-    Pattern \terminal{->} Statement
+    Pattern \terminal{=>} Statement
 \end{bnf}
 
 \pnum
@@ -124,8 +124,8 @@ enum E {
 
 func foo(e: E) {
     match e {
-        .A(_) -> { ... },
-        .B(_) -> { ... }, // 可以省略，不是编译错误
+        .A(_) => { ... },
+        .B(_) => { ... }, // 可以省略，不是编译错误
                           // 包含该项同样也不是编译错误，但可能导致不可达代码警告
     }
 }

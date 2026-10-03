@@ -630,7 +630,7 @@ let mut b: int? = 1;
 
 b = a?; // 被赋值运算符截断，\tcode{b}成为\tcode{nil}
 
-match a? { some let t -> true, nil -> false } // 被\tcode{match}的条件截断，不会传播到整个\tcode{match}表达式级别
+match a? { some let t => true, nil => false } // 被\tcode{match}的条件截断，不会传播到整个\tcode{match}表达式级别
 \end{codeblock}
 \exitexample
 
