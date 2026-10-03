@@ -114,7 +114,7 @@ func exhaustive() throw() -> Int {
 \tcode{try}表达式也可以包含一个\tcode{else}块。在这种情况下，\tcode{else}块的值将取代子表达式成为正确时整个表达式的值。匹配\tcode{else}块模式的是子表达式的正确值。
 
 \pnum
-\tcode{try}表达式的类型$T$与所有\tcode{catch}块的类型的公共类型。
+\tcode{try}表达式的类型$T$是所有\tcode{catch}块的类型的公共类型。
 
 \pnum
 如果一个错误传播到了最顶层函数的最外层，将会调用\tcode{core::terminate}。\tcode{core::terminate}向标准错误输出错误信息、放弃当前剩余表达式计算后结束程序。普通值没有确定性析构，内存由 GC 管理；线性值在异常路径上的结清行为暂缓定义。
@@ -148,7 +148,6 @@ func exhaustive() throw() -> Int {
 
 \pnum
 \tcode{throw(}$E_1$\tcode{,} $E_2$\tcode{,} ...\tcode{)}中的逗号分隔类型列表等价于结构化联合类型\tcode{$E_1$ | $E_2$ | ...}（参见~\ref{type.union}）。
-两种写法可互换：\tcode{throw(FileError, ParseError)}与\tcode{throw(FileError | ParseError)}具有相同的语义。
 两种写法可互换：\tcode{throw(FileError, ParseError)}与\tcode{throw(FileError | ParseError)}具有相同的语义。
 实际返回类型为\tcode{$R$ !! ($E_1$ | $E_2$ | ...)}，即错误类型始终为单层\tcode{!!}，不存在\tcode{$R$ !! $E_1$ !! $E_2$}的嵌套形式。
 

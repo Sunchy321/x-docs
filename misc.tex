@@ -344,10 +344,20 @@ func panic(message: string = "") -> never;
 \end{itemdecl}
 
 \pnum
-\tcode{panic}在程序遇到无法处理的错误时终止程序的执行。它会向标准错误流打印错误信息\tcode{message}，然后终止程序的执行。普通值没有确定性析构，内存由 GC 管理；线性值在异常路径上的结清行为暂缓定义。
+\tcode{panic}在程序遇到无法处理的错误时终止当前线程的执行。它会向标准错误流打印错误信息\tcode{message}，然后终止当前线程的执行。普通值没有确定性析构，内存由 GC 管理；线性值在异常路径上的结清行为暂缓定义。
 
 \pnum
 如果\tcode{panic}在执行过程中再次调用了\tcode{panic}，则会直接终止程序的执行。
+
+\rSec2[core.terminate]{\tcode{terminate}}
+
+\indexlibrary{\idxcode{terminate}}
+\begin{itemdecl}
+func terminate(message: string = "") -> never;
+\end{itemdecl}
+
+\pnum
+\tcode{terminate}向标准错误输出错误信息\tcode{message}、放弃当前剩余表达式计算后结束程序的执行（\ref{except.catch}）。
 
 \rSec2[core.assert]{\tcode{assert}}
 

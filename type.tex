@@ -498,7 +498,7 @@ y = x; // 正确，\tcode{dyn T}之间可以互相赋值
 
 \begin{equation*}
 \begin{aligned}
-I_{l_1,h_1} &\preceq J_{l_2,h_2} \mathrel{\mathrm{if}} l_1 \geq l_2 \lor h_1 \leq h_2 \\
+I_{l_1,h_1} &\preceq J_{l_2,h_2} \mathrel{\mathrm{if}} l_1 \geq l_2 \land h_1 \leq h_2 \\
     \tcode{float<}s_1\tcode{>} &\preceq \tcode{float<}s_2\tcode{>} \mathrel{\mathrm{if}} s_1 \leq s_2 \\
 I_{l,h} &\preceq \tcode{float<}s\tcode{>} \\
     I, J &\in \left\{ \tcode{int}, \tcode{uint}, \tcode{int<}w\tcode{>}, \tcode{uint<}w\tcode{>} \right\}
