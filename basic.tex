@@ -12,6 +12,9 @@
 \X{}采用\term{默认移动语义}。赋值（\ref{expr.assign}）与按值传参（\ref{param.qual.mut}）转移值并使源位置失效；复制必须显式\tcode{clone()}。\tcode{return}同样以转移方式把结果移交给调用方（\ref{stmt.control}）。
 
 \pnum
+\term{可复制类型}的值不受移动语义约束：整数类型、浮点类型、\tcode{bool}、\tcode{char}、\tcode{string}与\tcode{Symbol}的值在赋值、按值传参与\tcode{return}中被复制而非转移，源位置不失效，可继续使用。其中\tcode{string}的复制共享其字符内容（\ref{type.funda}）。
+
+\pnum
 \term{位置}是保存值的存储单元，可以被读取、赋值更新、取引用（\ref{type.ref}）与移出。位置不对应实际的内存地址，实现可以任意搬移它——引用指向位置本身，搬移后仍保持有效。变量绑定某个位置；整体值的字段与数组/映射元素是该位置的子位置。字面量与临时表达式取引用时物化为匿名的临时位置。引用类型（\ref{type.ref}）\tcode{$T$\&} / \tcode{$T$ mut\&}是位置的别名，可携带生命期表达借用有效性约束。活引用不得跨越其目标位置的消费点；生命期可显式标注，未标注处由编译器推断。
 
 \pnum

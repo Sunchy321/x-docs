@@ -99,7 +99,7 @@ $$\tcode{char} \coloneqq \left\{ \textnormal{Any Unicode scalar value} \right\}$
 $$\tcode{string} \coloneqq \left\{ \textnormal{Any UTF-8 String} \right\} $$
 
 \pnum
-\tcode{string}表示任意长度的UTF-8字符串，包括空字符串。
+\tcode{string}表示任意长度的UTF-8字符串，包括空字符串。string 值的存储由 GC 管理，内容不可变：对 string 的复制（\ref{value-model}）只复制引用，不复制字符内容。
 
 \rSec2[type.special]{特殊类型}
 \indextext{类型!特殊类型}
