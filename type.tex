@@ -13,8 +13,8 @@
     SpecialType \br
     CompType \br
     OpaqueType \br
-    SomeType \br
-    AnyType \br
+    ImplType \br
+    DynType \br
     \terminal{typeof} \terminal{(} Expression \terminal{)} \br
     Type TypeQualifier
 \end{bnf}
@@ -385,7 +385,7 @@ let m: U = j; // 错误，\tcode{T}和\tcode{U}之间没有隐式转换
 \rSec1[type.impl]{\tcode{impl}类型}
 \indextext{类型!\tcode{impl}}
 
-\begin{bnf}{SomeType}
+\begin{bnf}{ImplType}
     \terminal{impl} Type \br
     \terminal{impl} \terminal{_}
 \end{bnf}
@@ -419,7 +419,7 @@ y = x; // 错误，\tcode{B}不能赋给\tcode{A}
 \rSec1[type.dyn]{\tcode{dyn}类型}
 \indextext{类型!\tcode{dyn}}
 
-\begin{bnf}{AnyType}
+\begin{bnf}{DynType}
     \terminal{dyn} Type \br
     \terminal{dyn} \terminal{_} \br
     \terminal{dyn}

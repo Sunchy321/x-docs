@@ -13,7 +13,7 @@ type Symbol = __intrinsic;
 \end{itemdecl}
 
 \pnum
-\tcode{Symbol}是符号字面量（\ref{literal.symbol}）的类型。它是一个内建实体（\ref{intrinsic}），只能通过符号字面量来获得值。\tcode{Symbol}值主要用于编译期位置（如常量泛型实参），运行时使用另行设计。
+\tcode{Symbol}是符号字面量（\ref{literal.symbol}）的类型。它是一个内建实体（\ref{intrinsic}），只能通过符号字面量来获得值。\tcode{Symbol}值主要用于编译期位置（如常量泛型实参），运行时使用另行设计（待定）。
 
 \indexlibrary{\idxcode{Optional}}
 \begin{itemdecl}
@@ -75,7 +75,7 @@ enum Order {
 普通的\tcode{$T$\&} / \tcode{$T$ mut\&}引用可以指向线性值，但不复制或承担其线性责任。借用不得跨越线性值的消费点，也不得经返回、存储或逃逸闭包进入长期/GC 可达状态。
 
 \pnum
-线性类型在类型声明处以\tcode{linear}标记（如\tcode{linear class $T$}）。终结协议的语法细节与标准库形态暂缓定义。
+线性类型在类型声明处以\tcode{linear}标记（如\tcode{linear class $T$}）。终结协议的语法细节与标准库形态暂缓定义（待定）。
 
 \rSec1[core.range]{范围}
 
@@ -171,7 +171,7 @@ impl void : ErrorCode = never;
 \end{itemdecl}
 
 \pnum
-\tcode{void}被禁止实现\tcode{ErrorCode}，这是为了避免不带参数的\tcode{throw}表达式产生理解歧义。
+\tcode{void}被禁止实现\tcode{ErrorCode}：错误类型用于承载错误信息，\tcode{void}不携带任何信息，不适合作为错误类型。
 
 \rSec2[core.error.impl]{实现}
 
@@ -341,7 +341,7 @@ impl<E> never !! E {
 \begin{itemdecl}
 impl<T, E> (T !! E) !! E {
     func flatten() throw(E) -> T {
-        this!!
+        try (try this)
     }
 }
 \end{itemdecl}

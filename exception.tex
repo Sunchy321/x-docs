@@ -12,7 +12,7 @@
 \begin{itemize}
 \item
 \term{一般错误}（recoverable errors）是调用方可以合理预期并处理的情况，例如文件不存在、网络超时、数据格式错误、权限被拒。
-一般错误应使用错误处理机制（\tcode{throw}表达式与结果类型\tcode{$T$ !! $E$}）处理，参与类型系统，由编译期保证错误被显式处理或传播。
+一般错误应使用错误处理机制（\tcode{throw}语句与结果类型\tcode{$T$ !! $E$}）处理，参与类型系统，由编译期保证错误被显式处理或传播。
 \item
 \term{致命错误}（unrecoverable bugs）是程序错误，调用方无法合理地恢复，例如空指针解引用、数组越界、除零、断言失败、合约违反。
 致命错误应调用\tcode{panic}终止当前线程的执行。\tcode{panic}不参与类型系统，不要求函数标注，不应被用作一般错误处理的控制流机制。
@@ -43,13 +43,13 @@ func getElement(arr: int[], index: int) -> int {
 若函数具有\tcode{throw(}$E_1$\tcode{,} $E_2$\tcode{,} ...\tcode{)}修饰符，则\tcode{$e$}的类型必须相容于所列错误类型之一。
 
 \pnum
-在既未携带\tcode{throw}修饰符、\tcode{throw()}中指定的错误类型也不包含所抛错误类型的函数中使用\tcode{throw}表达式是一个编译错误。
+在既未携带\tcode{throw}修饰符、\tcode{throw()}中指定的错误类型也不包含所抛错误类型的函数中使用\tcode{throw}语句是一个编译错误。
 
 \pnum
-\tcode{throw}表达式的参数必须实现了\tcode{ErrorCode}。
+\tcode{throw}语句的参数必须实现了\tcode{ErrorCode}。
 
 \pnum
-不带参数的\tcode{throw}表达式只能在\tcode{catch}块中使用。它重新抛出当前\tcode{catch}子句所捕获的错误。
+不带参数的\tcode{throw}语句只能在\tcode{catch}块中使用。它重新抛出当前\tcode{catch}子句所捕获的错误。
 重新抛出的错误类型为\tcode{catch}子句模式所收窄后的错误类型。
 该类型必须相容于外层函数的\tcode{throw}修饰符所约束的错误类型，否则为编译错误。
 
@@ -143,7 +143,7 @@ func exhaustive() throw() -> Int {
 \tcode{throw}：自动推导。编译器从函数体中实际抛出的错误类型推导，取所有可能的错误类型的并集。
 \item
 \tcode{throw(}$E_1$\tcode{,} $E_2$\tcode{,} ...\tcode{)}：显式指定。函数可能抛出所列类型的错误，构成静态约束。
-编译器检查函数体中的\tcode{throw}表达式是否相容于所列类型。
+编译器检查函数体中的\tcode{throw}语句是否相容于所列类型。
 \end{itemize}
 
 \pnum

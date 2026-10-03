@@ -45,12 +45,13 @@
 \tcode{xor} & \tcode{or} & \tcode{..} & \tcode{..=} & \tcode{\~} \\
 \tcode{==} & \tcode{!=} & \tcode{<} & \tcode{<=} & \tcode{>} \\
 \tcode{>=} & \tcode{cmp} & \tcode{in} & \tcode{\&\&} & \tcode{||} \\
+\tcode{+=} & \tcode{-=} & \tcode{*=} & \tcode{/=} & \tcode{\%=} \\
+\tcode{shl_eq} & \tcode{shr_eq} & \tcode{and\_eq} & \tcode{xor\_eq} & \tcode{or\_eq} \\
+\tcode{++} & \tcode{--} & \tcode{<\~} & \tcode{\~>} & \tcode{as} \\
+\tcode{as?} & & & & \\
 \hhline{|=====|}
 \tcode{.} & \tcode{await} & 前缀\tcode{\&} & \tcode{!in} & \tcode{is} \\
-\tcode{!is} & \tcode{=} & \tcode{+=} & \tcode{-=} & \tcode{*=} \\
-\tcode{/=} & \tcode{\%=} & \tcode{shl_eq} & \tcode{shr_eq} & \tcode{and\_eq} \\
-\tcode{xor\_eq} & \tcode{or\_eq} & \tcode{??=} & \tcode{++} & \tcode{--} \\
-\tcode{\~>} & \tcode{<\~} & \tcode{;} && \\
+\tcode{!is} & \tcode{=} & \tcode{??=} & \tcode{;} & \\
 \end{floattable}
 
 \rSec1[op.user]{自定义运算符}
@@ -227,7 +228,7 @@ let mut x = () as X;
 \topline
 运算符 & 特征 \\
 \capsep
-\tcode{[]} & \tcode{IndexMut::indexMut}, \tcode{Index::index} \\
+\tcode{[]} & \tcode{IndexRefMut::indexRefMut}, \tcode{IndexRef::indexRef}, \tcode{IndexAssign::indexAssign}, \tcode{Index::index} \\
 \tcode{()} & \tcode{FunctorMut::callMut}, \tcode{Functor::call}, \tcode{FunctorOnce::callOnce} \\
 \tcode{?} & \tcode{Failable::chain} \\
 \tcode{!} & \tcode{Failable::unwrap} \\

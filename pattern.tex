@@ -196,6 +196,9 @@ $\mathcal{v}$和$\mathcal{e}$必须可比较。$\mathcal{v}\mathrel{\Vert}\mathc
 绑定模式可以匹配任意值。匹配成功后，该标识符将作为一个变量插入到当前作用域中。
 
 \pnum
+如果被匹配的值来自借用的位置（例如对引用所指值的匹配，\ref{type.ref}），则绑定不移动该值：绑定的变量持有对相应子位置的引用。
+
+\pnum
 如果绑定使用关键字\tcode{const}，则这是一个常量绑定。参见~\ref{qual.const}。
 
 \pnum

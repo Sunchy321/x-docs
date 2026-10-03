@@ -10,14 +10,17 @@
 
 \indexlibrary{\idxcode{Sequence}}
 \begin{itemdecl}
-trait Sequence<T> {
+trait Sequence<T> : RangeBound {
     type Item = T;
-    type Iterator : core::Iterator<T>;
+    type Output = usize;
+    type Iterator: core::Iterator;
 
-    let size: uint;
+    let size: usize;
     let iter: Iterator;
 
     let isEmpty => this.size == 0;
+    func caret(&this) -> Output => 0;
+    func dollar(&this) -> Output => this.size;
 }
 \end{itemdecl}
 
@@ -28,10 +31,10 @@ trait Sequence<T> {
 \tcode{Item}是序列的元素类型，其始终为\tcode{T}。
 
 \pnum
-\tcode{Iterator}是序列的迭代器类型，其必须实现了\tcode{Iterator<T>}。
+\tcode{Iterator}是序列的迭代器类型，其必须实现了\tcode{core::Iterator}。
 
 \pnum
-\tcode{size}是序列的大小。序列实现了\tcode{Dollar}，返回\tcode{size}。
+\tcode{size}是序列的大小。序列实现了\tcode{RangeBound}：\tcode{\textasciicircum}等价于\tcode{0}，\tcode{\$}等价于\tcode{size}（\ref{expr.bound}）。
 
 \pnum
 \tcode{iter}是序列的迭代器。
@@ -39,22 +42,12 @@ trait Sequence<T> {
 \pnum
 \tcode{isEmpty}返回序列是否为空。它的默认实现将序列大小与0比较。
 
-\indexlibrary{\idxcode{Sequence}!实现}
-\begin{itemdecl}
-impl<T> Sequence<T> : Dollar {
-    func dollar() { this.size }
-}
-\end{itemdecl}
-
-\pnum
-序列实现了\tcode{Dollar}，返回序列的大小。
-
 \indexlibrary{\idxcode{Iterator}}
 \begin{itemdecl}
-trait Iterator<T> {
-    type Item = T;
+trait Iterator {
+    type Item;
 
-    func next(this: mut) -> T?;
+    func next(&mut this) -> Item?;
 }
 \end{itemdecl}
 

@@ -114,6 +114,9 @@ if x.filter{ true }
 \pnum
 穷举性检查按类型分类进行：对\tcode{bool}、枚举、定长整数类型（\tcode{int<$w$>}、\tcode{uint<$w$>}）等有限值类型，编译器通过构造函数分裂检查全部可能值是否被覆盖；对\tcode{int}（任意精度整数）、\tcode{string}、数组等无限值类型，必须包含\tcode{_}兜底分支，否则报编译错误。
 
+\pnum
+联合类型的穷尽性按成员类型分别判定：类型断言模式覆盖的成员视为已覆盖（\ref{type.union}）。可空类型\tcode{$T$?}的值由\tcode{some}模式与\tcode{nil}模式（或\tcode{_}）覆盖。结果类型经\tcode{try}的收窄规则处理穷尽性（\ref{except.catch}）；直接对结果值使用\tcode{match}时，需覆盖正确值与错误值两侧。
+
 \enterexample
 \begin{codeblock}
 
@@ -141,7 +144,7 @@ func foo(e: E) {
     \item 按出现顺序对每个项进行匹配。如果某个项的模式匹配成功，则执行其后的语句。所有其他项都不会进行求值。
 \end{itemize}
 
-\tcode{match}表达式的类型为其所有分支的公共类型。
+\tcode{match}语句的类型为其所有分支的公共类型。
 
 \rSec1[stmt.while]{\tcode{while} 语句}
 \indextext{语句!\idxcode{while}}
@@ -205,7 +208,7 @@ func foo(e: E) {
 其中$i$和$v$是内部使用的匿名变量名称。参见~\ref{core.seq}。
 
 \pnum
-\tcode{for}语句消耗其迭代表达式：迭代表达式的值被移入为其创建的迭代器；如果迭代表达式是一个拥有值的位置，该位置在\tcode{for}语句后失效。经借用迭代另行设计。
+\tcode{for}语句消耗其迭代表达式：迭代表达式的值被移入为其创建的迭代器；如果迭代表达式是一个拥有值的位置，该位置在\tcode{for}语句后失效。经借用迭代另行设计（待定）。
 
 \pnum
 内建容器（如数组\tcode{$T$[]}、字典\tcode{$T$[$K$]}）的迭代由编译器提供（\ref{intrinsic}）：其迭代器在迭代过程中将元素按值移出，元素的移出不经过下标运算（\ref{expr.index}）。因此对不可复制元素的消耗迭代同样按值产出（\ref{value-model}）。

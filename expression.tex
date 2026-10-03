@@ -105,6 +105,21 @@
 \pnum
 字面量或临时表达式本身不是位置；对它们使用\tcode{\&}时，会先物化为匿名的临时位置（\ref{expr.prefix}）。投影表达式（如\tcode{$a$[$i$]}或映射键访问）取引用时捕获其投影操作数，其有效性沿用普通访问的动态语义：越界或缺失时解引用报检查错误（\ref{expr.prefix}）。
 
+\rSec1[expr.eval-order]{求值顺序}
+\indextext{求值顺序}
+
+\pnum
+表达式的求值顺序是确定的：除非本节另行规定，子表达式从左到右求值。编译器可以为结果等价的程序调整求值的内部安排，但不得为可观察行为引入除本节规定之外的顺序。
+
+\pnum
+按从左到右求值的子表达式包括：二元运算与比较的两个操作数；下标表达式的接收者先于下标操作数（\ref{expr.index}）；调用表达式的被调用者先于各实参，实参按书写顺序（具名实参按其书写位置，\ref{expr.call}）；成员访问表达式的接收者先于后续访问（\ref{expr.member}）。
+
+\pnum
+以下情况不按从左到右：\tcode{\&\&}与\tcode{||}的右操作数仅在左操作数决定求值时求值（\ref{expr.logic}）；\tcode{??}的右操作数按需求值（\ref{expr.null-coal}）；空值检测与断言运算符的截断语义按其规则发生（\ref{expr.null}）。
+
+\pnum
+赋值在右操作数完成求值（含移动）后更新目标位置；目标与源为同一位置时，右操作数读取的是更新前的值（\ref{expr.assign}）。
+
 \rSec1[expr.primary]{基本表达式}
 \indextext{表达式!基本}
 
@@ -635,13 +650,13 @@ match a? { some let t => true, nil => false } // 被\tcode{match}的条件截断
 \exitexample
 
 \pnum
-后缀\tcode{!}断言其操作数取得成功：如果操作数类型是\tcode{$T$?}，非空时整个表达式的类型为$T$、值为其中的值，为\tcode{nil}时调用\tcode{panic}；如果操作数类型是\tcode{$T$ !! $E$}，正确时整个表达式的类型为$T$、值为正确值，为错误值时调用\tcode{panic}。
+后缀\tcode{!}在其操作数取得失败值时使失败\term{逃逸}出所属函数：如果操作数类型是\tcode{$T$?}，非空时整个表达式的类型为$T$、值为其中的值，为\tcode{nil}时所属函数直接以空值返回——所属函数的返回类型必须可容纳该空值，否则是编译错误；如果操作数类型是\tcode{$T$ !! $E$}，正确时整个表达式的类型为$T$、值为正确值，为错误值时该错误从所属函数抛出，等价于不带\tcode{catch}的\tcode{try $e$}（\ref{except.catch}），必须相容于所属函数的\tcode{throw}修饰符（\ref{except.func.throw}）。
 
 \pnum
-如果空值断言运算符\tcode{!}的操作数类型是\tcode{$T$?}或\tcode{$T$ !! $E$}，则整个表达式的类型为$T$。
+如果后缀\tcode{!}的操作数类型是\tcode{$T$?}或\tcode{$T$ !! $E$}，则整个表达式的类型为$T$。
 
 \pnum
-如果$e$是结果类型\tcode{$T$ !! $E$}，则\tcode{$e$?}遵循与空值检测（\ref{expr.null}）相同的截断语义：正确值的情况下，以其正确值继续求值，整个表达式的类型为\tcode{$T$?}；错误值的情况下，与操作数为\tcode{nil}时相同，该表达式直到截断边界为止的整个表达式的值为\tcode{nil}，错误值在截断处被丢弃。\enternote \tcode{?}不抛出错误；需要传播错误时使用不带\tcode{catch}的\tcode{try}表达式（\ref{except.catch}）。 \exitnote
+如果$e$是结果类型\tcode{$T$ !! $E$}，则\tcode{$e$?}遵循与空值检测（\ref{expr.null}）相同的截断语义：正确值的情况下，以其正确值继续求值，整个表达式的类型为\tcode{$T$?}；错误值的情况下，与操作数为\tcode{nil}时相同，该表达式直到截断边界为止的整个表达式的值为\tcode{nil}，错误值在截断处被丢弃。\enternote \tcode{?}不使失败逃逸出函数；需要传播错误时使用不带\tcode{catch}的\tcode{try}表达式（\ref{except.catch}）或后缀\tcode{!}。 \exitnote
 
 \pnum
 截断边界指下列情况之一：
