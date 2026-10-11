@@ -49,7 +49,7 @@
 \indextext{实现!属性}
 
 \begin{bnf}{PropertyDecl}
-    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq PropertyBody \terminal{;} \br
+    PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq PropertyBody \br
     PropertyQual\bnfs BindKeyword Identifier TypeNotation\bnfq \terminal{=>} Expression \terminal{;}
 \end{bnf}
 
@@ -94,7 +94,7 @@
 如果\tcode{set}访问器不显式写出参数，则视为其具有闭包参数\tcode{\$value}。如果\tcode{willSet}或\tcode{didSet}不显式写出参数，则视为其具有闭包参数\tcode{\$oldValue}和\tcode{\$newValue}。
 
 \pnum
-如果属性以直接后跟\tcode{=> $e$}的方式声明，则视作该属性具有访问器\tcode{get => $e$}。
+如果属性以直接后跟\tcode{=> $e$}的方式声明，则视作该属性具有访问器\tcode{get => $e$}；该形式以分号收尾。访问器块形式（\tcode{\{ \ldots \}}）不以分号收尾——这与函数的块体一致。
 
 \pnum
 未使用\tcode{mut}声明的属性不能包含\tcode{set}、\tcode{willSet}和\tcode{didSet}访问器。

@@ -101,11 +101,19 @@ if x.filter{ true }
 \end{bnf}
 
 \begin{bnf}{MatchItem}
+    MatchItemNoComma \terminal{,}\bnfq \br
+    MatchItemNoComma \terminal{,}
+\end{bnf}
+
+\begin{bnf}{MatchItemNoComma}
     Pattern \terminal{=>} Statement
 \end{bnf}
 
 \pnum
 \term{\tcode{match}语句}对其后跟的表达式进行模式匹配。
+
+\pnum
+\tcode{match}语句的各分支以逗号分隔；分支体以块结尾时，其后的逗号可以省略。末尾分支的逗号可以省略。
 
 \pnum
 \tcode{match}语句的各项中的模式必须覆盖被匹配表达式的所有可能值，否则这是一个编译错误。

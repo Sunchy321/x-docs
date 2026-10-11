@@ -82,7 +82,8 @@
 \end{bnf}
 
 \begin{bnf}{UnnamedParamDecl}
-    Attribute\bnfs ParamQual\bnfq Pattern TypeNotation
+    Attribute\bnfs ParamQual\bnfq Pattern TypeNotation DefaultValue\bnfq \br
+    Attribute\bnfs ParamQual\bnfq Pattern DefaultValue
 \end{bnf}
 
 \begin{bnf}{NamedParamDecl}
@@ -117,7 +118,7 @@
 \pnum
 参数可以为\tcode{this}参数、顺序参数或具名参数，且必须按照此顺序排列，并且\tcode{this}参数不能出现超过一次。
 顺序参数和具名参数必须显式指定其类型，不能省略类型。
-具名参数可以指定默认值。如果函数调用时没有提供对应的值，则视为传入该默认值。
+参数（无论顺序或具名）都可以指定默认值：带默认值的参数在省略类型时其类型由推导确定（\tcode{$name$ = $e$}），指定类型时写作\tcode{$name$ : $T$ = $e$}。如果函数调用时没有提供对应的值，则视为传入该默认值。
 
 \pnum
 函数参数可以是一个模式，但视为处于绑定模式中，其中所有的标识符都视为一个绑定。这个模式不能是可失败的。

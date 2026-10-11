@@ -276,8 +276,7 @@ return 1 + 2 // 等价于\tcode{return (1 + 2)}
 \end{bnf}
 
 \begin{bnf}{TypeParenLiteral}
-    TypeName \terminal{(} Arguments\bnfq \terminal{)} Block\bnfq \br
-    TypeName Block
+    TypeName \terminal{(} Arguments\bnfq \terminal{)} Block\bnfq
 \end{bnf}
 
 \begin{bnf}{TypeArrayLiteral}
@@ -306,7 +305,7 @@ let a = (int[])[1, 2, 3]; // 可以
 \exitexample
 
 \pnum
-\tcode{$T$($a_1$, $\ldots$, $a_n$)}以给定的参数创建$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有闭包块。如果这个对象的初始化器只接受这一个参数，也可以省略括号。
+\tcode{$T$($a_1$, $\ldots$, $a_n$)}以给定的参数创建$T$的对象。创建对象时，会以这些参数调用给定的初始化器。以这种方式初始化的对象也可以带有闭包块。
 如果不存在对应的初始化器，且该参数符合结构字面量的语法（并不包含闭包块），则会依次初始化对应的顺序成员和命名成员。
 
 \pnum

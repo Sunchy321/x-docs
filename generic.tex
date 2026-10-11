@@ -20,13 +20,11 @@
 
 \begin{bnf}{GenericConstraint}
     \terminal{:} \terminal{type} \br
-    \terminal{:} Type \br
-    GenericTraitConstraint
+    \terminal{:} Type
 \end{bnf}
 
-\begin{bnf}{GenericTraitConstraint}
-    \terminal{impl} Type
-\end{bnf}
+\pnum
+泛型参数的约束以冒号书写：\tcode{: type}约束参数为类型（kind 约束），\tcode{: $T$}约束参数的类型为$T$的子类型；当$T$是特征时，该约束要求参数实现此特征。历史上特征约束亦曾以\tcode{impl $T$}书写，该拼写已由冒号形式取代，编译器仅为兼容而接受。
 
 \begin{bnf}{GenericIfConstraint}
     \terminal{if} Expression
@@ -81,7 +79,7 @@ a < b  // 比较，有空白
 func f(a: impl A) { }
 
 // 等价于
-func<T impl A> f(a: T) { }
+func<T: A> f(a: T) { }
 
 \end{codeblock}
 \exitexample
