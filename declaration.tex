@@ -130,7 +130,10 @@
 类声明创建不透明类型。\tcode{class $C$ $B$}等价于\tcode{type $C$ = class $B$}。参见~\ref{type.opaque}。
 
 \pnum
-类体有两种书写形式。小括号形式\tcode{class $C$($B$)}是纯结构形式：成员为结构字段（顺序字段与命名用户字段，\ref{type.struct}），各成员以逗号分隔，不接受属性与方法。大括号形式\tcode{class $C$ \{ \ldots \}}是完整的类体：字段必须以\tcode{let}声明（\tcode{let $name$ : $T$}或\tcode{let mut $name$ : $T$}，不接受省略\tcode{let}的声明，也不接受顺序字段），此外还可以直接包含属性（\ref{impl.prop}）与方法（\ref{method}）。
+类体有两种书写形式。小括号形式\tcode{class $C$($B$)}是纯结构形式：成员为结构字段（顺序字段与命名用户字段，\ref{type.struct}），各成员以逗号分隔，不接受属性与方法。大括号形式\tcode{class $C$ \{ \ldots \}}是完整的类体：字段必须以\tcode{let}声明（\tcode{let $name$ : $T$}或\tcode{let mut $name$ : $T$}，不接受省略\tcode{let}的声明，也不接受顺序字段），此外还可以直接包含属性（\ref{impl.prop}）与方法（\ref{method}）。大括号体中的属性与方法是隐式固有实现的成员，与书写在\tcode{impl $C$ \{ \ldots \}}中的同名成员完全等价。
+
+\pnum
+类实例是普通值：就地存储、遵循默认移动语义，复制必须显式\tcode{clone()}（\ref{value-model}）。类的构造只能经初始化器进行；结构字面量按成员依次初始化的方式（\ref{expr.lit.init}）不适用于类类型。不写任何成员的大括号形式（\tcode{\{ \}}）等价于小括号形式的全 public 空结构：这样的类由编译器合成零参初始化器；含非 public 字段的类不合成。
 
 \pnum
 类声明中可以指定一个或多个能够自动实现的特征。
