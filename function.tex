@@ -43,6 +43,9 @@
 如果函数包含\tcode{throw}修饰符（\tcode{throw()}除外），则返回类型变为\tcode{$R$ !! $E$}，其中$E$为修饰符推导或指定的错误类型。不携带\tcode{throw}修饰符的函数默认不会抛出异常，其返回类型不受影响。参见~\ref{except.func.throw}。
 
 \pnum
+由\tcode{const}限定的函数是编译期函数：其实参必须为编译期已知，函数体在编译期求值，不得包含\tcode{throw}。求值规则与类型级函数参见~\ref{kind}。
+
+\pnum
 函数体为单个块或者\tcode{=>}后跟任意表达式和分号。如果采用后一种形式，则不能显式指定返回类型。
 
 \pnum

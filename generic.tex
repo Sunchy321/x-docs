@@ -64,8 +64,70 @@ a < b  // 比较，有空白
 \end{codeblock}
 \exitexample
 
-\rSec1[kind]{高阶类型}
-\indextext{高阶类型}
+\rSec1[kind]{类型级计算}
+\indextext{类型级计算}
+\indextext{编译期!类型}
+
+\pnum
+类型是一等编译期值（\ref{type.funda}）：可以绑定、作为实参传递、作为返回值、做相等比较，并经编译期内省（\ref{macro.type-info}）拆解其结构。类型级计算的机制由三部分构成：\tcode{const}限定函数在编译期求值；\tcode{\#type}宏以类型文法构造类型值（\ref{macro.type-construct}）；泛型参数是类型形参的声明式语法形式。
+
+\pnum
+\tcode{const}限定函数是编译期函数：其实参必须为编译期已知，函数体在编译期求值。函数体是普通的函数体——语句、控制流与可变绑定均可用，但不得包含\tcode{throw}，也不得依赖运行时的垃圾收集存储；编译期产生的中间值由实现托管。实现可以限制编译期求值的步数，超过限制是编译错误。返回类型为\tcode{type}的\tcode{const}限定函数称为\term{类型级函数}。
+
+\enterexample
+\begin{codeblock}
+const func MakePair(a: type, b: type) -> type {
+    #type((first: a, second: b))
+}
+
+const func Maybe(t: type) -> type {
+    #type(t?)
+}
+
+func first(pair: MakePair(int, string)) -> int {   // 类型位直接调用
+    pair.first
+}
+
+let const P: type = MakePair(int, string);          // 可选：为复用而绑定
+
+func firstOf(pair: P) -> int {
+    pair.first
+}
+\end{codeblock}
+\exitexample
+
+\pnum
+类型位的文法是自足的\term{类型表达式}。除上述类型文法外，类型表达式还包括两种形式：
+
+\begin{bnf}{TypeExpr}
+    Type \br
+    EntityID \terminal{(} Arguments\bnfq \terminal{)} \br
+    \terminal{if} Expression Block \terminal{else} Block
+\end{bnf}
+
+\pnum
+第一种形式是\term{类型级应用}：\tcode{EntityID}必须解析为返回类型为\tcode{type}的\tcode{const}限定函数（类型级函数），实参为编译期表达式；整个应用在编译期求值，结果为\tcode{type}。第二种形式是\term{类型级条件}：条件必须为编译期可求值的布尔表达式，仅被选择的分支被求值。求值结果为\tcode{type}的内建宏（如\tcode{\#typeof}，\ref{macro.typeof-expr}）亦可用于类型表达式。
+
+\pnum
+类型表达式中每个记号只有一个含义：后缀与前缀永远是类型级运算（\tcode{?}为可空、\tcode{[}$K$\tcode{]}为字典、\tcode{|}为联合、\tcode{->}为函数、\tcode{!!}为结果）；名字要么代表类型声明，要么是持有类型值的\tcode{type}绑定（代入），其他绑定是编译错误——如\tcode{type?}绑定，须先以可空类型的手段拆包（\ref{type.optional}）。类型表达式不经任何回退解析。
+
+\pnum
+表达式位置的类型构造由内建宏\tcode{\#type($T$)}完成：其参数是类型文法而非表达式，因此类型位的后缀与前缀（\ref{type.comp}）在该参数内不构成表达式运算符的歧义。参数中的名字按统一命名空间解析，且\term{仅限单个标识符}——类型声明的名字代表该类型，\tcode{type}类型的绑定代表其所持有的类型（代入）；运算表达式与非\tcode{type}绑定在类型文法中是编译错误。\tcode{\#type}是表达式位置唯一的字面类型构造形式。
+
+\pnum
+计算得到的类型的同一性按结构判定：以相同的实参求值同一类型级函数，所得类型相同；\tcode{\#type}构造的复合类型按其结构比较，类等名义类型声明按声明同一。因此，类型级函数在注解与签名中的多次出现指向同一类型，跨位置的赋值与传递按普通子类型规则检查。
+
+\pnum
+非\tcode{type}类型的绑定（如\tcode{type?}）不得直接用于类型位或类型构造：必须先以可空类型的既有手段（\ref{type.optional}）拆包为\tcode{type}类型的值。类型与值的边界在绑定处强制执行。
+
+\pnum
+泛型参数是类型形参的声明式语法形式：类型形参\tcode{<$T$>}等价于\tcode{<const $T$: type>}的语法糖，泛型实参在编译期代入。泛型参数上的特征约束是对该类型值的约束；\tcode{if}约束（\ref{generic}）与编译期求值使用同一求值域。
+
+\pnum
+在特征实现中，自类型可以携带未应用的类型参数，\tcode{self<}$U$\tcode{>}表示把实参$U$应用到该类型构造器上；应用所得的类型必须仍实现同一特征。据此，序列等容器特征可以声明以不同元素类型构造同类容器的操作。
+
+\pnum
+类型值可以作为普通值参与复合类型：\tcode{type?}是「可能为空的类型值」的可空类型，其使用遵循可空类型的一般规则（\ref{type.optional}）。
 
 \rSec1[generic.impl]{\tcode{impl}泛型}
 \indextext{泛型!\idxcode{impl}}

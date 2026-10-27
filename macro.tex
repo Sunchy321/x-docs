@@ -132,3 +132,24 @@
 
 \pnum
 \enternote 参数组与参数组展开是为函数形参与实参提供元编程能力的过渡性设计，可能在未来被替换或取消。 \exitnote
+
+\pnum
+随着编译期类型级计算（\ref{kind}）的引入，参数组展开预期改由编译期表达；这两个宏已计划弃用，仅为兼容保留。
+
+\rSec2[macro.type-construct]{\tcode{\#type}}
+\indextext{内建宏!type}
+
+\pnum
+\tcode{\#type($T$)}的参数是类型文法而非表达式，展开为表示该类型的编译期\tcode{type}值（\ref{type.funda}）。参数中的名字按统一命名空间解析：类型声明的名字代表该类型，\tcode{type}类型的绑定代表其所持有的类型（代入）。\tcode{\#type}是表达式位置唯一的字面类型构造形式，类型位的后缀与前缀在参数内不构成表达式运算符的歧义。参见~\ref{kind}。
+
+\rSec2[macro.type-info]{\tcode{\#typeInfo}}
+\indextext{内建宏!typeInfo}
+
+\pnum
+\tcode{\#typeInfo($T$)}展开为描述类型$T$的结构的编译期值，包括类型的种类与字段清单（每个字段的名称、类型与可变性）。该结果\term{不是类型}——它是以\tcode{type}值为其字段的编译期数据，用于\tcode{const}上下文的编译期逻辑（经\tcode{switch}遍历，或作为类型级函数的实参），不出现在类型位。密封类型的字段清单为空，仅保留类型种类；非密封类型的内省遵循与直接成员访问一致的访问级别规则（\ref{type.opaque}）。字段级之外的信息（方法、约束等）不在本内建的范围内。
+
+\rSec2[macro.typeof-expr]{\tcode{\#typeof}}
+\indextext{内建宏!typeof}
+
+\pnum
+\tcode{\#typeof($e$)}展开为表示表达式$e$的类型的编译期\tcode{type}值。$e$不被求值。对类型值本身求其类型时，结果是\tcode{type}。

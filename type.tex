@@ -43,7 +43,8 @@ $$ \mathcal{V} = \{ \langle v, T, Q \rangle \mid T \in \mathcal{T}, v \in T, Q \
     \terminal{float} \br
     \terminal{float} \terminal{<} Expression \terminal{>} \br
     \terminal{char} \br
-    \terminal{string}
+    \terminal{string} \br
+    \terminal{type}
 \end{bnf}
 
 $$\tcode{void} \coloneqq \{ \mathrm{void} \}$$
@@ -100,6 +101,9 @@ $$\tcode{string} \coloneqq \left\{ \textnormal{Any UTF-8 String} \right\} $$
 
 \pnum
 \tcode{string}表示任意长度的UTF-8字符串，包括空字符串。string 值的存储由 GC 管理，内容不可变：对 string 的复制（\ref{value-model}）只复制引用，不复制字符内容。
+
+\pnum
+\tcode{type}是「类型」本身的一等值：内置类型名、类型声明引入的名字与类型形参都是\tcode{type}的值。类型名字与值绑定共享同一命名空间，名字代表类型还是普通值由其绑定决定。类型值上的运算与编译期构造参见~\ref{kind}。
 
 \rSec2[type.special]{特殊类型}
 \indextext{类型!特殊类型}
